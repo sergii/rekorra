@@ -1,6 +1,6 @@
 # Step 0005 — Generic Resource Index v2
 
-Status: Feature branch; CI and browser verification pending.
+Status: Automated Ruby 3.3/3.4 CI passed; manual browser QA pending.
 
 ## Goal
 
@@ -24,14 +24,16 @@ Make searching, filtering, sorting and pagination first-class for **ordinary mod
 
 ## Verification
 
-- [ ] Ruby 3.3 / Ruby 3.4 CI green
-- [ ] Users across tenants never mix, including when filters and pagination apply
-- [ ] Selection, boolean, numeric and date range filters
-- [ ] Unknown filter/sort/column values cannot enter SQL
-- [ ] Pagination upper limit and stable secondary ordering
-- [ ] Query remains bounded with 50,000 demo Users
-- [ ] Search + filters preserved across Next / Previous links
+- [x] Ruby 3.3 / Ruby 3.4 CI green
+- [x] Users across tenants never mix, including when filters and pagination apply
+- [x] Selection, boolean, numeric and date range filters
+- [x] Unknown filter/sort/column values cannot enter SQL
+- [x] Pagination upper limit and stable secondary ordering
+- [x] Query remains bounded with 50,000 demo Users
+- [x] Search + filters preserved across Next / Previous links
 - [ ] Browser and mobile visual QA
+
+[CI run 40604436817](https://github.com/sergii/rekorra/actions/runs/40604436817): Ruby 3.3 and 3.4, **97 tests, 481 assertions, 0 failures/errors/skips** per matrix job. Includes actual 50,000-row SQLite dataset and a bounded Index SELECT with no full-table COUNT. Query performance on PostgreSQL/MySQL and production latency were not benchmarked.
 
 ## Known limits
 
