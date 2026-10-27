@@ -194,5 +194,21 @@ class ResourceIndexV2Test < ActionDispatch::IntegrationTest
     assert queries.any? { |sql| sql.match?(/\bLIMIT\b/i) && sql.match?(/\bOFFSET\b/i) }
     assert queries.none? { |sql| sql.match?(/COUNT\s*\(/i) }
     assert_operator queries.length, :<=, 3
+
+    # The same 50k scoped rows also support the opt-in keyset strategy.
+    keyset_sql = []
+    tracker = ->(*args) do
+      sql = args.last[:sql].to_s
+      keyset_sql << sql if sql.match?(/\ASELECT\b/i) && sql.match?(/FROM "?users"?/i)
+    end
+    ActiveSupport::Notifications.subscribed(tracker, "sql.active_record") do
+      get "/backoffice/resources/cursor_users", headers: auth,
+        params: { sort: "name", per_page: "50" }
+    end
+    assert_response :success
+    assert_select "table.rk-table tbody tr", count: 50
+    assert keyset_sql.any? { |sql| sql.match?(/\bLIMIT\b/i) }
+    assert keyset_sql.none? { |sql| sql.match?(/\bOFFSET\b|\bCOUNT\s*\(/i) }
+    assert_operator keyset_sql.length, :<=, 3
   end
 end
