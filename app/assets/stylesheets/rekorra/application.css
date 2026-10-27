@@ -1,0 +1,63 @@
+:root {
+  color-scheme: light dark;
+}
+html[data-theme="light"] { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
+.rk-app {
+  --rk-bg: #f6f8fb;
+  --rk-fg: #192335;
+  --rk-card: #ffffff;
+  --rk-muted: #596477;
+  --rk-line: #dfe5ed;
+  --rk-primary: #3155d5;
+  background: var(--rk-bg);
+  color: var(--rk-fg);
+  min-height: 100vh;
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .rk-app {
+    --rk-bg: #121820;
+    --rk-fg: #eef2f7;
+    --rk-card: #1d2632;
+    --rk-muted: #a8b5c5;
+    --rk-line: #364254;
+    --rk-primary: #aabaff;
+  }
+}
+html[data-theme="dark"] .rk-app {
+  --rk-bg: #121820;
+  --rk-fg: #eef2f7;
+  --rk-card: #1d2632;
+  --rk-muted: #a8b5c5;
+  --rk-line: #364254;
+  --rk-primary: #aabaff;
+}
+.rk-app * { box-sizing: border-box; }
+.rk-app a { color: var(--rk-primary); text-decoration: none; }
+.rk-app a:hover { text-decoration: underline; }
+.rk-app h1 { line-height: 1.2; font-size: clamp(1.7rem, 4vw, 2.6rem); margin: 0 0 1rem; }
+.rk-shell { width: min(100% - 2rem, 1140px); margin-inline: auto; }
+.rk-header { background: var(--rk-card); border-bottom: 1px solid var(--rk-line); }
+.rk-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1rem; }
+.rk-brand { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; }
+.rk-theme { display: flex; align-items: center; gap: 0.6rem; }
+.rk-theme label { color: var(--rk-muted); font-size: 0.875rem; }
+.rk-theme select, .rk-app input, .rk-app select, .rk-app textarea {
+  border: 1px solid var(--rk-line); color: var(--rk-fg); background: var(--rk-card);
+  padding: 0.65rem 0.8rem; border-radius: 0.55rem; max-width: 100%;
+}
+.rk-main { padding-block: 2.5rem; }
+.rk-panel { background: var(--rk-card); border: 1px solid var(--rk-line); border-radius: 1rem; padding: clamp(1.2rem, 4vw, 2.5rem); }
+.rk-kicker { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--rk-primary); }
+.rk-muted { color: var(--rk-muted); }
+.rk-button { border: none; border-radius: 0.55rem; padding: 0.6rem 0.9rem; background: var(--rk-primary); color: var(--rk-card); cursor: pointer; font: inherit; }
+.rk-button--secondary { border: 1px solid var(--rk-line); background: var(--rk-card); color: var(--rk-fg); }
+.rk-notice { border: 1px solid var(--rk-line); padding: 1rem; border-radius: 0.6rem; }
+@media (max-width: 600px) {
+  .rk-header__inner { flex-wrap: wrap; }
+  .rk-theme { width: 100%; justify-content: space-between; }
+  .rk-main { padding-block: 1rem; }
+}

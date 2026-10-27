@@ -1,0 +1,10 @@
+/.bundle/
+/vendor/bundle/
+/tmp/
+/log/
+/coverage/
+/test/dummy/db/*.sqlite3*
+/test/dummy/tmp/
+/test/dummy/log/
+/test/dummy/storage/
+/.DS_Store

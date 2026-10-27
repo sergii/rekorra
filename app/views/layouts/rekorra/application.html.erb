@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="<%= rekorra_theme %>">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rekorra</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "rekorra/application", "data-turbo-track": "reload" %>
+  </head>
+  <body class="rk-app">
+    <header class="rk-header">
+      <div class="rk-shell rk-header__inner">
+        <a class="rk-brand" href="<%= root_path %>">Rekorra</a>
+        <%= form_with url: theme_path, method: :post, local: true, class: "rk-theme" do |form| %>
+          <%= form.label :theme, "Theme" %>
+          <%= form.select :theme, [["Auto", "auto"], ["Light", "light"], ["Dark", "dark"]], { selected: rekorra_theme } %>
+          <%= form.submit "Apply", class: "rk-button rk-button--secondary" %>
+        <% end %>
+      </div>
+    </header>
+    <main class="rk-shell rk-main">
+      <% if notice.present? %><p class="rk-notice"><%= notice %></p><% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>
