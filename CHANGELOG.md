@@ -1,13 +1,16 @@
 # Changelog
 
-Changes are grouped by incremental vertical slices rather than speculative feature claims.
+Changes are grouped by vertical increments. For validation evidence and outstanding checks see [docs/steps](docs/steps/README.md).
 
 ## Unreleased
 
-### Step 0000 - Engine shell
-- Initial mountable, isolated Rails Engine.
-- Server-rendered shell with packaged CSS and theme selection.
-- Demo Rails host and initial integration tests.
-- Architecture decisions and step-by-step validation log.
+### Step 0001 - First associations
+- Added a real demo domain with Organization, Customer, Order, Payment and seeded records.
+- Added Resource DSL, server-rendered CRUD, scoped associations and relationships.
+- Added restricted search/sort, batched belongs_to rendering and relationship assignment checks.
+- Added security and query integration tests.
 
-See [docs/steps](docs/steps/README.md) for acceptance evidence and unresolved checks.
+### Step 0000 - Engine shell
+- Initial mountable and isolated Rails Engine.
+- Server-rendered shell with packaged CSS and theme selection.
+- Demo Rails host, initial integration tests and architecture records.

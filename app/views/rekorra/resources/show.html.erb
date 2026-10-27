@@ -1,0 +1,31 @@
+<div class="rk-page-heading">
+  <div><p class="rk-kicker"><%= link_to @resource.title, records_path(slug: params[:slug]) %> / Record</p><h1><%= @model.model_name.human %> #<%= @record.to_param %></h1></div>
+  <div class="rk-actions">
+    <% if allowed?(@record, :edit?) %><%= link_to "Edit", edit_record_path(slug: params[:slug], id: @record.to_param), class: "rk-button rk-button--secondary" %><% end %>
+    <% if allowed?(@record, :destroy?) %>
+      <%= button_to "Delete", record_path(slug: params[:slug], id: @record.to_param), method: :delete, form: { data: { turbo: false } }, class: "rk-button rk-button--secondary" %>
+    <% end %>
+  </div>
+</div>
+<section class="rk-panel">
+  <dl class="rk-details">
+    <% @resource.show.fields.each do |field| %>
+      <div><dt><%= field.label %></dt><dd><%= rekorra_field_value(@record, field) %></dd></div>
+    <% end %>
+  </dl>
+</section>
+<% @related.each do |name, records| %>
+  <section class="rk-panel rk-related">
+    <h2><%= name.to_s.humanize %></h2>
+    <% if records.empty? %><p class="rk-muted">No visible related records.</p><% end %>
+    <ul class="rk-related-list">
+      <% records.each do |record| %>
+        <li>
+          <% slug = Rekorra.slug_for(record.class) %>
+          <% label = record.respond_to?(:number) ? record.number : "##{record.to_param}" %>
+          <% if slug %><%= link_to label, record_path(slug: slug, id: record.to_param) %><% else %><%= label %><% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>

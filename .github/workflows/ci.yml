@@ -14,4 +14,8 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - run: bundle exec rake test
+      - name: Prepare demo database
+        run: RAILS_ENV=test bundle exec rails db:migrate
+        working-directory: test/dummy
+      - name: Run integration tests
+        run: bundle exec rake test

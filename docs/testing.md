@@ -1,0 +1,18 @@
+# Testing and release gates
+
+1. **Contract:** configuration, DSL validation, custom renderer.
+2. **Integration:** real mounted Rails host, migration, CRUD, CSRF, scoped read/write, related records.
+3. **Query:** N+1 regression, allowed search/sort, bounded pagination.
+4. **Packaging:** gem install, Propshaft fingerprinted CSS, host without a JS build.
+5. **Browser** (pending): narrow/mobile/tablet/desktop, light/dark/auto, keyboard accessibility, JavaScript disabled.
+6. **Compatibility** (pending): Rails 8.0 vs 8.1; Ruby 3.2/3.3/3.4; Sprockets; host with existing Turbo and Stimulus.
+
+## Run
+
+```sh
+bundle install
+(cd test/dummy && RAILS_ENV=test bundle exec rails db:migrate)
+bundle exec rake test
+```
+
+A green CI run is necessary but not sufficient for a production-ready label. Keep unchecked gates in `docs/steps`.

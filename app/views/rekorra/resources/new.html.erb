@@ -1,0 +1,2 @@
+<div class="rk-page-heading"><div><p class="rk-kicker"><%= link_to @resource.title, records_path(slug: params[:slug]) %></p><h1>New <%= @model.model_name.human %></h1></div></div>
+<section class="rk-panel"><%= render "form", record: @record %></section>
