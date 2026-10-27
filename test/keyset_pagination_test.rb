@@ -161,6 +161,17 @@ class KeysetPaginationTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "expired encrypted cursor is rejected without restarting from first page" do
+    15.times { |n| user("Expiry #{n}") }
+    list({ sort: "name", per_page: "10" })
+    token = params_of(cursor_link("Next")).fetch("cursor")
+    travel 2.hours do
+      list({ sort: "name", per_page: "10", cursor: token })
+      assert_response :bad_request
+      assert_includes response.body, "Invalid or expired pagination cursor"
+    end
+  end
+
   test "encrypted cursor does not expose email or original key" do
     15.times { |n| user("Same", role: "admin") }
     list({ sort: "email", per_page: "10" })
