@@ -2,6 +2,9 @@
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
+  config.job_adapters.register :solid_queue,
+    Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(order) { order.demo_job_links })
+
   config.activity_actor_with = ->(actor) { "demo-organization:#{actor.slug}" }
   config.activity_adapters.register :paper_trail, Rekorra::Activity::Adapters::PaperTrail.new
   config.context_application = "rekorra-demo"
@@ -34,6 +37,7 @@ Rekorra.configure do |config|
       next %i[index? show?].include?(action) &&
         (subject.is_a?(Class) || subject.id == actor.id)
     end
+    next actor.slug == "acme" if action == :view_jobs?
     next actor.slug == "acme" if action == :view_activity?
     next actor.slug == "acme" if action == :view_logs?
     next true if action == :view_issues?

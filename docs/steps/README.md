@@ -10,5 +10,5 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0001.6 - Context References](0001-6-context-references.md) | Order links Customer, Organization, fictional Jira issue and trace | Typed identities, scoped resolver and context DSL | CI green; browser QA pending |
 | [0001.7 - Jira linking](../backlog/jira-integration.md) | Jira issue associated to Orders or investigations | Remote Issue Links adapter | Deferred to backlog |
 | [0002 - Activity](0002-activity.md) | PaperTrail versioned Orders and seeded change | Optional PaperTrail adapter, protected read-only timeline | CI green; browser QA pending |
-| 0003 - Jobs | ActiveJob/Solid Queue sample | Job inspector adapter | Planned |
+| [0003 - Jobs](0003-jobs.md) | OrderReceiptJob and Solid Queue, explicit job links | Jobs DSL, adapter registry, read-only job status panel | CI green; browser/worker QA pending |
 | 0004 - Findings | Consistency rule | Findings and evidence UI | Planned |

@@ -19,3 +19,5 @@ bundle exec rake test
 ```
 
 A green CI run is necessary but not sufficient for a production-ready label. Keep unchecked gates in `docs/steps`.
+
+10. **Jobs:** real backend enqueue, scoped record mapping, forbidden policy, safe errors, missing/finished status and adapter interchangeability.

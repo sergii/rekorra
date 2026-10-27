@@ -124,3 +124,12 @@ html[data-theme="dark"] .rk-app {
 .rk-activity__changes dt { color: var(--rk-muted); font-size: 0.84rem; }
 .rk-activity__changes dd { margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 0.65rem; overflow-wrap: anywhere; }
 @media (max-width: 650px) { .rk-activity__changes > div { grid-template-columns: 1fr; gap: 0.2rem; } }
+
+.rk-jobs__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.8rem; }
+.rk-jobs__item { border: 1px solid var(--rk-line); border-radius: 0.6rem; padding: 1rem; }
+.rk-jobs__title { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.rk-jobs__detail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem 1rem; margin: 0.8rem 0 0; }
+.rk-jobs__detail div { min-width: 0; }
+.rk-jobs__detail dt { color: var(--rk-muted); font-size: 0.78rem; }
+.rk-jobs__detail dd { margin: 0; overflow-wrap: anywhere; font-size: 0.85rem; }
+@media (max-width: 650px) { .rk-jobs__detail { grid-template-columns: 1fr; } }

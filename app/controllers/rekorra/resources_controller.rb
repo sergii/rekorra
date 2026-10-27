@@ -15,6 +15,12 @@ module Rekorra
 
     def show
       authorize!(@record, :show?)
+      @jobs_visible = @resource.jobs && allowed?(@record, @resource.jobs.policy)
+      @job_items = Jobs::Resolver.new(
+        resource: @resource, record: @record,
+        authorize: ->(subject, action) { allowed?(subject, action) },
+        registry: Rekorra.configuration.job_adapters
+      ).call
       @activity_visible = @resource.activity && allowed?(@record, @resource.activity.policy)
       @activity_events = Activity::Resolver.new(
         resource: @resource, record: @record,

@@ -39,3 +39,13 @@ end
 Payment.find_or_create_by!(order: order_a, status: "captured") { |payment| payment.amount_cents = 25000 }
 
 puts "Rekorra demo records ready: login acme or globex with REKORRA_DEMO_PASSWORD"
+
+# Enqueue exactly one demonstration job for the first order.
+# It remains queued until the demo runs a Solid Queue worker.
+unless order_a.demo_job_links.exists?
+  job = OrderReceiptJob.perform_later(order_a.id)
+  if job&.successfully_enqueued?
+    DemoJobLink.create!(order: order_a, active_job_id: job.job_id,
+      job_class_name: job.class.name)
+  end
+end

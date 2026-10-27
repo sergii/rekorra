@@ -14,4 +14,6 @@
 
 - [ADR 0010 - Activity adapters and protected timeline](0010-activity-adapters.md)
 
+- [ADR 0011 — Jobs queue adapters](0011-jobs-queue-adapters.md)
+
 Accepted means a design decision, not verified implementation.
