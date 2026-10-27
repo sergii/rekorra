@@ -105,6 +105,8 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "invalid CSRF requests are rejected" do
+    get "/backoffice/resources/orders/new", headers: headers
+    assert_response :success
     assert_raises(ActionController::InvalidAuthenticityToken) do
       post "/backoffice/resources/orders", headers: headers, params: {
         record: { number: "FORGED", customer_id: @alice.id, status: "pending", total_cents: 1 }
