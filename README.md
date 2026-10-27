@@ -19,7 +19,7 @@ Ruby 3.2+, Rails 8.x and Bundler are required.
 ```sh
 bundle install
 cd test/dummy
-bundle exec rails db:migrate db:seed
+bundle exec rails db:prepare db:seed
 REKORRA_DEMO_PASSWORD=local-test-password bundle exec rails server
 ```
 
@@ -32,7 +32,7 @@ The demo does not have custom views. The engine renders the resources.
 From the root:
 
 ```sh
-RAILS_ENV=test bundle exec ruby test/dummy/bin/rails db:migrate
+RAILS_ENV=test bundle exec ruby test/dummy/bin/rails db:prepare
 bundle exec rake test
 ```
 
