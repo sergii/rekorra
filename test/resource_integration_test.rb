@@ -26,7 +26,7 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
   def csrf_token
     get "/backoffice/resources/orders/new", headers: headers
     assert_response :success
-    Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]').fetch("value")
+    Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]')["value"]
   end
 
   test "lists orders and related customer without leaking another organization" do
