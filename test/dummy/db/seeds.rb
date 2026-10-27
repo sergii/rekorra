@@ -15,9 +15,12 @@ end
 
 order_a = Order.find_or_create_by!(number: "ACME-1001") do |order|
   order.customer = alice
-  order.status = "paid"
+  order.status = "pending"
   order.total_cents = 25000
 end
+# Demonstrate a real change event while keeping the seeded end state stable.
+order_a.update!(status: "paid") unless order_a.status == "paid"
+
 order_a.update!(
   support_issue_id: "10024",
   support_issue_key: "BILL-482",
