@@ -38,6 +38,11 @@ module Rekorra
         @form || Section.new
       end
 
+      def activity(&block)
+        @activity = Activity::Definition.new.tap { |definition| definition.instance_eval(&block) } if block
+        @activity
+      end
+
       def context(&block)
         @context = Context::Section.new.tap { |section| section.instance_eval(&block) } if block
         @context || Context::Section.new
@@ -58,6 +63,7 @@ module Rekorra
       end
 
       def validate!
+        activity&.validate!(model_class)
         (index.fields + show.fields + form.fields).each do |field|
           next if model_class.column_names.include?(field.name.to_s)
           next if model_class.reflect_on_association(field.name)

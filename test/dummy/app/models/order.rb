@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
+  has_paper_trail on: %i[create update destroy]
   belongs_to :customer
   has_many :payments, dependent: :restrict_with_error
 

@@ -21,6 +21,13 @@ class OrderResource < Rekorra::Resource
     association :payments
   end
 
+  activity do
+    source :paper_trail
+    fields :number, :status, :total_cents
+    authorize :view_activity?
+    limit 10
+  end
+
   context do
     record :customer, resource: :customers, id: ->(order) { order.customer_id }
     record :organization, resource: :organizations,

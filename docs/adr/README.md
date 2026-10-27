@@ -12,4 +12,6 @@
 - [ADR 0008 - Provider-neutral Context References](0008-context-references.md)
 - [ADR 0009 - Correlation and Investigations](0009-correlation-and-investigation.md)
 
+- [ADR 0010 - Activity adapters and protected timeline](0010-activity-adapters.md)
+
 Accepted means a design decision, not verified implementation.

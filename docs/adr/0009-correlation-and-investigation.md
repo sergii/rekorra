@@ -32,4 +32,4 @@ An Investigation may initially have only an external issue identifier; no order/
 
 ## Delivery sequence
 
-0001.5 External Links -> 0001.6 Context Reference contract -> 0001.7 Jira linking -> 0002 Activity -> 0003 technical context/jobs -> later Investigations and optional AI integrations.
+0001.5 External Links -> 0001.6 Context References -> 0002 Activity/PaperTrail -> 0003 technical context/jobs -> later Investigations and optional AI integrations. Jira linking (formerly 0001.7) is deferred to [backlog](../backlog/jira-integration.md).

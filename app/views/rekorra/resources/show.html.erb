@@ -14,6 +14,36 @@
     <% end %>
   </dl>
 </section>
+<% if @activity_visible %>
+  <section class="rk-panel rk-activity" aria-labelledby="rk-activity-heading">
+    <h2 id="rk-activity-heading">Activity</h2>
+    <% if @activity_events.empty? %>
+      <p class="rk-muted">No recorded changes.</p>
+    <% else %>
+      <ol class="rk-activity__events">
+        <% @activity_events.each do |event| %>
+          <li class="rk-activity__event">
+            <div class="rk-activity__summary">
+              <strong><%= event.kind.humanize %></strong>
+              <span><%= event.at ? l(event.at, format: :long) : "Unknown time" %></span>
+            </div>
+            <div class="rk-muted">By <%= event.actor %></div>
+            <% if event.changes.any? %>
+              <dl class="rk-activity__changes">
+                <% event.changes.each do |change| %>
+                  <div>
+                    <dt><%= change.field.humanize %></dt>
+                    <dd><span><%= change.before %></span><span aria-hidden="true">→</span><span><%= change.after %></span></dd>
+                  </div>
+                <% end %>
+              </dl>
+            <% end %>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+  </section>
+<% end %>
 <% if @context_entries.any? %>
   <section class="rk-panel rk-context" aria-labelledby="rk-context-heading">
     <h2 id="rk-context-heading">Linked context</h2>

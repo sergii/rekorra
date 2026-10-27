@@ -57,6 +57,23 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Activity (Step 0002)
+
+Rekorra supports optional, policy-guarded activity history without requiring PaperTrail in the published gem. The demo host installs PaperTrail 17 and tracks Order versions.
+
+```ruby
+activity do
+  source :paper_trail
+  fields :number, :status, :total_cents
+  authorize :view_activity?
+  limit 10
+end
+```
+
+Configure the host's activity registry, `activity_actor_with` and authorization callback to enable this. The host owns its version table and decides whether sensitive model attributes should be stored in its audit history.
+
+See [Step 0002](docs/steps/0002-activity.md) for the implementation and limitations. Jira integration is deferred to [backlog](docs/backlog/jira-integration.md).
+
 ## Linked context (Step 0001.6)
 
 A resource can declare typed context independently from external URL builders:

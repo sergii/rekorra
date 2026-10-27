@@ -114,3 +114,13 @@ html[data-theme="dark"] .rk-app {
 .rk-context__list li:last-child { border-bottom: none; }
 .rk-context__link, .rk-context__label { font-weight: 600; overflow-wrap: anywhere; }
 .rk-context__list .rk-muted { font-size: 0.8rem; }
+
+.rk-activity__events { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.rk-activity__event { border-left: 2px solid var(--rk-line); padding: 0.2rem 0.5rem 0.5rem 1rem; }
+.rk-activity__summary { display: flex; gap: 0.5rem 1rem; flex-wrap: wrap; justify-content: space-between; }
+.rk-activity__summary span, .rk-activity__event .rk-muted { color: var(--rk-muted); font-size: 0.84rem; }
+.rk-activity__changes { display: grid; gap: 0.5rem; margin: 0.8rem 0 0; }
+.rk-activity__changes > div { display: grid; grid-template-columns: minmax(0, 160px) minmax(0, 1fr); gap: 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--rk-line); }
+.rk-activity__changes dt { color: var(--rk-muted); font-size: 0.84rem; }
+.rk-activity__changes dd { margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 0.65rem; overflow-wrap: anywhere; }
+@media (max-width: 650px) { .rk-activity__changes > div { grid-template-columns: 1fr; gap: 0.2rem; } }
