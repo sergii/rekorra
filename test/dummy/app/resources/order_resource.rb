@@ -21,6 +21,12 @@ class OrderResource < Rekorra::Resource
     association :payments
   end
 
+  findings do
+    rule :paid_but_pending
+    authorize :view_findings?
+    limit 10
+  end
+
   jobs do
     source :solid_queue
     authorize :view_jobs?

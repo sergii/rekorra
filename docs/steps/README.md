@@ -12,4 +12,4 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0002 - Activity](0002-activity.md) | PaperTrail versioned Orders and seeded change | Optional PaperTrail adapter, protected read-only timeline | CI green; browser QA pending |
 | [0003 - Jobs](0003-jobs.md) | OrderReceiptJob and Solid Queue, explicit job links | Jobs DSL, adapter registry, read-only job status panel | CI green; browser/worker QA pending |
 | [0003.1 - Sidekiq adapter](0003-1-sidekiq.md) | Sidekiq worker and alternate Order resource | Read-only bounded Sidekiq API projection | Feature branch; CI pending |
-| 0004 - Findings | Consistency rule | Findings and evidence UI | Planned |
+| [0004 - Findings](0004-findings.md) | Pending Order with captured payment | Provider-neutral rules, evidence and read-only Findings UI | Feature branch; CI pending |

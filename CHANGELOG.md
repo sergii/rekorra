@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0004 — Findings
+- Added provider-neutral Findings registry, resolver, DSL and structured evidence types.
+- Added a demo host rule for captured payments on still-pending orders, with deterministic seeds.
+- Added separately authorized, read-only Findings UI and validation tests.
+- See [Step 0004](docs/steps/0004-findings.md).
+
 ### Step 0003.1 — Sidekiq Jobs adapter
 - Added optional Sidekiq API adapter to the provider-neutral Jobs registry.
 - Added demo Sidekiq worker and alternate Order resource without changing Solid Queue resource semantics.

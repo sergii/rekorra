@@ -16,4 +16,6 @@
 
 - [ADR 0011 — Jobs queue adapters](0011-jobs-queue-adapters.md)
 
+- [ADR 0012 — Host-owned Findings rules](0012-findings.md)
+
 Accepted means a design decision, not verified implementation.

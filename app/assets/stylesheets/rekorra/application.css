@@ -133,3 +133,12 @@ html[data-theme="dark"] .rk-app {
 .rk-jobs__detail dt { color: var(--rk-muted); font-size: 0.78rem; }
 .rk-jobs__detail dd { margin: 0; overflow-wrap: anywhere; font-size: 0.85rem; }
 @media (max-width: 650px) { .rk-jobs__detail { grid-template-columns: 1fr; } }
+
+.rk-findings__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.9rem; }
+.rk-findings__item { border: 1px solid var(--rk-line); border-radius: 0.65rem; padding: 1rem; }
+.rk-findings__title { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; flex-wrap: wrap; }
+.rk-findings__item p { margin: 0.65rem 0; }
+.rk-findings__evidence { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; margin: 0.75rem 0 0; }
+.rk-findings__evidence dt { color: var(--rk-muted); font-size: 0.78rem; }
+.rk-findings__evidence dd { margin: 0; overflow-wrap: anywhere; font-size: 0.85rem; }
+@media (max-width: 650px) { .rk-findings__evidence { grid-template-columns: 1fr; } }

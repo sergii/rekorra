@@ -14,6 +14,31 @@
     <% end %>
   </dl>
 </section>
+<% if @findings_visible %>
+  <section class="rk-panel rk-findings" aria-labelledby="rk-findings-heading">
+    <h2 id="rk-findings-heading">Findings</h2>
+    <% if @finding_items.empty? %>
+      <p class="rk-muted">No active findings.</p>
+    <% else %>
+      <ul class="rk-findings__list">
+        <% @finding_items.each do |finding| %>
+          <li class="rk-findings__item">
+            <div class="rk-findings__title">
+              <strong><%= finding.title %></strong>
+              <span class="rk-badge"><%= finding.severity.humanize %></span>
+            </div>
+            <p class="rk-muted"><%= finding.description %></p>
+            <dl class="rk-findings__evidence">
+              <% finding.evidence.each do |item| %>
+                <div><dt><%= item.label %></dt><dd><%= item.value %></dd></div>
+              <% end %>
+            </dl>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+<% end %>
 <% if @jobs_visible %>
   <section class="rk-panel rk-jobs" aria-labelledby="rk-jobs-heading">
     <h2 id="rk-jobs-heading">Background Jobs</h2>

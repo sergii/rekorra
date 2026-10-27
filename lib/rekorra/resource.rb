@@ -38,6 +38,11 @@ module Rekorra
         @form || Section.new
       end
 
+      def findings(&block)
+        @findings = Findings::Definition.new.tap { |definition| definition.instance_eval(&block) } if block
+        @findings
+      end
+
       def jobs(&block)
         @jobs = Jobs::Definition.new.tap { |definition| definition.instance_eval(&block) } if block
         @jobs
@@ -68,6 +73,7 @@ module Rekorra
       end
 
       def validate!
+        findings&.validate!
         jobs&.validate!
         activity&.validate!(model_class)
         (index.fields + show.fields + form.fields).each do |field|
