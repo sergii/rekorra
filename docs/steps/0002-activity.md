@@ -1,6 +1,6 @@
 # Step 0002 - PaperTrail Activity
 
-Status: Implemented in feature branch; CI and manual browser verification pending.
+Status: GitHub Actions passed on Ruby 3.3 and 3.4; manual browser verification pending.
 
 ## Demo Rails application
 
@@ -21,14 +21,16 @@ Status: Implemented in feature branch; CI and manual browser verification pendin
 
 ## Validation checklist
 
-- [ ] Ruby 3.3 and 3.4 CI green on Rails 8.x
-- [ ] Order version create and update shown
-- [ ] Unauthorized viewers cannot see activity or trigger adapter queries
-- [ ] Tenant isolation intact
-- [ ] Web CRUD attributes new versions to demo actor
-- [ ] Unapproved fields hidden and HTML values escaped
-- [ ] Activity list size bounded and wrong configuration rejected
+- [x] Ruby 3.3 and 3.4 CI green on Rails 8.1
+- [x] Order version create and update shown
+- [x] Unauthorized viewers cannot see activity or trigger adapter queries
+- [x] Tenant isolation intact
+- [x] Web CRUD attributes new versions to demo actor
+- [x] Unapproved fields hidden and HTML values escaped
+- [x] Activity list size bounded and wrong configuration rejected
 - [ ] Responsive browser / color-theme visual QA
+
+Verified in [GitHub Actions run 40596123644](https://github.com/sergii/rekorra/actions/runs/40596123644): 49 tests, 216 assertions, 0 failures, 0 errors, 0 skips on Ruby 3.3 and 3.4.
 
 ## Security and behavior constraints
 
