@@ -35,7 +35,11 @@ module Rekorra
 
         # The scope callback is validated by the controller's scoped_for helper.
         # Query the scope, never the model, to avoid cross-tenant disclosures.
-        target = @scope.call(model).find_by(model.primary_key => id)
+        scoped = @scope.call(model)
+        unless scoped.is_a?(ActiveRecord::Relation) && scoped.klass == model
+          raise ConfigurationError, "Context scope must return a relation for #{model}"
+        end
+        target = scoped.find_by(model.primary_key => id)
         return nil unless target && @authorize.call(target, :show?) == true
 
         reference = ContextRef.new(
@@ -43,7 +47,7 @@ module Rekorra
           environment: @configuration.context_environment,
           tenant: @configuration.context_tenant_with.call(@actor),
           resource: definition.resource,
-          id: target.to_param
+          id: target.public_send(model.primary_key)
         )
         title = if target.respond_to?(:name)
           target.name

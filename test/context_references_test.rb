@@ -117,6 +117,25 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
     assert_equal :trace, trace.kind
     assert_equal :github_issues, github.provider
     assert jira.frozen?
+
+    # Changing a Jira display key does not change the remote issue identity.
+    renamed = Rekorra::ExternalRef.new(provider: :jira,
+      instance: "acme.atlassian.net", kind: :issue, id: "10024",
+      display_key: "BILL-900")
+    assert_equal jira, renamed
+    assert_equal jira.hash, renamed.hash
+    assert_not_equal jira.to_h, renamed.to_h
+  end
+
+  test "context resolver rejects a non-relation scope" do
+    section = Rekorra::Context::Section.new
+    section.record(:customer, resource: :customers, id: ->(source) { source.customer_id })
+    resource = Struct.new(:context).new(section)
+    resolver = Rekorra::Context::Resolver.new(resource: resource, record: @order,
+      actor: @acme, configuration: Rekorra.configuration,
+      authorize: ->(_subject, _action) { true },
+      scope: ->(_model) { Customer.all.to_a })
+    assert_raises(Rekorra::ConfigurationError) { resolver.call }
   end
 
   test "reference identifiers reject blanks and control characters" do

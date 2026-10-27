@@ -20,13 +20,17 @@ module Rekorra
         id: id, display_key: display_key }
     end
 
+    def identity
+      [provider, instance, kind, id]
+    end
+
     def ==(other)
-      other.is_a?(ExternalRef) && other.to_h == to_h
+      other.is_a?(ExternalRef) && other.identity == identity
     end
     alias eql? ==
 
     def hash
-      to_h.hash
+      identity.hash
     end
 
     private

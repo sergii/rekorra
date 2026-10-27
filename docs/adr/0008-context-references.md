@@ -34,6 +34,8 @@ ExternalRef.new(
 
 The `context do` DSL supports `record` and `external` declarations. Resolving an internal reference requires an authorized source record, a registered resource, a tenant-scoped ActiveRecord relation and permission for the target. External references require their own policy and do not automatically fetch external data.
 
+External reference identity uses provider, instance, kind, and stable ID; `display_key` is presentation metadata and may change (for example, after renaming a Jira issue key). Context reference identity uses the model's primary key, not its potentially overridden URL parameter.
+
 Identity must include the source application/instance and environment. A record ID alone is insufficient; staging and production orders may use the same number.
 
 ## Relationship provenance
