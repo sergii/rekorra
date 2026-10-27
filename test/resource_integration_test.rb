@@ -23,10 +23,10 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
     { "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(slug, "test-password") }
   end
 
-  def csrf_token
+  def csrf_token(action = "/backoffice/resources/orders")
     get "/backoffice/resources/orders/new", headers: headers
     assert_response :success
-    Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]')["value"]
+    Nokogiri::HTML(response.body).at_css("form[action='#{action}'] input[name='authenticity_token']")["value"]
   end
 
   test "lists orders and related customer without leaking another organization" do
@@ -76,7 +76,7 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "theme form works without JavaScript" do
-    token = csrf_token
+    token = csrf_token("/backoffice/theme")
     post "/backoffice/theme", headers: headers, params: { authenticity_token: token, theme: "dark" }
     assert_response :redirect
     get "/backoffice", headers: headers
