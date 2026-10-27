@@ -57,4 +57,24 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
-Read [step 0001](docs/steps/0001-first-associations.md) for implementation status.
+## External links (Step 0001.5)
+
+A resource can expose authorized, provider-specific deep links without fetching external data:
+
+```ruby
+# Host initializer: explicitly allow external domains.
+config.external_link_allowed_hosts = %w[github.com service.sumologic.com]
+config.external_services[:sumo_logic] = {
+  base_url: "https://service.sumologic.com"
+}
+
+# OrderResource:
+external_link :logs, label: "See logs", provider: :sumo_logic,
+  query: ->(order) { "order_id=#{Integer(order.id)}" },
+  authorize: :view_logs?
+```
+
+The host must implement `:view_logs?` authorization in its `authorize_with` callback. External links never bypass the provider's own session, SSO, or RBAC. `https` + configured allowed hosts are mandatory. Each provider's URL uses encoded scalar query parameters.
+
+Read [Step 0001.5](docs/steps/0001-5-external-links.md) for evidence and remaining checks. Provider-neutral references and Jira integration are planned next, not implemented.
+

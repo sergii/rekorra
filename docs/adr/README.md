@@ -8,4 +8,8 @@
 - [ADR 0005 - Dependency boundaries](0005-dependency-boundaries.md)
 - [ADR 0006 - Resource DSL](0006-resource-dsl.md)
 
+- [ADR 0007 - External Links](0007-external-links.md)
+- [ADR 0008 - Provider-neutral Context References](0008-context-references.md)
+- [ADR 0009 - Correlation and Investigations](0009-correlation-and-investigation.md)
+
 Accepted means a design decision, not verified implementation.
