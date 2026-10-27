@@ -1,6 +1,6 @@
 # Step 0001.6 - Context References
 
-Status: Implemented in feature branch; CI verification pending.
+Status: Ruby 3.3 and 3.4 integration CI passed; browser visual verification pending.
 
 ## Demo host application
 
@@ -21,13 +21,15 @@ Status: Implemented in feature branch; CI verification pending.
 
 ## Verification
 
-- [ ] Ruby 3.3 and 3.4 GitHub Actions green
-- [ ] Internal associations linked only after policy + tenant scope
-- [ ] External metadata hidden without separate permission
-- [ ] Denied callbacks not executed
-- [ ] ContextRef identity distinguishes tenant and environment
-- [ ] No phantom external entries for missing identifiers
+- [x] Ruby 3.3 and 3.4 GitHub Actions green
+- [x] Internal associations linked only after policy + tenant scope
+- [x] External metadata hidden without separate permission
+- [x] Denied callbacks not executed
+- [x] ContextRef identity distinguishes tenant and environment
+- [x] No phantom external entries for missing identifiers
 - [ ] Mobile browser UI screenshots
+
+GitHub Actions [run 40591962298](https://github.com/sergii/rekorra/actions/runs/40591962298) passed on Ruby 3.3 and 3.4: 37 tests, 160 assertions, 0 failures and 0 errors per job.
 
 ## Deliberately excluded
 
