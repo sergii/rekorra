@@ -1,6 +1,6 @@
 # Step 0003.1 — Sidekiq Jobs adapter
 
-Status: Implemented in feature branch; CI pending.
+Status: CI green on Ruby 3.3/3.4 with real Redis; mobile/browser QA pending.
 
 ## Demo Rails app
 
@@ -19,14 +19,16 @@ Status: Implemented in feature branch; CI pending.
 
 ## Acceptance
 
-- [ ] Ruby 3.3 and Ruby 3.4 CI green, with real Redis
-- [ ] Enqueued Sidekiq job appears in Sidekiq Order page
-- [ ] Other tenant job JID never leaks
-- [ ] Retry / scheduled / dead status projection
-- [ ] Adapter-specific permission
-- [ ] Bounded scan and missing-job `unavailable`
-- [ ] Published Rekorra gem still has no Sidekiq dependency
+- [x] Ruby 3.3 and Ruby 3.4 CI green, with real Redis
+- [x] Enqueued Sidekiq job appears in Sidekiq Order page
+- [x] Other tenant job JID never leaks
+- [x] Retry / scheduled / dead status projection
+- [x] Adapter-specific permission
+- [x] Bounded scan and missing-job `unavailable`
+- [x] Published Rekorra gem still has no Sidekiq dependency
 - [ ] Manual browser QA
+
+[CI run 40600768052](https://github.com/sergii/rekorra/actions/runs/40600768052): 75 tests, 347 assertions, 0 failures/errors on Ruby 3.3 and 3.4.
 
 ## Tradeoffs
 

@@ -15,6 +15,12 @@ module Rekorra
 
     def show
       authorize!(@record, :show?)
+      @findings_visible = @resource.findings && allowed?(@record, @resource.findings.policy)
+      @finding_items = Findings::Resolver.new(
+        resource: @resource, record: @record,
+        authorize: ->(subject, action) { allowed?(subject, action) },
+        registry: Rekorra.configuration.finding_rules
+      ).call
       @jobs_visible = @resource.jobs && allowed?(@record, @resource.jobs.policy)
       @job_items = Jobs::Resolver.new(
         resource: @resource, record: @record,

@@ -57,6 +57,22 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Findings (Step 0004)
+
+Host-owned read-only rules can declare a business mismatch without requiring new tables or a background process:
+
+```ruby
+findings do
+  rule :paid_but_pending
+  authorize :view_findings?
+  limit 10
+end
+```
+
+Configure `config.finding_rules.register :paid_but_pending, "PaidButPending"` (resolved lazily after Rails autoloading), with `PaidButPending#evaluate(record:)` returning a `Rekorra::Findings::Finding` or nil. Findings are recomputed per authorized Show request, not persisted, and never automatically fix a record.
+
+See [Step 0004](docs/steps/0004-findings.md).
+
 ## Sidekiq backend (Step 0003.1)
 
 The demo also has a `:sidekiq_orders` resource to prove a second backend can be used with the same Jobs contract. The host installs Sidekiq and configures:

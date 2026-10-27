@@ -26,7 +26,7 @@ order_a.update!(
   support_issue_key: "BILL-482",
   trace_id: "4bf92f3577b34da6a3ce929d0e0e4736"
 )
-Order.find_or_create_by!(number: "ACME-1002") do |order|
+order_b = Order.find_or_create_by!(number: "ACME-1002") do |order|
   order.customer = bob
   order.status = "pending"
   order.total_cents = 7800
@@ -37,6 +37,8 @@ Order.find_or_create_by!(number: "GLOBEX-9001") do |order|
   order.total_cents = 9900
 end
 Payment.find_or_create_by!(order: order_a, status: "captured") { |payment| payment.amount_cents = 25000 }
+# Intentionally inconsistent sample, so the Findings panel has an example.
+Payment.find_or_create_by!(order: order_b, status: "captured") { |payment| payment.amount_cents = 7800 }
 
 puts "Rekorra demo records ready: login acme or globex with REKORRA_DEMO_PASSWORD"
 

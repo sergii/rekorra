@@ -4,7 +4,7 @@ module Rekorra
   class Configuration
     attr_accessor :authenticate_with, :authorize_with, :scope_with
     attr_accessor :activity_actor_with
-    attr_reader :activity_adapters, :job_adapters
+    attr_reader :activity_adapters, :job_adapters, :finding_rules
     attr_accessor :context_application, :context_environment, :context_tenant_with
     attr_accessor :external_link_allowed_hosts
     attr_reader :resources, :external_services
@@ -13,6 +13,7 @@ module Rekorra
       @resources = {}
       @activity_adapters = Activity::Registry.new
       @job_adapters = Jobs::Registry.new
+      @finding_rules = Findings::Registry.new
       @external_services = {}
       @external_link_allowed_hosts = []
     end
