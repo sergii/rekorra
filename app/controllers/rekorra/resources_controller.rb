@@ -16,6 +16,10 @@ module Rekorra
     def show
       authorize!(@record, :show?)
       @visible_associations = visible_associations([@record], @resource.show.fields)
+      @external_links = ExternalLinks::Resolver.new(
+        resource: @resource, record: @record, configuration: Rekorra.configuration,
+        authorize: ->(record, policy) { allowed?(record, policy) }
+      ).call
       @related = {}
       @resource.show.associations.each do |association|
         reflection = @model.reflect_on_association(association)

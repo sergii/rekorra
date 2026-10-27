@@ -38,6 +38,16 @@ module Rekorra
         @form || Section.new
       end
 
+      def external_link(name, label:, provider:, authorize:, **options)
+        @external_links ||= []
+        @external_links << ExternalLink.new(name, label: label, provider: provider,
+          authorize: authorize, **options)
+      end
+
+      def external_links
+        @external_links || []
+      end
+
       def permitted_fields
         form.fields.map(&:name).select { |name| model_class.column_names.include?(name.to_s) }
       end

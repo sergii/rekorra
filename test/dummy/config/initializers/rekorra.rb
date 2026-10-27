@@ -16,12 +16,18 @@ Rekorra.configure do |config|
 
   # Authorization decides whether an action is allowed.
   # Scope adapters enforce organization-level row visibility.
+  config.external_link_allowed_hosts = %w[github.com service.sumologic.com]
+  config.external_services[:sumo_logic] = { base_url: "https://service.sumologic.com" }
+
   config.authorize_with = lambda do |actor, subject, action|
     next false unless actor.is_a?(Organization)
     next true if subject.nil? && action == :access?
 
     model_name = subject.is_a?(Class) ? subject.name : subject.class.name
     next false unless %w[Customer Order Payment].include?(model_name)
+    next actor.slug == "acme" if action == :view_logs?
+    next true if action == :view_issues?
+
     allowed = %i[index? show? create? edit? update? destroy?]
     next false unless allowed.include?(action)
     !(%w[Customer].include?(model_name) && !%i[index? show?].include?(action))

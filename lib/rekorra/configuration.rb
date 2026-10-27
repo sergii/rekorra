@@ -3,10 +3,13 @@
 module Rekorra
   class Configuration
     attr_accessor :authenticate_with, :authorize_with, :scope_with
-    attr_reader :resources
+    attr_accessor :external_link_allowed_hosts
+    attr_reader :resources, :external_services
 
     def initialize
       @resources = {}
+      @external_services = {}
+      @external_link_allowed_hosts = []
     end
 
     def resource(slug, class_name)
