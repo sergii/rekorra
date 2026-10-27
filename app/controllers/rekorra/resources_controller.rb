@@ -15,6 +15,12 @@ module Rekorra
 
     def show
       authorize!(@record, :show?)
+      @activity_visible = @resource.activity && allowed?(@record, @resource.activity.policy)
+      @activity_events = Activity::Resolver.new(
+        resource: @resource, record: @record,
+        authorize: ->(subject, action) { allowed?(subject, action) },
+        registry: Rekorra.configuration.activity_adapters
+      ).call
       @visible_associations = visible_associations([@record], @resource.show.fields)
       @context_entries = Context::Resolver.new(
         resource: @resource, record: @record, actor: rekorra_actor,
@@ -47,7 +53,7 @@ module Rekorra
       @record = @model.new(record_params)
       authorize!(@record, :create?)
       validate_foreign_keys!
-      if @record.save
+      if with_activity_actor { @record.save }
         redirect_to record_path(slug: params[:slug], id: @record.to_param), notice: "Created"
       else
         load_field_options
@@ -75,11 +81,23 @@ module Rekorra
 
     def destroy
       authorize!(@record, :destroy?)
-      @record.destroy!
+      with_activity_actor { @record.destroy! }
       redirect_to records_path(slug: params[:slug]), notice: "Deleted", status: :see_other
     end
 
     private
+
+    def with_activity_actor(&block)
+      definition = @resource.activity
+      return yield unless definition
+
+      identify = Rekorra.configuration.activity_actor_with
+      raise ConfigurationError, "Activity actor callback missing" unless identify.respond_to?(:call)
+
+      Rekorra.configuration.activity_adapters.fetch(definition.source_name).with_actor(
+        actor: identify.call(rekorra_actor), &block
+      )
+    end
 
     def load_resource
       @resource = Rekorra.resource_for(params[:slug])
