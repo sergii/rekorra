@@ -69,7 +69,7 @@ findings do
 end
 ```
 
-Configure `config.finding_rules.register :paid_but_pending, PaidButPending.new`, with `PaidButPending#evaluate(record:)` returning a `Rekorra::Findings::Finding` or nil. Findings are recomputed per authorized Show request, not persisted, and never automatically fix a record.
+Configure `config.finding_rules.register :paid_but_pending, "PaidButPending"` (resolved lazily after Rails autoloading), with `PaidButPending#evaluate(record:)` returning a `Rekorra::Findings::Finding` or nil. Findings are recomputed per authorized Show request, not persisted, and never automatically fix a record.
 
 See [Step 0004](docs/steps/0004-findings.md).
 

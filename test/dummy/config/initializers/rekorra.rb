@@ -3,7 +3,7 @@ require "sidekiq/api"
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
-  config.finding_rules.register :paid_but_pending, PaidButPending.new
+  config.finding_rules.register :paid_but_pending, "PaidButPending"
 
   config.job_adapters.register :solid_queue,
     Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(order) { order.demo_job_links.where(provider: "solid_queue") })
