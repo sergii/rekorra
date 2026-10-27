@@ -6,15 +6,19 @@ module Rekorra
     PAGE_SIZE = 25
     MAX_PAGE = 10_000
 
-    attr_reader :page, :sort, :direction, :search, :has_next, :per_page,
-      :filter_values, :sort_columns
+    attr_reader :page, :sort, :direction, :search, :has_next, :has_previous,
+      :next_cursor, :previous_cursor, :per_page, :filter_values, :sort_columns
 
-    def initialize(resource:, scope:, search:, sort:, direction:, page:, per_page: nil, filters: nil)
+    def initialize(resource:, scope:, search:, sort:, direction:, page:,
+      per_page: nil, filters: nil, cursor: nil, cursor_context: nil)
       @resource, @scope = resource, scope
       @search = search.is_a?(String) ? search.strip.first(160) : ""
       @page = [[Integer(page, exception: false) || 1, 1].max, MAX_PAGE].min
       @direction = direction == "desc" ? "desc" : "asc"
       @has_next = false
+      @has_previous = false
+      @next_cursor = @previous_cursor = nil
+      @cursor_token, @cursor_context = cursor, cursor_context
 
       settings = resource.index.pagination
       settings.validate!
@@ -33,6 +37,10 @@ module Rekorra
       @filter_values = {}
     end
 
+    def keyset?
+      @resource.index.pagination.strategy == :keyset
+    end
+
     def navigation_params
       args = { q: search, sort: sort, direction: direction, per_page: per_page }
       args[:filters] = filter_values unless filter_values.empty?
@@ -45,6 +53,8 @@ module Rekorra
         raise ConfigurationError, "Resource Query requires a model-scoped relation"
       end
       relation = apply_filters(apply_search(@scope, model), model)
+      return run_keyset(relation, model) if keyset?
+
       table, primary = model.arel_table, model.primary_key
       order = direction == "desc" ? table[sort].desc : table[sort].asc
       relation = relation.reorder(order)
@@ -56,6 +66,22 @@ module Rekorra
     end
 
     private
+
+    def run_keyset(relation, model)
+      codec = Index::Cursor.new(context: @cursor_context)
+      fingerprint = codec.fingerprint(
+        resource: @resource, scope: @scope, search: search, filters: filter_values,
+        sort: sort, direction: direction, per_page: per_page
+      )
+      result = Index::Keyset.new(
+        relation: relation, model: model, sort: sort, direction: direction,
+        per_page: per_page, token: @cursor_token,
+        codec: codec, fingerprint: fingerprint
+      ).call
+      @has_previous, @has_next = result.has_previous, result.has_next
+      @previous_cursor, @next_cursor = result.previous_cursor, result.next_cursor
+      result.records
+    end
 
     def apply_search(relation, model)
       names = @resource.index.index_search_columns || @resource.search_by.map(&:to_s)
