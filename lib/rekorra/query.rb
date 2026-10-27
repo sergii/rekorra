@@ -67,7 +67,7 @@ module Rekorra
 
       pattern = "%#{ActiveRecord::Base.sanitize_sql_like(search)}%"
       table = model.arel_table
-      conditions = names.map { |name| table[name].matches(pattern) }
+      conditions = names.map { |name| table[name].matches(pattern, "\\") }
       relation.where(conditions.reduce { |left, right| left.or(right) })
     end
 
