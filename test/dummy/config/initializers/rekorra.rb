@@ -2,6 +2,9 @@
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
+  config.context_application = "rekorra-demo"
+  config.context_environment = Rails.env
+  config.context_tenant_with = ->(actor) { actor.slug }
   config.authenticate_with = lambda do |controller|
     actor = ActionController::HttpAuthentication::Basic.authenticate(controller.request) do |username, password|
       secret = ENV["REKORRA_DEMO_PASSWORD"]
@@ -24,7 +27,11 @@ Rekorra.configure do |config|
     next true if subject.nil? && action == :access?
 
     model_name = subject.is_a?(Class) ? subject.name : subject.class.name
-    next false unless %w[Customer Order Payment].include?(model_name)
+    next false unless %w[Organization Customer Order Payment].include?(model_name)
+    if model_name == "Organization"
+      next %i[index? show?].include?(action) &&
+        (subject.is_a?(Class) || subject.id == actor.id)
+    end
     next actor.slug == "acme" if action == :view_logs?
     next true if action == :view_issues?
 
@@ -37,6 +44,7 @@ Rekorra.configure do |config|
     next model.none unless actor.is_a?(Organization)
 
     case model.name
+    when "Organization" then model.where(id: actor.id)
     when "Customer" then model.where(organization_id: actor.id)
     when "Order" then model.joins(:customer).where(customers: { organization_id: actor.id })
     when "Payment" then model.joins(order: :customer).where(customers: { organization_id: actor.id })
@@ -44,6 +52,7 @@ Rekorra.configure do |config|
     end
   end
 
+  config.resource :organizations, "OrganizationResource"
   config.resource :customers, "CustomerResource"
   config.resource :orders, "OrderResource"
   config.resource :payments, "PaymentResource"

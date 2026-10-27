@@ -108,3 +108,9 @@ html[data-theme="dark"] .rk-app {
 .rk-external-links__list li:last-child { border-bottom: none; }
 .rk-external-link { font-weight: 650; overflow-wrap: anywhere; }
 .rk-external-links__list .rk-muted { font-size: 0.82rem; }
+
+.rk-context__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.rk-context__list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1rem; border-bottom: 1px solid var(--rk-line); padding: 0.7rem 0; }
+.rk-context__list li:last-child { border-bottom: none; }
+.rk-context__link, .rk-context__label { font-weight: 600; overflow-wrap: anywhere; }
+.rk-context__list .rk-muted { font-size: 0.8rem; }

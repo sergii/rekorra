@@ -14,6 +14,23 @@
     <% end %>
   </dl>
 </section>
+<% if @context_entries.any? %>
+  <section class="rk-panel rk-context" aria-labelledby="rk-context-heading">
+    <h2 id="rk-context-heading">Linked context</h2>
+    <ul class="rk-context__list">
+      <% @context_entries.each do |entry| %>
+        <li>
+          <% if entry.resource_slug %>
+            <%= link_to entry.label, record_path(slug: entry.resource_slug, id: entry.record_id), class: "rk-context__link" %>
+          <% else %>
+            <span class="rk-context__label"><%= entry.label %></span>
+          <% end %>
+          <span class="rk-muted"><%= entry.reference.is_a?(Rekorra::ContextRef) ? "Internal" : "External reference" %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
 <% if @external_links.any? %>
   <section class="rk-panel rk-external-links" aria-labelledby="rk-external-links-heading">
     <h2 id="rk-external-links-heading">External tools</h2>

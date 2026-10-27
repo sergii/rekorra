@@ -38,6 +38,11 @@ module Rekorra
         @form || Section.new
       end
 
+      def context(&block)
+        @context = Context::Section.new.tap { |section| section.instance_eval(&block) } if block
+        @context || Context::Section.new
+      end
+
       def external_link(name, label:, provider:, authorize:, **options)
         @external_links ||= []
         @external_links << ExternalLink.new(name, label: label, provider: provider,

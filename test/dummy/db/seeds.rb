@@ -18,6 +18,11 @@ order_a = Order.find_or_create_by!(number: "ACME-1001") do |order|
   order.status = "paid"
   order.total_cents = 25000
 end
+order_a.update!(
+  support_issue_id: "10024",
+  support_issue_key: "BILL-482",
+  trace_id: "4bf92f3577b34da6a3ce929d0e0e4736"
+)
 Order.find_or_create_by!(number: "ACME-1002") do |order|
   order.customer = bob
   order.status = "pending"

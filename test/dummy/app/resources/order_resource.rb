@@ -21,6 +21,21 @@ class OrderResource < Rekorra::Resource
     association :payments
   end
 
+  context do
+    record :customer, resource: :customers, id: ->(order) { order.customer_id }
+    record :organization, resource: :organizations,
+      id: ->(order) { order.customer.organization_id }
+
+    external :issue, provider: :jira, instance: "example.atlassian.net",
+      kind: :issue, id: ->(order) { order.support_issue_id },
+      display_key: ->(order) { order.support_issue_key },
+      authorize: :view_issues?
+
+    external :trace, provider: :datadog, instance: "us1",
+      kind: :trace, id: ->(order) { order.trace_id },
+      authorize: :view_logs?
+  end
+
   # External link configuration is owned by the demo host application.
   # Query values are numeric IDs, not untrusted names or email addresses.
   external_link :logs, label: "See logs", provider: :sumo_logic,
