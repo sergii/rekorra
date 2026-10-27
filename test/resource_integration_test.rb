@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "test_helper"
+require "action_controller/metal/request_forgery_protection"
 
 class ResourceIntegrationTest < ActionDispatch::IntegrationTest
   setup do
