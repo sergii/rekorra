@@ -57,6 +57,21 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Sidekiq backend (Step 0003.1)
+
+The demo also has a `:sidekiq_orders` resource to prove a second backend can be used with the same Jobs contract. The host installs Sidekiq and configures:
+
+```ruby
+config.job_adapters.register :sidekiq,
+  Rekorra::Jobs::Adapters::Sidekiq.new(
+    links: ->(order) { order.demo_job_links.where(provider: "sidekiq") }
+  )
+```
+
+Sidekiq Redis must be running for this optional view; its API is eventually consistent and the adapter scans a bounded subset of queues. Missing jobs mean **unavailable**, not completed. This is not a production-grade job lifecycle audit.
+
+See [Step 0003.1](docs/steps/0003-1-sidekiq.md).
+
 ## Background Jobs (Step 0003)
 
 The demo host uses Solid Queue with explicit `Order -> DemoJobLink -> ActiveJob ID` correlations. The engine renders provider-neutral job metadata and requires a distinct permission.

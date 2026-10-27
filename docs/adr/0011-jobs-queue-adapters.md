@@ -28,3 +28,7 @@ Job arguments may contain business identifiers, passwords or sensitive serialize
 ## Scope
 
 This prototype does not implement job execution history, failed attempt counts, retries, controls, queue administration, or generic Sidekiq compatibility. Those require separate provider contracts and specific authorization tests.
+
+## Sidekiq adapter (Step 0003.1)
+
+A second adapter uses Sidekiq's Data API for bounded, read-only inspection of explicitly linked JIDs, queue names and scheduled/retry/dead states. It never assumes a missing Sidekiq Redis job has finished and never displays serialized job arguments or error messages. The scan is best-effort due to Redis races and bounded traversal; a durable host-owned lifecycle status store is recommended for production-scale accuracy.
