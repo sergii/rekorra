@@ -19,7 +19,7 @@ Status: Engine boot confirmed by Step 0001 Rails 8.1 CI; browser visual checks p
 - [x] Rails engine loads
 - [x] Unauthorized request returns 401
 - [x] Authorized request renders the shell
-- [ ] CSS is fingerprinted by Propshaft
+- [x] CSS is fingerprinted by Propshaft
 - [x] Theme form works with cookies
 - [ ] Mobile browser visual check
 

@@ -24,11 +24,11 @@ Status: Integration CI passed on Ruby 3.3 and 3.4 with Rails 8.1; browser checks
 
 ## Verification checklist
 - [x] Rails 8 boot and migration
-- [ ] CRUD without JavaScript
-- [ ] Customer/Order/Payment links
+- [x] CRUD without JavaScript
+- [x] Customer/Order/Payment links
 - [x] Tenant isolation and unauthorized association
 - [x] SQL query budget
-- [ ] Propshaft CSS loaded
+- [x] Propshaft CSS loaded
 - [ ] Responsive viewport screenshots
 - [x] Renderer override test
 
@@ -37,4 +37,4 @@ Status: Integration CI passed on Ruby 3.3 and 3.4 with Rails 8.1; browser checks
 - Basic record fields only; no attachment upload, enums, polymorphic relations or auditing yet.
 - The demo policy scope is a reference only; production apps must implement their own.
 
-Baseline verified in [GitHub Actions run 40582539435](https://github.com/sergii/rekorra/actions/runs/40582539435). More HTML and Propshaft tests are being added separately.
+Verified in [GitHub Actions run 40583138105](https://github.com/sergii/rekorra/actions/runs/40583138105): Ruby 3.3/3.4, 15 tests, 58 assertions, 0 failures. Browser screenshot and compatibility gates remain pending.
