@@ -1,6 +1,6 @@
 # Step 0004 — Findings
 
-Status: Implemented in feature branch; CI and mobile browser QA pending.
+Status: Automated CI passed on Ruby 3.3 and 3.4; mobile browser QA pending.
 
 ## Demo host
 
@@ -19,14 +19,16 @@ Status: Implemented in feature branch; CI and mobile browser QA pending.
 
 ## Acceptance
 
-- [ ] Ruby 3.3 / 3.4 CI passed
-- [ ] Paid/pending mismatch produces a warning with explicit evidence
-- [ ] Matching paid status, partial capture and no payment produce no warning
-- [ ] Cross-tenant, anonymous and denied policy prevent evidence disclosure
-- [ ] Denied policy never invokes rules
-- [ ] Invalid payloads, configuration and rule results fail closed
-- [ ] HTML escaping of potentially unsafe text and bounded output
+- [x] Ruby 3.3 / 3.4 CI passed
+- [x] Paid/pending mismatch produces a warning with explicit evidence
+- [x] Matching paid status, partial capture and no payment produce no warning
+- [x] Cross-tenant, anonymous and denied policy prevent evidence disclosure
+- [x] Denied policy never invokes rules
+- [x] Invalid payloads, configuration and rule results fail closed
+- [x] HTML escaping of potentially unsafe text and bounded output
 - [ ] Mobile visual QA
+
+[CI run 40601346550](https://github.com/sergii/rekorra/actions/runs/40601346550): 87 tests, 392 assertions, 0 failures/errors on each Ruby 3.3 and Ruby 3.4 job.
 
 ## Limitations
 
