@@ -3,6 +3,7 @@
 module Rekorra
   class Configuration
     attr_accessor :authenticate_with, :authorize_with, :scope_with
+    attr_accessor :index_cursor_context_with
     attr_accessor :activity_actor_with
     attr_reader :activity_adapters, :job_adapters, :finding_rules
     attr_accessor :context_application, :context_environment, :context_tenant_with
