@@ -1,6 +1,6 @@
 # Step 0001.5 - External Links
 
-Status: Implemented in feature branch; CI and browser verification pending.
+Status: Automated CI passed on Ruby 3.3 and 3.4; browser visual verification pending.
 
 ## Demo Rails app
 
@@ -22,13 +22,15 @@ The sample URLs do not prove that those external services contain events for dem
 
 ## Verification
 
-- [ ] CI tests complete for Ruby 3.3 and 3.4
-- [ ] Authorized link presence and encoded provider filters
-- [ ] Forbidden link hidden before callbacks run
-- [ ] Cross-tenant and anonymous requests do not expose links
-- [ ] Reject insecure URL, credentials, off-allowlist host and unsafe path
-- [ ] Provider-unconfigured behavior covered
+- [x] CI tests complete for Ruby 3.3 and 3.4
+- [x] Authorized link presence and encoded provider filters
+- [x] Forbidden link hidden before callbacks run
+- [x] Cross-tenant and anonymous requests do not expose links
+- [x] Reject insecure URL, credentials, off-allowlist host and unsafe path
+- [x] Provider-unconfigured behavior covered
 - [ ] Manual mobile/browser visual QA
+
+Verified in [CI run 40590155637](https://github.com/sergii/rekorra/actions/runs/40590155637): Ruby 3.3 and 3.4, 25 tests and 108 assertions per matrix job, 0 failures, 0 errors. Browser QA remains outstanding.
 
 ## Known limitations
 
