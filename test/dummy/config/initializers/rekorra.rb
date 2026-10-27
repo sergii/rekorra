@@ -3,7 +3,7 @@
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
   config.authenticate_with = lambda do |controller|
-    ActionController::HttpAuthentication::Basic.authenticate(controller) do |username, password|
+    ActionController::HttpAuthentication::Basic.authenticate(controller.request) do |username, password|
       secret = ENV["REKORRA_DEMO_PASSWORD"]
       next nil if secret.nil? || secret.empty?
       next nil unless ActiveSupport::SecurityUtils.secure_compare(password, secret)
