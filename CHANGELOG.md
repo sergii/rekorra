@@ -4,6 +4,14 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0001.6 - Context References
+- Added typed, immutable ContextRef and ExternalRef identities, independent of any single provider.
+- Added context DSL for internal record links and external provider references.
+- Added scope- and policy-checked resolution, plus Linked context UI on Show.
+- Added demo Order issue/trace fields and a tenant-scoped Organization resource.
+- Added context regression tests and updated ADR 0008.
+- See [Step 0001.6](docs/steps/0001-6-context-references.md).
+
 ### Step 0001.5 - External Links
 - Added authorized, provider-aware external links on resource Show pages.
 - Added a generic HTTPS URL builder and a Sumo Logic search URL adapter.

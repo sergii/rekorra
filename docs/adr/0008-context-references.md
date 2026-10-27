@@ -1,6 +1,6 @@
 # ADR 0008 - Context references are provider-neutral
 
-Status: Proposed; design contract only, not implemented in Step 0001.5.
+Status: Partially accepted and implemented in Step 0001.6; EvidenceRef and persistent relationships remain proposed.
 
 ## Naming
 
@@ -8,7 +8,7 @@ Ruby public classes can be `Rekorra::ContextRef`, `Rekorra::ExternalRef`, and `R
 
 A provider is configured with snake_case symbols such as `:jira`, `:github_issues`, `:intercom`, `:datadog`, `:sumo_logic`, or `:grafana`. Each provider maps its own vocabulary (issue, ticket, conversation, event, trace, log search) to a common reference interface. Do **not** force every provider to use `issue_key`, `ticket_id` or the term "track".
 
-## Planned shapes (illustrative, not yet Ruby API)
+## Implemented value objects (Ruby API)
 
 ```ruby
 ContextRef.new(
@@ -31,6 +31,8 @@ ExternalRef.new(
   id: "4bf92f3577b34da6a3ce929d0e0e4736"
 )
 ```
+
+The `context do` DSL supports `record` and `external` declarations. Resolving an internal reference requires an authorized source record, a registered resource, a tenant-scoped ActiveRecord relation and permission for the target. External references require their own policy and do not automatically fetch external data.
 
 Identity must include the source application/instance and environment. A record ID alone is insufficient; staging and production orders may use the same number.
 
