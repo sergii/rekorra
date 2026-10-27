@@ -26,4 +26,4 @@ No full log ingestion, web view-access audit, PaperTrail version rollback, backg
 
 ## Alternatives
 
-A mandatory PaperTrail dependency, a Rekorra-owned event database, and a generic YAML event parser were rejected. Other providers may implement `events` and `with_actor` behind the registry later.
+A mandatory PaperTrail dependency, a Rekorra-owned event database, and a generic YAML event parser were rejected. Other providers must implement `events(record:, fields:, limit:)` and may optionally implement `with_actor(actor:) { ... }` for source-specific write attribution. The registry checks only the read capability; read-only adapters are supported. If `with_actor` is absent, Rekorra writes execute normally and recording is owned by the host/provider. If it is present, the host must configure `activity_actor_with`. Aggregating multiple activity sources into one timeline is not supported yet.

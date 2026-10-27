@@ -91,12 +91,13 @@ module Rekorra
       definition = @resource.activity
       return yield unless definition
 
+      adapter = Rekorra.configuration.activity_adapters.fetch(definition.source_name)
+      return yield unless adapter.respond_to?(:with_actor)
+
       identify = Rekorra.configuration.activity_actor_with
       raise ConfigurationError, "Activity actor callback missing" unless identify.respond_to?(:call)
 
-      Rekorra.configuration.activity_adapters.fetch(definition.source_name).with_actor(
-        actor: identify.call(rekorra_actor), &block
-      )
+      adapter.with_actor(actor: identify.call(rekorra_actor), &block)
     end
 
     def load_resource
