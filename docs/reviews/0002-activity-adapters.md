@@ -1,6 +1,6 @@
 # Activity Adapter Contract Review (2026-10-28)
 
-Status: Implementation audited; automated contract checks pending.
+Status: Contract verified in CI (Ruby 3.3 / 3.4); multi-source support remains out of scope.
 
 ## Verified architecture
 
@@ -32,10 +32,12 @@ After this change:
 
 ## Validation criteria
 
-- [ ] Non-PaperTrail source registered and rendered through resolver.
-- [ ] Read-only provider works without `with_actor`.
-- [ ] Existing PaperTrail actor attribution and ACL tests remain green.
-- [ ] Ruby 3.3/3.4 CI passed.
+- [x] Non-PaperTrail source registered and resolved through provider-neutral resolver.
+- [x] Read-only provider works without `with_actor`.
+- [x] Existing PaperTrail actor attribution and ACL tests remain green.
+- [x] Ruby 3.3/3.4 CI passed.
+
+Evidence: [GitHub Actions CI run 40598021894](https://github.com/sergii/rekorra/actions/runs/40598021894). 52 tests, 223 assertions, 0 failures, 0 errors, 0 skips per Ruby matrix job.
 
 ## Next architecture spike
 
