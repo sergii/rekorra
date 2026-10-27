@@ -14,6 +14,33 @@
     <% end %>
   </dl>
 </section>
+<% if @jobs_visible %>
+  <section class="rk-panel rk-jobs" aria-labelledby="rk-jobs-heading">
+    <h2 id="rk-jobs-heading">Background Jobs</h2>
+    <% if @job_items.empty? %>
+      <p class="rk-muted">No linked jobs.</p>
+    <% else %>
+      <ul class="rk-jobs__list">
+        <% @job_items.each do |item| %>
+          <li class="rk-jobs__item">
+            <div class="rk-jobs__title">
+              <strong><%= item.name %></strong>
+              <span class="rk-badge"><%= item.status.humanize %></span>
+            </div>
+            <dl class="rk-jobs__detail">
+              <div><dt>Job ID</dt><dd><%= item.id %></dd></div>
+              <div><dt>Queue</dt><dd><%= item.queue %></dd></div>
+              <div><dt>Created</dt><dd><%= item.created_at ? l(item.created_at, format: :long) : "Unknown" %></dd></div>
+              <% if item.finished_at %>
+                <div><dt>Finished</dt><dd><%= l(item.finished_at, format: :long) %></dd></div>
+              <% end %>
+            </dl>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+<% end %>
 <% if @activity_visible %>
   <section class="rk-panel rk-activity" aria-labelledby="rk-activity-heading">
     <h2 id="rk-activity-heading">Activity</h2>

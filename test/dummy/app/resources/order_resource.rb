@@ -21,6 +21,12 @@ class OrderResource < Rekorra::Resource
     association :payments
   end
 
+  jobs do
+    source :solid_queue
+    authorize :view_jobs?
+    limit 10
+  end
+
   activity do
     source :paper_trail
     fields :number, :status, :total_cents
