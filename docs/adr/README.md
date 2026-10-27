@@ -20,4 +20,6 @@
 
 - [ADR 0013 — Generic Resource Index v2](0013-resource-index-v2.md)
 
+- [ADR 0014 — Secure Keyset Cursor Pagination](0014-keyset-pagination.md)
+
 Accepted means a design decision, not verified implementation.

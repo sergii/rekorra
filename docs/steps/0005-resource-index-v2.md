@@ -47,4 +47,4 @@ Make searching, filtering, sorting and pagination first-class for **ordinary mod
 
 ## Next
 
-Step 0005.1: cursor/keyset pagination on supported stable indexed sorts, with signed cursors and tenant/filter binding; optional paginators can be evaluated behind the same contract.
+Step 0005.1 implements opt-in encrypted keyset pagination with scoped/tenant-bound cursors. See [Step 0005.1](0005-1-keyset-pagination.md). Optional paginators can be evaluated behind the same contract.

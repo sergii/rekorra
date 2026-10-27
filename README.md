@@ -80,7 +80,25 @@ index do
 end
 ```
 
-No paginator gem is mandatory. The host-supplied `scope_with` must enforce row visibility before pagination; Rekorra applies another per-record `:show?` check when rendering. Large offsets, full-text search and keyset/cursor strategies remain separate follow-up work.
+For large, frequently updated ordinary indexes, an alternative is now available:
+
+```ruby
+index do
+  field :name
+  field :email
+  sort_by :name, :email
+
+  pagination do
+    strategy :keyset
+    per_page 25
+    max_per_page 100
+  end
+end
+```
+
+The host also configures a stable, authorization-relevant `index_cursor_context_with` callback. The encrypted one-hour cursor binds the tenant/actor, SQL scope, resource, search, filters, sort and page size. The demo provides an alternative `/backoffice/resources/cursor_users` page over the same User model; ordinary `/users` keeps offset pagination. Keyset requires explicit NOT NULL sortable columns.
+
+No paginator gem is mandatory. The host-supplied `scope_with` must enforce row visibility before pagination; Rekorra applies another per-record `:show?` check when rendering. Large offsets and full-text search adapters remain separate follow-up work. See [Step 0005.1](docs/steps/0005-1-keyset-pagination.md) for cursor constraints.
 
 To test a large index, from `test/dummy`, run `bundle exec rails db:prepare db:seed` and `bundle exec rake 'demo:seed_users[50000]'`, then open `/backoffice/resources/users`.
 
