@@ -18,4 +18,6 @@
 
 - [ADR 0012 — Host-owned Findings rules](0012-findings.md)
 
+- [ADR 0013 — Generic Resource Index v2](0013-resource-index-v2.md)
+
 Accepted means a design decision, not verified implementation.

@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0005 — Resource Index v2
+- Added static typed filters, declared sort columns, search and page-size configuration to ordinary Resource indexes.
+- Added scoped ActiveRecord/Arel filter/query plan, bounded offset pagination and parameter-preserving HTML controls.
+- Added a read-only User model/Resource and opt-in 50,000-record seed task.
+- Added ADR 0013 and Step 0005 verification plan; keyset remains a follow-up.
+- See [Step 0005](docs/steps/0005-resource-index-v2.md).
+
 ### Step 0004 — Findings
 - Added provider-neutral Findings registry, resolver, DSL and structured evidence types.
 - Added a demo host rule for captured payments on still-pending orders, with deterministic seeds.

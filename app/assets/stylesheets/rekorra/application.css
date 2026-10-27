@@ -142,3 +142,14 @@ html[data-theme="dark"] .rk-app {
 .rk-findings__evidence dt { color: var(--rk-muted); font-size: 0.78rem; }
 .rk-findings__evidence dd { margin: 0; overflow-wrap: anywhere; font-size: 0.85rem; }
 @media (max-width: 650px) { .rk-findings__evidence { grid-template-columns: 1fr; } }
+
+.rk-index-controls { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+.rk-index-controls__main, .rk-index-controls__filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 0.75rem; }
+.rk-index-control { display: grid; gap: 0.35rem; min-width: 0; }
+.rk-index-control--search { grid-column: span 2; }
+.rk-index-control label { font-size: 0.78rem; font-weight: 650; color: var(--rk-muted); }
+.rk-index-control input, .rk-index-control select { width: 100%; min-width: 0; }
+.rk-index-controls__filters { padding-top: 1rem; border-top: 1px solid var(--rk-line); }
+.rk-index-controls__actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.rk-pagination { flex-wrap: wrap; }
+@media (max-width: 650px) { .rk-index-control--search { grid-column: span 1; } }

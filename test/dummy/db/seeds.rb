@@ -51,3 +51,22 @@ unless order_a.demo_job_links.exists?
       job_class_name: job.class.name)
   end
 end
+
+# A small default dataset makes pagination visible in the ordinary Users Index.
+# Use `rake demo:seed_users[50000]` for an opt-in large dataset.
+if acme.users.count < 65
+  now = Time.current
+  rows = (1..65).map do |n|
+    {
+      organization_id: acme.id,
+      name: "Demo User #{format('%05d', n)}",
+      email: "demo-user-#{format('%05d', n)}@example.test",
+      status: n % 7 == 0 ? "suspended" : "active",
+      role: n % 10 == 0 ? "admin" : "member",
+      verified: n.even?,
+      created_at: now - n.days,
+      updated_at: now
+    }
+  end
+  User.insert_all(rows, unique_by: :index_users_on_organization_id_and_email)
+end

@@ -5,11 +5,71 @@
   <% end %>
 </div>
 <section class="rk-panel">
-  <%= form_with url: records_path(slug: params[:slug]), method: :get, local: true, class: "rk-filters" do |form| %>
-    <%= form.search_field :q, value: @query.search, placeholder: "Search records", "aria-label": "Search records" %>
-    <%= form.select :sort, @resource.index.fields.select { |field| @model.column_names.include?(field.name.to_s) }.map { |field| [field.label, field.name] }, { selected: @query.sort, include_blank: "Default sort" } %>
-    <%= form.select :direction, [["Ascending", "asc"], ["Descending", "desc"]], { selected: @query.direction } %>
-    <%= form.submit "Apply", class: "rk-button" %>
+  <%= form_with url: records_path(slug: params[:slug]), method: :get, local: true, class: "rk-index-controls" do |form| %>
+    <div class="rk-index-controls__main">
+      <div class="rk-index-control rk-index-control--search">
+        <%= form.label :q, "Search" %>
+        <%= form.search_field :q, value: @query.search, placeholder: "Search records" %>
+      </div>
+      <div class="rk-index-control">
+        <%= form.label :sort, "Sort by" %>
+        <%= form.select :sort, @query.sort_columns.map { |name| [name.humanize, name] },
+          { selected: @query.sort, include_blank: "Default (ID)" } %>
+      </div>
+      <div class="rk-index-control">
+        <%= form.label :direction, "Direction" %>
+        <%= form.select :direction, [["Ascending", "asc"], ["Descending", "desc"]],
+          { selected: @query.direction } %>
+      </div>
+      <div class="rk-index-control">
+        <%= form.label :per_page, "Rows per page" %>
+        <%= form.select :per_page, @resource.index.pagination.sizes.map { |n| [n, n] },
+          { selected: @query.per_page } %>
+      </div>
+    </div>
+    <% if @resource.index.filters.any? %>
+      <div class="rk-index-controls__filters">
+        <% @resource.index.filters.each do |filter| %>
+          <% case filter.type %>
+          <% when :select %>
+            <div class="rk-index-control">
+              <%= label_tag "rk-filter-#{filter.name}", filter.label %>
+              <%= select_tag "filters[#{filter.name}]",
+                options_for_select(filter.options, @query.filter_values[filter.name]),
+                include_blank: "All", id: "rk-filter-#{filter.name}" %>
+            </div>
+          <% when :boolean %>
+            <div class="rk-index-control">
+              <%= label_tag "rk-filter-#{filter.name}", filter.label %>
+              <%= select_tag "filters[#{filter.name}]",
+                options_for_select([["Yes", "true"], ["No", "false"]],
+                  @query.filter_values[filter.name]),
+                include_blank: "All", id: "rk-filter-#{filter.name}" %>
+            </div>
+          <% when :date_range %>
+            <% %w[from to].each do |bound| %>
+              <% key = "#{filter.name}_#{bound}" %>
+              <div class="rk-index-control">
+                <%= label_tag "rk-filter-#{key}", "#{filter.label} #{bound}" %>
+                <%= date_field_tag "filters[#{key}]", @query.filter_values[key], id: "rk-filter-#{key}" %>
+              </div>
+            <% end %>
+          <% when :number_range %>
+            <% %w[min max].each do |bound| %>
+              <% key = "#{filter.name}_#{bound}" %>
+              <div class="rk-index-control">
+                <%= label_tag "rk-filter-#{key}", "#{filter.label} #{bound}" %>
+                <%= number_field_tag "filters[#{key}]", @query.filter_values[key], id: "rk-filter-#{key}" %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="rk-index-controls__actions">
+      <%= form.submit "Apply", class: "rk-button" %>
+      <%= link_to "Reset", records_path(slug: params[:slug]), class: "rk-button rk-button--secondary" %>
+    </div>
   <% end %>
   <% if @records.any? %>
     <div class="rk-table-scroll">
@@ -31,15 +91,17 @@
       </table>
     </div>
   <% else %>
-    <p class="rk-muted">No records match your search.</p>
+    <p class="rk-muted">No records match your search or filters.</p>
   <% end %>
   <nav class="rk-pagination" aria-label="Pagination">
     <% if @query.page > 1 %>
-      <%= link_to "Previous", records_path(slug: params[:slug], q: @query.search, sort: @query.sort, direction: @query.direction, page: @query.page - 1) %>
+      <%= link_to "Previous", records_path(slug: params[:slug],
+        **@query.navigation_params.merge(page: @query.page - 1)) %>
     <% end %>
-    <span>Page <%= @query.page %></span>
+    <span>Page <%= @query.page %> · <%= @records.size %> records</span>
     <% if @query.has_next %>
-      <%= link_to "Next", records_path(slug: params[:slug], q: @query.search, sort: @query.sort, direction: @query.direction, page: @query.page + 1) %>
+      <%= link_to "Next", records_path(slug: params[:slug],
+        **@query.navigation_params.merge(page: @query.page + 1)) %>
     <% end %>
   </nav>
 </section>
