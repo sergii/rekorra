@@ -1,6 +1,6 @@
 # ADR 0014 — Encrypted, actor/scope-bound cursor pagination
 
-Status: Accepted as the Step 0005.1 architecture (implementation CI pending).
+Status: Accepted and verified in Step 0005.1 integration CI; manual browser QA pending.
 
 ## Context
 
