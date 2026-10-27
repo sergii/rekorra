@@ -1,0 +1,45 @@
+<div class="rk-page-heading">
+  <div><p class="rk-kicker">Resources</p><h1><%= @resource.title %></h1></div>
+  <% if allowed?(@model, :create?) %>
+    <%= link_to "New record", new_record_path(slug: params[:slug]), class: "rk-button" %>
+  <% end %>
+</div>
+<section class="rk-panel">
+  <%= form_with url: records_path(slug: params[:slug]), method: :get, local: true, class: "rk-filters" do |form| %>
+    <%= form.search_field :q, value: @query.search, placeholder: "Search records", "aria-label": "Search records" %>
+    <%= form.select :sort, @resource.index.fields.select { |field| @model.column_names.include?(field.name.to_s) }.map { |field| [field.label, field.name] }, { selected: @query.sort, include_blank: "Default sort" } %>
+    <%= form.select :direction, [["Ascending", "asc"], ["Descending", "desc"]], { selected: @query.direction } %>
+    <%= form.submit "Apply", class: "rk-button" %>
+  <% end %>
+  <% if @records.any? %>
+    <div class="rk-table-scroll">
+      <table class="rk-table">
+        <thead><tr>
+          <% @resource.index.fields.each do |field| %><th scope="col"><%= field.label %></th><% end %>
+          <th scope="col">Actions</th>
+        </tr></thead>
+        <tbody>
+          <% @records.each do |record| %>
+            <tr>
+              <% @resource.index.fields.each do |field| %>
+                <td data-label="<%= field.label %>"><%= rekorra_field_value(record, field) %></td>
+              <% end %>
+              <td data-label="Actions"><%= link_to "View", record_path(slug: params[:slug], id: record.to_param) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="rk-muted">No records match your search.</p>
+  <% end %>
+  <nav class="rk-pagination" aria-label="Pagination">
+    <% if @query.page > 1 %>
+      <%= link_to "Previous", records_path(slug: params[:slug], q: @query.search, sort: @query.sort, direction: @query.direction, page: @query.page - 1) %>
+    <% end %>
+    <span>Page <%= @query.page %></span>
+    <% if @query.has_next %>
+      <%= link_to "Next", records_path(slug: params[:slug], q: @query.search, sort: @query.sort, direction: @query.direction, page: @query.page + 1) %>
+    <% end %>
+  </nav>
+</section>

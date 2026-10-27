@@ -1,6 +1,13 @@
 <section class="rk-panel">
-  <p class="rk-kicker">Technical prototype / Step 0000</p>
+  <p class="rk-kicker">Technical prototype / Step 0001</p>
   <h1>Rekorra engine is mounted</h1>
-  <p>The isolated Rails Engine rendered this page with server-side HTML and packaged CSS, without frontend tooling in the host application.</p>
-  <p class="rk-muted">Next: resource registration and a real Order association in the dummy application.</p>
+  <p class="rk-muted">Browse the scoped demo domain through the gem. No host application views or frontend build required.</p>
+  <div class="rk-resource-grid">
+    <% @resources.each do |slug, resource| %>
+      <%= link_to records_path(slug: slug), class: "rk-tile" do %>
+        <strong><%= resource.title %></strong>
+        <span>Browse records</span>
+      <% end %>
+    <% end %>
+  </div>
 </section>

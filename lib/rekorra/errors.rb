@@ -5,4 +5,5 @@ module Rekorra
   class ConfigurationError < Error; end
   class NotAuthenticated < Error; end
   class NotAuthorized < Error; end
+  class UnknownResource < Error; end
 end

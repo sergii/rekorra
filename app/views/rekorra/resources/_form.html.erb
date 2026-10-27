@@ -1,0 +1,23 @@
+<%= form_with scope: :record, url: record.persisted? ? record_path(slug: params[:slug], id: record.to_param) : records_path(slug: params[:slug]), method: record.persisted? ? :patch : :post, local: true, class: "rk-form" do |form| %>
+  <% if record.errors.any? %>
+    <div role="alert" class="rk-errors"><strong>Please correct the following errors:</strong>
+      <ul><% record.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+  <% @resource.form.fields.each do |field| %>
+    <div class="rk-field">
+      <%= form.label field.name, field.label %>
+      <% if @field_options.key?(field.name) %>
+        <%= form.select field.name, @field_options[field.name], { include_blank: true } %>
+      <% elsif record.class.type_for_attribute(field.name.to_s).type == :text %>
+        <%= form.text_area field.name, rows: 3 %>
+      <% else %>
+        <%= form.text_field field.name %>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="rk-actions">
+    <%= form.submit record.persisted? ? "Save changes" : "Create", class: "rk-button" %>
+    <%= link_to "Cancel", record.persisted? ? record_path(slug: params[:slug], id: record.to_param) : records_path(slug: params[:slug]) %>
+  </div>
+<% end %>
