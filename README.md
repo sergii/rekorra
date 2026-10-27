@@ -57,6 +57,25 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Linked context (Step 0001.6)
+
+A resource can declare typed context independently from external URL builders:
+
+```ruby
+context do
+  record :customer, resource: :customers, id: ->(order) { order.customer_id }
+  external :issue, provider: :jira, instance: "example.atlassian.net",
+    kind: :issue, id: ->(order) { order.support_issue_id },
+    display_key: ->(order) { order.support_issue_key }, authorize: :view_issues?
+end
+```
+
+The host configures `context_application`, `context_environment` and
+`context_tenant_with` (a callable returning the current actor's tenant).
+Internal targets must be registered resources and pass scoped relation plus
+`:show?` authorization. External references are metadata, not working Jira links,
+and use their own policies. No provider network calls or extra gem tables.
+
 ## External links (Step 0001.5)
 
 A resource can expose authorized, provider-specific deep links without fetching external data:

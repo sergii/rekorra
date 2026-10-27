@@ -5,8 +5,9 @@
 3. **Query:** N+1 regression, allowed search/sort, bounded pagination.
 4. **Packaging:** gem install, Propshaft fingerprinted CSS, host without a JS build.
 5. **External Links:** provider URL/encoding contracts, host allowlist, link-specific authorization, no credential forwarding, cross-tenant rejection.
-6. **Browser** (pending): narrow/mobile/tablet/desktop, light/dark/auto, keyboard accessibility, JavaScript disabled.
-7. **Compatibility** (pending): Rails 8.0 vs 8.1; Ruby 3.2/3.3/3.4; Sprockets; host with existing Turbo and Stimulus.
+6. **Context References:** typed identity validation and immutability, tenant-scoped internal target resolution, separately authorized external references, missing ID behavior.
+7. **Browser** (pending): narrow/mobile/tablet/desktop, light/dark/auto, keyboard accessibility, JavaScript disabled.
+8. **Compatibility** (pending): Rails 8.0 vs 8.1; Ruby 3.2/3.3/3.4; Sprockets; host with existing Turbo and Stimulus.
 
 ## Run
 

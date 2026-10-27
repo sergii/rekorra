@@ -3,6 +3,7 @@
 module Rekorra
   class Configuration
     attr_accessor :authenticate_with, :authorize_with, :scope_with
+    attr_accessor :context_application, :context_environment, :context_tenant_with
     attr_accessor :external_link_allowed_hosts
     attr_reader :resources, :external_services
 
