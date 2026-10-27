@@ -21,6 +21,18 @@ class OrderResource < Rekorra::Resource
     association :payments
   end
 
+  # External link configuration is owned by the demo host application.
+  # Query values are numeric IDs, not untrusted names or email addresses.
+  external_link :logs, label: "See logs", provider: :sumo_logic,
+    query: ->(order) {
+      "_sourceCategory=rekorra/demo order_id=#{Integer(order.id)} tenant_id=#{Integer(order.customer.organization_id)}"
+    }, start_time: "-24h", end_time: "now", authorize: :view_logs?
+
+  external_link :issues, label: "Find related issues", provider: :url,
+    base_url: "https://github.com", path: "/sergii/rekorra/issues",
+    params: ->(order) { { q: "order_id:#{Integer(order.id)}" } },
+    authorize: :view_issues?
+
   form do
     field :number
     field :customer_id

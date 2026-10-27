@@ -14,6 +14,21 @@
     <% end %>
   </dl>
 </section>
+<% if @external_links.any? %>
+  <section class="rk-panel rk-external-links" aria-labelledby="rk-external-links-heading">
+    <h2 id="rk-external-links-heading">External tools</h2>
+    <ul class="rk-external-links__list">
+      <% @external_links.each do |external_link| %>
+        <li>
+          <%= link_to external_link.label, external_link.url, target: "_blank",
+            rel: "noopener noreferrer", referrerpolicy: "no-referrer",
+            class: "rk-external-link" %>
+          <span class="rk-muted"><%= external_link.provider.to_s.humanize %> · Opens in new tab</span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
 <% @related.each do |name, records| %>
   <section class="rk-panel rk-related">
     <h2><%= name.to_s.humanize %></h2>
