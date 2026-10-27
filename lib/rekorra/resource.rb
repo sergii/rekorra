@@ -73,6 +73,7 @@ module Rekorra
       end
 
       def validate!
+        index.validate_index!(model_class)
         findings&.validate!
         jobs&.validate!
         activity&.validate!(model_class)
