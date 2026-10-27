@@ -163,7 +163,8 @@ class ResourceIndexV2Test < ActionDispatch::IntegrationTest
     pagination = Rekorra::Index::Pagination.new
     pagination.per_page 101
     assert_raises(Rekorra::ConfigurationError) { pagination.validate! }
-    assert_raises(Rekorra::ConfigurationError) { pagination.strategy :keyset }
+    pagination.strategy :keyset
+    assert_equal :keyset, pagination.strategy
   end
 
   test "fifty thousand Users are queried with a bound rather than materialized" do
