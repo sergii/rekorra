@@ -1,6 +1,6 @@
 # Step 0000 - Bootable Engine
 
-Status: Implementation submitted, runtime validation pending.
+Status: Engine boot confirmed by Step 0001 Rails 8.1 CI; browser visual checks pending.
 
 ## Demo Rails application
 - `test/dummy` is a real Rails host application.
@@ -15,12 +15,12 @@ Status: Implementation submitted, runtime validation pending.
 - Authentication and authorization required for the root page.
 
 ## Validation
-- [ ] Bundle install in CI
-- [ ] Rails engine loads
-- [ ] Unauthorized request returns 401
-- [ ] Authorized request renders the shell
+- [x] Bundle install in CI
+- [x] Rails engine loads
+- [x] Unauthorized request returns 401
+- [x] Authorized request renders the shell
 - [ ] CSS is fingerprinted by Propshaft
-- [ ] Theme form works with cookies
+- [x] Theme form works with cookies
 - [ ] Mobile browser visual check
 
 ## Known limitations

@@ -23,8 +23,8 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
     { "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(slug, "test-password") }
   end
 
-  def csrf_token(action = "/backoffice/resources/orders")
-    get "/backoffice/resources/orders/new", headers: headers
+  def csrf_token(action = "/backoffice/resources/orders", source = "/backoffice/resources/orders/new")
+    get source, headers: headers
     assert_response :success
     Nokogiri::HTML(response.body).at_css("form[action='#{action}'] input[name='authenticity_token']")["value"]
   end
@@ -82,6 +82,45 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
     get "/backoffice", headers: headers
     assert_response :success
     assert_select "html[data-theme='dark']"
+  end
+
+  test "updates an order through its HTML form" do
+    url = "/backoffice/resources/orders/#{@order.id}"
+    token = csrf_token(url, "#{url}/edit")
+    patch url, headers: headers, params: {
+      authenticity_token: token, record: { status: "fulfilled", customer_id: @alice.id }
+    }
+    assert_response :redirect
+    assert_equal "fulfilled", @order.reload.status
+  end
+
+  test "deletes an order through its HTML form" do
+    disposable = Order.create!(customer: @alice, number: "ACME-DELETE", status: "pending", total_cents: 0)
+    url = "/backoffice/resources/orders/#{disposable.id}"
+    token = csrf_token(url, url)
+    assert_difference("Order.count", -1) do
+      delete url, headers: headers, params: { authenticity_token: token }
+    end
+    assert_response :see_other
+  end
+
+  test "invalid CSRF requests are rejected" do
+    assert_raises(ActionController::InvalidAuthenticityToken) do
+      post "/backoffice/resources/orders", headers: headers, params: {
+        record: { number: "FORGED", customer_id: @alice.id, status: "pending", total_cents: 1 }
+      }
+    end
+    assert_not Order.exists?(number: "FORGED")
+  end
+
+  test "Propshaft serves the engine CSS asset" do
+    get "/backoffice", headers: headers
+    assert_response :success
+    stylesheet = Nokogiri::HTML(response.body).at_css("link[rel='stylesheet']")["href"]
+    assert_match(%r{/assets/rekorra/application-[a-f0-9]+\.css}, stylesheet)
+    get stylesheet
+    assert_response :success
+    assert_includes response.body, ".rk-app"
   end
 
   test "search and sort are restricted to configured fields" do

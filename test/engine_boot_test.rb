@@ -6,6 +6,7 @@ class EngineBootTest < ActionDispatch::IntegrationTest
   test "unauthenticated users receive unauthorized" do
     get "/backoffice"
     assert_response :unauthorized
+    assert_match(/Basic realm=/, response.headers.fetch("WWW-Authenticate"))
   end
 
   test "authenticated users can view engine shell and resources" do
