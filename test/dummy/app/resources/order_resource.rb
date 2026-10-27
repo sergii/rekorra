@@ -10,6 +10,17 @@ class OrderResource < Rekorra::Resource
     field :status, as: :badge
     field :total_cents, as: :money, label: "Total"
     field :created_at, as: :datetime
+
+    filter :status, type: :select, options: %w[pending paid fulfilled]
+    filter :total_cents, type: :number_range
+    filter :created_at, type: :date_range
+    sort_by :number, :total_cents, :created_at
+
+    pagination do
+      strategy :offset
+      per_page 25
+      max_per_page 100
+    end
   end
 
   show do

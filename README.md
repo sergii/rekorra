@@ -57,6 +57,35 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Generic Resource Index v2 (Step 0005)
+
+All ordinary model pages can configure static typed filters, sort/search columns and bounded pagination:
+
+```ruby
+index do
+  field :name
+  field :email
+  field :status
+
+  search_by :name, :email
+  filter :status, type: :select, options: %w[active suspended invited]
+  filter :created_at, type: :date_range
+  sort_by :name, :email, :created_at
+
+  pagination do
+    strategy :offset
+    per_page 25
+    max_per_page 100
+  end
+end
+```
+
+No paginator gem is mandatory. The host-supplied `scope_with` must enforce row visibility before pagination; Rekorra applies another per-record `:show?` check when rendering. Large offsets, full-text search and keyset/cursor strategies remain separate follow-up work.
+
+To test a large index, from `test/dummy`, run `bundle exec rails db:prepare db:seed` and `bundle exec rake 'demo:seed_users[50000]'`, then open `/backoffice/resources/users`.
+
+See [Step 0005](docs/steps/0005-resource-index-v2.md).
+
 ## Findings (Step 0004)
 
 Host-owned read-only rules can declare a business mismatch without requiring new tables or a background process:
