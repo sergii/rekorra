@@ -71,7 +71,7 @@ module Rekorra
       @record.assign_attributes(record_params)
       authorize!(@record, :update?)
       validate_foreign_keys!
-      if @record.save
+      if with_activity_actor { @record.save }
         redirect_to record_path(slug: params[:slug], id: @record.to_param), notice: "Updated"
       else
         load_field_options

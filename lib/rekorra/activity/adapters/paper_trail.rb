@@ -13,7 +13,7 @@ module Rekorra
             raise ConfigurationError, "PaperTrail is not installed on #{record.class}"
           end
 
-          record.versions.order(created_at: :desc, id: :desc).limit(limit).map do |version|
+          record.versions.reorder(created_at: :desc, id: :desc).limit(limit).map do |version|
             changeset = version.changeset
             changes = if changeset.is_a?(Hash)
               fields.filter_map do |field|
