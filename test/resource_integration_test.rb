@@ -23,6 +23,12 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
     { "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(slug, "test-password") }
   end
 
+  def csrf_token
+    get "/backoffice/resources/orders/new", headers: headers
+    assert_response :success
+    Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]').fetch("value")
+  end
+
   test "lists orders and related customer without leaking another organization" do
     get "/backoffice/resources/orders", headers: headers
     assert_response :success
@@ -45,6 +51,7 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
 
   test "creating an order with a foreign customer is forbidden" do
     post "/backoffice/resources/orders", headers: headers, params: {
+      authenticity_token: csrf_token,
       record: { number: "ACME-2", customer_id: @other.id, status: "pending", total_cents: 500 }
     }
     assert_response :forbidden
@@ -54,11 +61,27 @@ class ResourceIntegrationTest < ActionDispatch::IntegrationTest
   test "creates an order through a plain HTML form endpoint" do
     assert_difference("Order.count", 1) do
       post "/backoffice/resources/orders", headers: headers, params: {
+        authenticity_token: csrf_token,
         record: { number: "ACME-2", customer_id: @alice.id, status: "pending", total_cents: 500 }
       }
     end
     assert_response :redirect
     assert_equal "ACME-2", Order.order(:id).last.number
+  end
+
+  test "custom field renderer overrides default output" do
+    get "/backoffice/resources/payments", headers: headers
+    assert_response :success
+    assert_includes response.body, "Gateway: CAPTURED"
+  end
+
+  test "theme form works without JavaScript" do
+    token = csrf_token
+    post "/backoffice/theme", headers: headers, params: { authenticity_token: token, theme: "dark" }
+    assert_response :redirect
+    get "/backoffice", headers: headers
+    assert_response :success
+    assert_select "html[data-theme='dark']"
   end
 
   test "search and sort are restricted to configured fields" do
