@@ -60,8 +60,8 @@ class ActivityAdapterContractTest < ActiveSupport::TestCase
   test "a read only activity source does not require a write actor hook" do
     resource = custom_resource
     source = ReadOnlyEventSource.new
-    registry = Rekorra::Activity::Registry.new
-    registry.register(:domain_events, source)
+    # The controller resolves writers from the host-configured registry.
+    Rekorra.configuration.activity_adapters.register(:domain_events, source)
 
     controller = Rekorra::ResourcesController.new
     controller.instance_variable_set(:@resource, resource)
