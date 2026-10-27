@@ -1,6 +1,6 @@
 # Step 0005.1 — Secure Keyset / Cursor Pagination
 
-Status: Feature branch; integration CI and manual browser QA pending.
+Status: Ruby 3.3/3.4 integration CI green; manual browser QA pending.
 
 ## Goal
 
@@ -34,14 +34,16 @@ Support a second pagination strategy for ordinary model indexes (Users, Orders, 
 
 ## Verification
 
-- [ ] Ruby 3.3 / 3.4 CI green
-- [ ] Navigates forward and backward through duplicate sort values without duplicates/skips
-- [ ] ASC / DESC and primary-key cursor ordering
-- [ ] Invalid/tampered/tenant-crossed/search-changed cursor fails closed with HTTP 400
-- [ ] Filters and page-size preserved during navigation
-- [ ] SQL queries use LIMIT without OFFSET or COUNT
-- [ ] Offset Resource Index remains unchanged
+- [x] Ruby 3.3 / 3.4 CI green
+- [x] Navigates forward and backward through duplicate sort values without duplicates/skips
+- [x] ASC / DESC and primary-key cursor ordering
+- [x] Invalid/tampered/tenant-crossed/search-changed cursor fails closed with HTTP 400
+- [x] Filters and page-size preserved during navigation
+- [x] SQL queries use LIMIT without OFFSET or COUNT
+- [x] Offset Resource Index remains unchanged
 - [ ] Manual mobile/table visual QA
+
+CI evidence: [GitHub Actions run 40605655831](https://github.com/sergii/rekorra/actions/runs/40605655831): **110 tests, 568 assertions, zero failures/errors/skips**, each on Ruby 3.3 and 3.4. This includes encrypted-token expiry, tampering, cross-tenant rejection and a 50,000-row SQL query bound on both offset and keyset modes. Browser QA and production PostgreSQL/MySQL benchmarks are still outstanding.
 
 ## Next
 
