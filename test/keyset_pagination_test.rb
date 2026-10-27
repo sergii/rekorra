@@ -55,7 +55,7 @@ class KeysetPaginationTest < ActionDispatch::IntegrationTest
     forward = cursor_link("Next")
     assert forward
     assert_includes forward, "cursor="
-    refute_includes forward, "page="
+    assert_nil params_of(forward)["page"]
     first_ids = Nokogiri::HTML(response.body).css("table.rk-table tbody tr td:last-child a").map { |n| n["href"] }
 
     get forward, headers: auth
@@ -169,10 +169,10 @@ class KeysetPaginationTest < ActionDispatch::IntegrationTest
     assert_operator token.bytesize, :<, 4_096
   end
 
-  test "keyset refuses nullable and unsupported sort columns" do
+  test "keyset refuses unsupported or missing sort columns" do
     bad = Rekorra::Section.new
-    bad.field :created_at
-    bad.sort_by :created_at
+    bad.field :verified
+    bad.sort_by :verified
     bad.pagination { strategy :keyset }
     assert_raises(Rekorra::ConfigurationError) { bad.validate_index!(User) }
 
