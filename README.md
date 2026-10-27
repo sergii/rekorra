@@ -57,6 +57,31 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Background Jobs (Step 0003)
+
+The demo host uses Solid Queue with explicit `Order -> DemoJobLink -> ActiveJob ID` correlations. The engine renders provider-neutral job metadata and requires a distinct permission.
+
+```ruby
+jobs do
+  source :solid_queue
+  authorize :view_jobs?
+  limit 10
+end
+```
+
+Registered adapter in the host initializer:
+
+```ruby
+config.job_adapters.register :solid_queue,
+  Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(order) { order.demo_job_links })
+```
+
+This is read-only and deliberately never inspects serialized job arguments or exposes raw exception text. Solid Queue is only a demo dependency, not a published Rekorra requirement.
+
+To run the demo, prepare both primary and queue SQLite databases with `RAILS_ENV=development bundle exec rails db:prepare` from `test/dummy`. Run a Solid Queue worker separately to process enqueued jobs; simply visiting the UI does not execute jobs.
+
+See [Step 0003](docs/steps/0003-jobs.md).
+
 ## Activity (Step 0002)
 
 Rekorra supports optional, policy-guarded activity history without requiring PaperTrail in the published gem. The demo host installs PaperTrail 17 and tracks Order versions.

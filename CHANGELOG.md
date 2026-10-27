@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0003 — Background Jobs
+- Added optional Jobs DSL, provider-independent Job Item projection, adapter registry and resolver.
+- Added host-scoped Solid Queue inspector, without parsing job arguments or displaying raw errors.
+- Added demo OrderReceiptJob, explicit correlation model and separate queue schema.
+- Added read-only Jobs section, authorization, tests and ADR 0011.
+- See [Step 0003](docs/steps/0003-jobs.md).
+
 ### Step 0002 - PaperTrail Activity
 - Added optional Activity adapter registry, DSL and server-rendered history section.
 - Added a demo-host PaperTrail integration, JSON versions table and Order change history.
