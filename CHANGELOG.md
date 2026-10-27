@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0003.1 — Sidekiq Jobs adapter
+- Added optional Sidekiq API adapter to the provider-neutral Jobs registry.
+- Added demo Sidekiq worker and alternate Order resource without changing Solid Queue resource semantics.
+- Explicit provider-scoped correlations and bounded, read-only best-effort Redis scans.
+- See [Step 0003.1](docs/steps/0003-1-sidekiq.md).
+
 ### Step 0003 — Background Jobs
 - Added optional Jobs DSL, provider-independent Job Item projection, adapter registry and resolver.
 - Added host-scoped Solid Queue inspector, without parsing job arguments or displaying raw errors.

@@ -1,9 +1,14 @@
+require "sidekiq/api"
 # frozen_string_literal: true
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
   config.job_adapters.register :solid_queue,
-    Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(order) { order.demo_job_links })
+    Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(order) { order.demo_job_links.where(provider: "solid_queue") })
+  config.job_adapters.register :sidekiq,
+    Rekorra::Jobs::Adapters::Sidekiq.new(
+      links: ->(order) { order.demo_job_links.where(provider: "sidekiq") }
+    )
 
   config.activity_actor_with = ->(actor) { "demo-organization:#{actor.slug}" }
   config.activity_adapters.register :paper_trail, Rekorra::Activity::Adapters::PaperTrail.new
@@ -62,5 +67,6 @@ Rekorra.configure do |config|
   config.resource :organizations, "OrganizationResource"
   config.resource :customers, "CustomerResource"
   config.resource :orders, "OrderResource"
+  config.resource :sidekiq_orders, "SidekiqOrderResource"
   config.resource :payments, "PaymentResource"
 end
