@@ -7,7 +7,7 @@ class PaymentResource < Rekorra::Resource
   index do
     field :id
     field :order
-    field :status, as: :badge
+    field :status, renderer: ->(value, record:, field:) { "Gateway: #{value.upcase}" }
     field :amount_cents, as: :money, label: "Amount"
   end
 
