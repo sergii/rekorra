@@ -1,3 +1,4 @@
+require "sidekiq/api"
 # frozen_string_literal: true
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
