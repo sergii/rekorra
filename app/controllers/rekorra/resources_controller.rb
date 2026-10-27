@@ -8,7 +8,8 @@ module Rekorra
     def index
       authorize!(@model, :index?)
       @query = Query.new(resource: @resource, scope: scoped_for(@model),
-        search: params[:q], sort: params[:sort], direction: params[:direction], page: params[:page])
+        search: params[:q], sort: params[:sort], direction: params[:direction],
+        page: params[:page], per_page: params[:per_page], filters: params[:filters])
       @records = @query.call.select { |item| allowed?(item, :show?) }
       @visible_associations = visible_associations(@records, @resource.index.fields)
     end
