@@ -26,7 +26,7 @@ class ResourceIndexV2Test < ActionDispatch::IntegrationTest
       status: status, role: role, verified: verified, created_at: at, updated_at: at)
   end
 
-  def get_users(params = {}, tenant: "acme")
+  def get_users(tenant: "acme", **params)
     get "/backoffice/resources/users", headers: auth(tenant), params: params
   end
 
