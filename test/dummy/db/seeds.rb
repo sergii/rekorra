@@ -1,0 +1,33 @@
+# frozen_string_literal: true
+
+acme = Organization.find_or_create_by!(slug: "acme") { |organization| organization.name = "Acme Ltd" }
+globex = Organization.find_or_create_by!(slug: "globex") { |organization| organization.name = "Globex Ltd" }
+
+alice = Customer.find_or_create_by!(organization: acme, email: "alice@example.test") do |customer|
+  customer.name = "Alice Miller"
+end
+bob = Customer.find_or_create_by!(organization: acme, email: "bob@example.test") do |customer|
+  customer.name = "Bob Smith"
+end
+other = Customer.find_or_create_by!(organization: globex, email: "hidden@example.test") do |customer|
+  customer.name = "Globex Customer"
+end
+
+order_a = Order.find_or_create_by!(number: "ACME-1001") do |order|
+  order.customer = alice
+  order.status = "paid"
+  order.total_cents = 25000
+end
+Order.find_or_create_by!(number: "ACME-1002") do |order|
+  order.customer = bob
+  order.status = "pending"
+  order.total_cents = 7800
+end
+Order.find_or_create_by!(number: "GLOBEX-9001") do |order|
+  order.customer = other
+  order.status = "paid"
+  order.total_cents = 9900
+end
+Payment.find_or_create_by!(order: order_a, status: "captured") { |payment| payment.amount_cents = 25000 }
+
+puts "Rekorra demo records ready: login acme or globex with REKORRA_DEMO_PASSWORD"
