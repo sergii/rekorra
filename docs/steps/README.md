@@ -14,4 +14,4 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0003.1 - Sidekiq adapter](0003-1-sidekiq.md) | Sidekiq worker and alternate Order resource | Read-only bounded Sidekiq API projection | CI green; browser QA pending |
 | [0004 - Findings](0004-findings.md) | Pending Order with captured payment | Provider-neutral rules, evidence and read-only Findings UI | CI green; browser QA pending |
 | [0005 — Resource Index v2](0005-resource-index-v2.md) | 50k-user dataset option, typed filters | Scoped AR/Arel search, filter, sort and offset pagination | CI green; browser QA pending |
-| [0005.1 — Keyset Pagination](0005-1-keyset-pagination.md) | Alternate Cursor Users page | Encrypted scope-bound keyset strategy and bidirectional HTML navigation | Feature branch; CI pending |
+| [0005.1 — Keyset Pagination](0005-1-keyset-pagination.md) | Alternate Cursor Users page | Encrypted scope-bound keyset strategy and bidirectional HTML navigation | CI green; browser QA pending |
