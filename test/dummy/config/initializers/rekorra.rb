@@ -39,7 +39,10 @@ Rekorra.configure do |config|
     next true if subject.nil? && action == :access?
 
     model_name = subject.is_a?(Class) ? subject.name : subject.class.name
-    next false unless %w[Organization Customer Order Payment].include?(model_name)
+    next false unless %w[Organization Customer Order Payment User].include?(model_name)
+    if model_name == "User"
+      next %i[index? show?].include?(action)
+    end
     if model_name == "Organization"
       next %i[index? show?].include?(action) &&
         (subject.is_a?(Class) || subject.id == actor.id)
@@ -60,6 +63,7 @@ Rekorra.configure do |config|
 
     case model.name
     when "Organization" then model.where(id: actor.id)
+    when "User" then model.where(organization_id: actor.id)
     when "Customer" then model.where(organization_id: actor.id)
     when "Order" then model.joins(:customer).where(customers: { organization_id: actor.id })
     when "Payment" then model.joins(order: :customer).where(customers: { organization_id: actor.id })
@@ -68,6 +72,7 @@ Rekorra.configure do |config|
   end
 
   config.resource :organizations, "OrganizationResource"
+  config.resource :users, "UserResource"
   config.resource :customers, "CustomerResource"
   config.resource :orders, "OrderResource"
   config.resource :sidekiq_orders, "SidekiqOrderResource"

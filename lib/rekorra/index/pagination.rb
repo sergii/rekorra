@@ -13,7 +13,8 @@ module Rekorra
         @maximum_per_page = HARD_MAX_PER_PAGE
       end
 
-      def strategy(value)
+      def strategy(value = nil)
+        return @strategy if value.nil?
         raise ConfigurationError, "Only offset pagination is implemented" unless value.to_sym == :offset
         @strategy = :offset
       end
