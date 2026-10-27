@@ -8,8 +8,8 @@ module Rekorra
       end
 
       def register(name, adapter)
-        unless adapter.respond_to?(:events) && adapter.respond_to?(:with_actor)
-          raise ConfigurationError, "Activity adapter must implement events and with_actor"
+        unless adapter.respond_to?(:events)
+          raise ConfigurationError, "Activity adapter must implement events"
         end
         @adapters[name.to_sym] = adapter
       end
