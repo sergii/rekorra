@@ -18,3 +18,6 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0005.2 — Resource Index UX](0005-2-resource-index-ux.md) | Users and Cursor Users tables | Clickable headers, compact filters, filter chips, optional loading hint | CI green; browser QA pending |
 | [0005.3 — Chrome Acceptance](0005-3-browser-acceptance.md) | Mounted Rails host in Chrome | Desktop, 390/320 px, keyboard, JS-off, screenshot artifacts | Chrome CI green; human QA pending |
 | [0006 — Advanced Resources](0006-advanced-resources.md) | Protected totals, searchable Customer picker | Field-level policies, scoped bounded belongs_to lookup | CI green; manual device QA pending |
+| [0006.1 — Draft-safe association lookup](0006-1-association-picker.md) | Order Customer lookup | Optional draft-preserving JS + native GET | CI green; manual QA pending |
+| [0006.2 — Pundit adapter](0006-2-pundit-adapter.md) | Real test-host policy | Optional authorization and scoped relation adapters | CI green |
+| [0006.3 — Enum fields](0006-3-enum-fields.md) | CaseRecord with enum state | Declarative enum select, value validation | CI green; manual QA pending |
