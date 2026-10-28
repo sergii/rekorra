@@ -1,6 +1,6 @@
 # Step 0007 — Access Audit
 
-Status: Implemented on feature branch; integration and browser CI pending.
+Status: Implemented and merged in main via PR #16; Ruby 3.3/3.4 and Chrome CI green; manual device and screen-reader QA pending.
 
 ## Purpose
 
@@ -19,16 +19,18 @@ Access Audit is **not** a model version history (PaperTrail Activity), backgroun
 
 ## Acceptance
 
-- [ ] Ruby 3.3 / 3.4 integration CI green; Chrome CI green
-- [ ] Authorized Show recorded with tenant, actor, record and correlation ID
-- [ ] No event for unauthenticated/denied access
-- [ ] Other tenant's entries never shown
-- [ ] CRUD success produces single correct action; invalid mutation produces none
-- [ ] Forbidden parameter mutations are not recorded as success
-- [ ] Audit sink failure rolls back demo AR mutation
-- [ ] Second in-memory adapter works, with independent reader policy
-- [ ] Malformed payloads and oversized result sets rejected
+- [x] Ruby 3.3 / 3.4 integration CI green; Chrome CI green
+- [x] Authorized Show recorded with tenant, actor, record and correlation ID
+- [x] No event for unauthenticated/denied access
+- [x] Other tenant's entries never shown
+- [x] CRUD success produces single correct action; invalid mutation produces none
+- [x] Forbidden parameter mutations are not recorded as success
+- [x] Audit sink failure rolls back demo AR mutation
+- [x] Second in-memory adapter works, with independent reader policy
+- [x] Malformed payloads and oversized result sets rejected
 - [ ] Manual browser/phone accessibility QA
+
+CI evidence: [post-merge GitHub Actions 40659823614](https://github.com/sergii/rekorra/actions/runs/40659823614), Ruby 3.3 and 3.4 each **154 tests, 925 assertions, zero failures/errors/skips**, plus Chrome **8 tests, 58 assertions, zero failures/errors/skips**. Merged as [PR #16](https://github.com/sergii/rekorra/pull/16). This is automated acceptance, not human mobile or screen-reader sign-off.
 
 ## Important limits
 
