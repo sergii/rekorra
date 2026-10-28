@@ -196,3 +196,9 @@ html[data-theme="dark"] .rk-app {
 
 .rk-association-lookup__status { font-size: 0.82rem; min-height: 1.1em; margin: 0; }
 .rk-association-lookup[aria-busy="true"] { opacity: 0.75; }
+
+.rk-access-audit__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.8rem; }
+.rk-access-audit__list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem; padding: 0.65rem 0; border-bottom: 1px solid var(--rk-line); }
+.rk-access-audit__list li:last-child { border-bottom: none; }
+.rk-access-audit__list time { margin-left: auto; color: var(--rk-muted); font-size: 0.8rem; }
+.rk-access-audit__list span { overflow-wrap: anywhere; }

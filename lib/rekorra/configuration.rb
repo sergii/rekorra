@@ -4,14 +4,16 @@ module Rekorra
   class Configuration
     attr_accessor :authenticate_with, :authorize_with, :scope_with
     attr_accessor :index_cursor_context_with
+    attr_accessor :access_audit_actor_with, :access_audit_tenant_with
     attr_accessor :activity_actor_with
-    attr_reader :activity_adapters, :job_adapters, :finding_rules
+    attr_reader :activity_adapters, :job_adapters, :finding_rules, :access_audit_adapters
     attr_accessor :context_application, :context_environment, :context_tenant_with
     attr_accessor :external_link_allowed_hosts
     attr_reader :resources, :external_services
 
     def initialize
       @resources = {}
+      @access_audit_adapters = AccessAudit::Registry.new
       @activity_adapters = Activity::Registry.new
       @job_adapters = Jobs::Registry.new
       @finding_rules = Findings::Registry.new

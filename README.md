@@ -63,6 +63,31 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Access Audit (Step 0007)
+
+Access Audit is distinct from PaperTrail Activity (changes/version history) and is optional per Resource.
+
+```ruby
+access_audit do
+  source :active_record
+  authorize :view_access_audit?
+  limit 10
+end
+```
+
+The host provides stable identities and owns the storage:
+
+```ruby
+config.access_audit_actor_with = ->(actor) { "user:#{actor.id}" }
+config.access_audit_tenant_with = ->(actor) { actor.organization_id.to_s }
+config.access_audit_adapters.register :active_record,
+  Rekorra::AccessAudit::Adapters::ActiveRecord.new(model: "YourAuditEntry")
+```
+
+The demo logs authorized Order Show attempts and successful create/update/destroy, with a separately authorized, tenant-scoped read-only timeline. It stores only normalized metadata and request correlation IDs; never raw params or field values. Failed audit writes abort the operation. The demo writes to a host-owned audit table in the same DB transaction for successful mutations. Remote sinks are **not** automatically atomic. No audit gem dependency is mandatory.
+
+See [Step 0007](docs/steps/0007-access-audit.md) and [ADR 0021](docs/adr/0021-access-audit.md).
+
 ## Advanced Resources (Step 0006)
 
 Use one explicit field policy declaration to govern Index, Show, forms and protected POST/PATCH attributes:
