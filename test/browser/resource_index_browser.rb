@@ -27,6 +27,9 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     User.create!(organization: @globex, name: "Other Tenant Secret",
       email: "forbidden@example.test", status: "active", role: "admin")
 
+    page.driver.browser.execute_cdp("Emulation.clearDeviceMetricsOverride")
+    page.driver.browser.execute_cdp("Emulation.setScriptExecutionDisabled", value: false)
+
     # The demo host uses HTTP Basic. Chrome visits a real Rails server and
     # receives the credentials through the browser's own request headers.
     page.driver.browser.execute_cdp("Network.enable")
@@ -39,6 +42,7 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     ENV["REKORRA_DEMO_PASSWORD"] = @previous_password
     page.driver.browser.execute_cdp("Emulation.setScriptExecutionDisabled",
       value: false)
+    page.driver.browser.execute_cdp("Emulation.clearDeviceMetricsOverride")
   rescue Selenium::WebDriver::Error::WebDriverError
     # Chrome may already be shut down after a failed system test.
   end
