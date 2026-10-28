@@ -21,3 +21,4 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0006.1 — Draft-safe association lookup](0006-1-association-picker.md) | Order Customer lookup | Optional draft-preserving JS + native GET | CI green; manual QA pending |
 | [0006.2 — Pundit adapter](0006-2-pundit-adapter.md) | Real test-host policy | Optional authorization and scoped relation adapters | CI green |
 | [0006.3 — Enum fields](0006-3-enum-fields.md) | CaseRecord with enum state | Declarative enum select, value validation | CI green; manual QA pending |
+| [0006.4 — Native typed forms](0006-4-native-typed-fields.md) | CaseRecord typed columns | ActiveRecord-derived HTML fields and strict structured-input validation | CI green; device QA pending |

@@ -82,6 +82,8 @@ The optional [Pundit bridge](docs/steps/0006-2-pundit-adapter.md) provides separ
 
 Rails enum forms support `field :state, as: :enum`, derived from host model `defined_enums` with POST/PATCH validation. See [Step 0006.3](docs/steps/0006-3-enum-fields.md).
 
+Native forms derive checkbox, number, date, datetime-local and text controls from host ActiveRecord types, with server-side structured-value checks before attribute assignment. See [Step 0006.4](docs/steps/0006-4-native-typed-fields.md).
+
 See [Step 0006](docs/steps/0006-advanced-resources.md).
 
 ## Generic Resource Index v2 (Step 0005)

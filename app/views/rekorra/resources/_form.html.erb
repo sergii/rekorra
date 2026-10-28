@@ -1,22 +1,36 @@
 <%= form_with scope: :record, url: record.persisted? ? record_path(slug: params[:slug], id: record.to_param) : records_path(slug: params[:slug]), method: record.persisted? ? :patch : :post, local: true, class: "rk-form" do |form| %>
   <% if record.errors.any? %>
     <div role="alert" class="rk-errors"><strong>Please correct the following errors:</strong>
-      <ul><% record.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+      <ul><% record.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
     </div>
   <% end %>
   <% @form_fields.each do |field| %>
+    <% control = Rekorra::Forms::Control.new(model: record.class, field: field) %>
     <div class="rk-field">
       <%= form.label field.name, field.label %>
-      <% if field.type == :enum %>
+      <% if control.kind == :enum %>
         <%= form.select field.name,
           record.class.defined_enums.fetch(field.name.to_s).keys.map { |value| [value.humanize, value] },
           { include_blank: true } %>
       <% elsif @field_options.key?(field.name) %>
         <%= form.select field.name, @field_options[field.name], { include_blank: true } %>
-      <% elsif record.class.type_for_attribute(field.name.to_s).type == :text %>
-        <%= form.text_area field.name, rows: 3 %>
       <% else %>
-        <%= form.text_field field.name %>
+        <% case control.kind %>
+        <% when :boolean %>
+          <%= form.check_box field.name %>
+        <% when :integer %>
+          <%= form.number_field field.name, step: 1 %>
+        <% when :decimal %>
+          <%= form.number_field field.name, step: "any" %>
+        <% when :date %>
+          <%= form.date_field field.name %>
+        <% when :datetime %>
+          <%= form.datetime_local_field field.name, step: 60 %>
+        <% when :text %>
+          <%= form.text_area field.name, rows: 3 %>
+        <% else %>
+          <%= form.text_field field.name %>
+        <% end %>
       <% end %>
     </div>
   <% end %>

@@ -19,5 +19,10 @@ class CaseRecordResource < Rekorra::Resource
     field :title
     field :organization_id
     field :state, as: :enum
+    field :flagged
+    field :due_on
+    field :estimated_hours
+    field :reviewed_at
+    field :notes
   end
 end
