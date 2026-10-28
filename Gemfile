@@ -3,7 +3,14 @@
 source "https://rubygems.org"
 gemspec
 
-gem "rails", ">= 8.0", "< 9.0"
+# Keep Rails selection explicit in CI; do not pin the published engine to this.
+if ENV["REKORRA_RAILS_SERIES"]
+  series = ENV.fetch("REKORRA_RAILS_SERIES")
+  raise "Unsupported Rails compatibility target" unless %w[8.0 8.1].include?(series)
+  gem "rails", "~> #{series}.0"
+else
+  gem "rails", ">= 8.0", "< 9.0"
+end
 gem "sqlite3", ">= 2.1", "< 3.0"
 gem "propshaft", ">= 1.1", "< 3.0"
 gem "puma", ">= 6.0", "< 8.0"

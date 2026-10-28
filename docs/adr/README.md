@@ -35,4 +35,6 @@
 
 - [ADR 0021 — Host-owned Access Audit](0021-access-audit.md)
 
+- [ADR 0022 — Version compatibility and packaging](0022-compatibility-packaging.md)
+
 Accepted means a design decision, not verified implementation.

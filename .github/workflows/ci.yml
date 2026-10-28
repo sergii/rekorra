@@ -17,9 +17,12 @@ jobs:
           --health-retries 10
     env:
       REDIS_URL: redis://127.0.0.1:6379/12
+      REKORRA_RAILS_SERIES: ${{ matrix.rails }}
     strategy:
+      fail-fast: false
       matrix:
         ruby: ["3.3", "3.4"]
+        rails: ["8.0", "8.1"]
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -29,6 +32,10 @@ jobs:
       - name: Prepare demo database
         run: RAILS_ENV=test bundle exec rails db:prepare
         working-directory: test/dummy
+      - name: Report resolved versions
+        run: |
+          bundle exec rails --version
+          ruby --version
       - name: Run integration tests
         run: bundle exec rake test
 
@@ -73,3 +80,22 @@ jobs:
             test/dummy/tmp/screenshots/
             tmp/screenshots/
           if-no-files-found: warn
+
+  package:
+    name: Installed gem in independent Rails host
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Build distributable gem and inspect package contents
+        run: |
+          gem build rekorra.gemspec --output "$RUNNER_TEMP/rekorra-built.gem"
+          gem install --local "$RUNNER_TEMP/rekorra-built.gem" --install-dir "$RUNNER_TEMP/packaged-gems" --no-document --ignore-dependencies
+      - name: Boot a separate Rails app with the installed gem
+        run: |
+          export GEM_PATH="$(bundle exec ruby -e 'puts Gem.path.join(":")'):$RUNNER_TEMP/packaged-gems"
+          cd "$RUNNER_TEMP"
+          env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" ruby "$GITHUB_WORKSPACE/test/packaging/external_host_smoke.rb"

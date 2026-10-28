@@ -27,6 +27,10 @@ Open `http://localhost:3000/backoffice` and use HTTP Basic username `acme` (or `
 
 The demo does not have custom views. The engine renders the resources.
 
+## Compatibility matrix
+
+CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance and a separate installed-gem Rails host smoke. These checks do not yet establish production readiness. See [Step 0008.0](docs/steps/0008-production-readiness.md).
+
 ## Test
 
 From the root:
