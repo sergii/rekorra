@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.10 - Transactional outbox and external delivery
+- Host-owned PostgreSQL outbox intent is committed atomically with the tenant-key idempotency ledger and local business effect.
+- Independent HTTP provider process persists to a separate PostgreSQL DB, dies after commit and before ACK; failed delivery is marked uncertain.
+- Real Solid Queue delivery job uses stable key on explicit retry; provider deduplication makes two HTTP attempts one external effect. Read-only receipt reconciliation also proven.
+- Aggregate host-only outbox health counts; no generic Rekorra retry UI, automatic scanner, external TLS/provider proof, or exactly-once claim.
+- See [Step 0008.10](docs/steps/0008-10-transactional-outbox.md).
+
 ### Step 0008.9 - Idempotency and Recovery Operations
 - Add host-only unique tenant-scoped operation ledger for atomic local business effects and replay-safe worker.
 - Add explicit host authorization, linked-job and class checks, durable operator retry decision, and global failed/aged claim health snapshot.

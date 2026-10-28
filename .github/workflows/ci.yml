@@ -480,3 +480,51 @@ jobs:
           name: rekorra-worker-recovery-operations
           path: test/dummy/tmp/worker-recovery-operations/
           if-no-files-found: warn
+
+
+  worker_outbox_external:
+    name: PostgreSQL transactional outbox and independent HTTP provider
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: rekorra
+          POSTGRES_PASSWORD: rekorra_ci_only
+          POSTGRES_DB: rekorra_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rekorra -d rekorra_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      RAILS_ENV: test
+      REKORRA_RAILS_SERIES: "8.1"
+      REKORRA_WORKER_PROCESSES: "1"
+      REKORRA_TEST_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_test
+      REKORRA_TEST_QUEUE_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_queue_test
+      REKORRA_EXTERNAL_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_external_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Create separate queue and provider databases
+        run: |
+          bundle exec ruby -rpg -e 'c = PG.connect(ENV.fetch("REKORRA_TEST_DATABASE_URL")); %w[rekorra_queue_test rekorra_external_test].each { |name| c.exec("CREATE DATABASE #{name}") }; c.close'
+      - name: Prepare Rails primary and Solid Queue databases
+        run: bundle exec rails db:prepare
+        working-directory: test/dummy
+      - name: Prove provider commit, lost response, redelivery dedupe and reconciliation
+        run: bundle exec ruby test/worker_e2e/outbox_external_smoke.rb
+      - name: Archive worker and external provider process logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rekorra-transactional-outbox-provider-logs
+          path: test/dummy/tmp/worker-outbox/
+          if-no-files-found: warn
