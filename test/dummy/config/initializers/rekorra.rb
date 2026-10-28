@@ -58,6 +58,8 @@ Rekorra.configure do |config|
     next actor.slug == "acme" if action == :edit_total_cents?
     next actor.slug == "acme" if action == :view_findings?
     next actor.slug == "acme" if action == :view_jobs?
+    # Demo-only operator approval; no public Rekorra retry route.
+    next actor.slug == "acme" if action == :retry_job?
     next actor.slug == "acme" if action == :view_access_audit?
     next actor.slug == "acme" if action == :view_activity?
     next actor.slug == "acme" if action == :view_logs?
