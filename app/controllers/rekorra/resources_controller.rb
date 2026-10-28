@@ -155,6 +155,9 @@ module Rekorra
     end
 
     def field_writable?(record, name)
+      field = @resource.form.fields.find { |entry| entry.name.to_s == name.to_s }
+      return false unless field && field_readable?(record, field)
+
       policy = @resource.policy_for(name, :write)
       !policy || (allowed?(@model, policy) && allowed?(record, policy))
     end
