@@ -1,6 +1,6 @@
 # Step 0008.0 — Rails compatibility and installed gem
 
-Status: Merged as PR #18; post-merge CI green. PostgreSQL passed Step 0008.1; MySQL validation is Step 0008.2.
+Status: Merged as PR #18; post-merge CI green. PostgreSQL passed Step 0008.1; MySQL integration passed Step 0008.2 CI.
 
 ## Scope
 
@@ -24,7 +24,7 @@ Post-merge evidence: [run 40667341789](https://github.com/sergii/rekorra/actions
 
 ## Still open
 
-No production-ready declaration. PostgreSQL 16 passed Step 0008.1, while MySQL 8.4 is pending Step 0008.2. Sprockets-only hosts, existing Turbo/Stimulus host, Ruby 3.2, worker E2E, manual accessibility and mobile Safari, and production security audits remain separate gates. Rails 7 support is not claimed.
+No production-ready declaration. PostgreSQL 16 passed Step 0008.1, while MySQL 8.4 passed Step 0008.2 integration CI. Sprockets-only hosts, existing Turbo/Stimulus host, Ruby 3.2, worker E2E, manual accessibility and mobile Safari, and production security audits remain separate gates. Rails 7 support is not claimed.
 
 ## CI evidence
 
