@@ -4,5 +4,6 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   connect() {
     window.__rekorraProbeConnected = (window.__rekorraProbeConnected || 0) + 1
+    this.element.dataset.rkProbeConnected = "true"
   }
 }
