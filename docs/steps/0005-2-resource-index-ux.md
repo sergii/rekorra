@@ -1,6 +1,6 @@
 # Step 0005.2 — Resource Index UX
 
-Status: Feature branch; Ruby CI and manual browser QA pending.
+Status: Ruby 3.3/3.4 CI green; manual browser QA pending.
 
 ## Goal
 
@@ -25,15 +25,17 @@ Make everyday model indexes useful with clickable sortable headers, compact filt
 
 ## Acceptance
 
-- [ ] CI green Ruby 3.3 and Ruby 3.4
-- [ ] Accessible heading sorting and direction toggle
-- [ ] Sorting preserves validated state and resets offset/cursor
-- [ ] Empty pages retain sortable heading controls
-- [ ] Details are compact when unused and open for active filters
-- [ ] Filter chip removal and Clear filters preserve unrelated state
-- [ ] JS/CSS assets load from mounted Rails Engine; no-JS forms still work
-- [ ] Existing 50k Users test and access controls remain green
+- [x] CI green Ruby 3.3 and Ruby 3.4
+- [x] Accessible heading sorting and direction toggle
+- [x] Sorting preserves validated state and resets offset/cursor
+- [x] Empty pages retain sortable heading controls
+- [x] Details are compact when unused and open for active filters
+- [x] Filter chip removal and Clear filters preserve unrelated state
+- [x] JS/CSS assets load from mounted Rails Engine; no-JS forms still work
+- [x] Existing 50k Users test and access controls remain green
 - [ ] Physical mobile browser, keyboard and screen-reader visual QA
+
+CI evidence: [GitHub Actions run 40607479397](https://github.com/sergii/rekorra/actions/runs/40607479397), Ruby 3.3 and 3.4, **117 tests and 659 assertions, 0 failures/errors/skips** per job. The pre-existing 50,000-record Index test remains green. Mobile browser, keyboard and screen-reader QA remain pending.
 
 ## Not included
 
