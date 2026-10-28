@@ -7,6 +7,7 @@ require "rubygems"
 require "pathname"
 require "rack/mock"
 require "rails/all"
+require "propshaft"
 require "propshaft/railtie"
 require "rekorra"
 
