@@ -34,3 +34,6 @@ gem "pundit", "~> 2.5", group: :test
 # PostgreSQL compatibility job only. This remains a test-host dependency,
 # never a required runtime dependency of the Rekorra Engine.
 gem "pg", "~> 1.5", group: :test if ENV["REKORRA_TEST_DATABASE_URL"]&.start_with?("postgres")
+
+# MySQL compatibility host only. The published gem does not depend on mysql2.
+gem "mysql2", "~> 0.5.6", group: :test if ENV["REKORRA_TEST_DATABASE_URL"]&.start_with?("mysql2:")

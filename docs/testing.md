@@ -8,7 +8,7 @@
 6. **Context References:** typed identity validation and immutability, tenant-scoped internal target resolution, separately authorized external references, missing ID behavior.
 7. **Activity:** versions and history, actor attribution, separate policy, whitelisted changes, HTML escaping, bounded query count and length.
 8. **Browser** (automated Chrome partially verified): desktop at 1280 px, phones at 390/320 px, keyboard Enter, JavaScript-disabled fallback and keyset/offset navigation. Manual phone, screen-reader, contrast, zoom and visual review remain pending.
-9. **Compatibility** (Step 0008.0): Rails 8.0/8.1 × Ruby 3.3/3.4 and an installed-gem smoke. Ruby 3.2, Sprockets, Turbo/Stimulus and real MySQL hosts still require separate gates. PostgreSQL is covered by the Step 0008.1 CI job once green.
+9. **Compatibility** (Step 0008.0): Rails 8.0/8.1 × Ruby 3.3/3.4 and an installed-gem smoke. Ruby 3.2, Sprockets and Turbo/Stimulus still require separate gates. PostgreSQL is covered by Step 0008.1. MySQL 8.4 passed the Step 0008.2 real-host CI integration gate (PR #20); production query plans and benchmark gates remain open.
 
 ## Run
 
