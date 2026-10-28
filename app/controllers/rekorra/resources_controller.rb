@@ -2,6 +2,8 @@
 
 module Rekorra
   class ResourcesController < ApplicationController
+    helper_method :field_readable?
+
     before_action :load_resource
     before_action :load_record, only: %i[show edit update destroy]
 
