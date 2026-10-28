@@ -193,3 +193,6 @@ html[data-theme="dark"] .rk-app {
 .rk-association-lookup__row input[type="search"] { flex: 1 1 12rem; min-width: 0; }
 .rk-association-lookup__row .rk-button { min-height: 2.5rem; }
 .rk-association-lookup .rk-muted { font-size: 0.76rem; margin: 0; }
+
+.rk-association-lookup__status { font-size: 0.82rem; min-height: 1.1em; margin: 0; }
+.rk-association-lookup[aria-busy="true"] { opacity: 0.75; }

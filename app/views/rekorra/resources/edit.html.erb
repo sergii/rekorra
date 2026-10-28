@@ -3,7 +3,8 @@
   <div class="rk-association-lookups" aria-label="Search related records">
     <% @association_searches.each do |field_name, value| %>
       <%= form_with url: @record.persisted? ? edit_record_path(slug: params[:slug], id: @record.to_param) : new_record_path(slug: params[:slug]),
-        method: :get, local: true, class: "rk-association-lookup" do %>
+        method: :get, local: true, class: "rk-association-lookup",
+        data: { rk_association_lookup: true, rk_field: field_name } do %>
         <%= label_tag "rk-association-search-#{field_name}", "Find #{field_name.to_s.delete_suffix('_id').humanize}" %>
         <div class="rk-association-lookup__row">
           <%= search_field_tag "association_q[#{field_name}]", value,
@@ -11,9 +12,10 @@
             placeholder: "Search by name" %>
           <%= submit_tag "Find options", class: "rk-button rk-button--secondary" %>
           <% if value.present? %>
-            <%= link_to "Clear", @record.persisted? ? edit_record_path(slug: params[:slug], id: @record.to_param) : new_record_path(slug: params[:slug]) %>
+            <%= link_to "Clear", @record.persisted? ? edit_record_path(slug: params[:slug], id: @record.to_param) : new_record_path(slug: params[:slug]), data: { rk_association_clear: true } %>
           <% end %>
         </div>
+        <p class="rk-association-lookup__status" role="status" aria-live="polite"></p>
         <p class="rk-muted">Up to 50 matching records are shown. Current selection remains available.</p>
       <% end %>
     <% end %>
