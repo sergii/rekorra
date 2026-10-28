@@ -146,12 +146,15 @@ module Rekorra
         next unless submitted.key?(name)
         raise NotAuthorized unless field_writable?(@record, name)
         definition = @resource.form.fields.find { |item| item.name.to_s == name.to_s }
-        next unless definition&.type == :enum
-
-        value = submitted[name]
-        allowed_values = @model.defined_enums.fetch(name.to_s).keys
-        raise NotAuthorized unless value.is_a?(String) &&
-          (value.empty? || allowed_values.include?(value))
+        if definition&.type == :enum
+          value = submitted[name]
+          allowed_values = @model.defined_enums.fetch(name.to_s).keys
+          raise NotAuthorized unless value.is_a?(String) &&
+            (value.empty? || allowed_values.include?(value))
+        elsif definition
+          control = Forms::Control.new(model: @model, field: definition)
+          raise NotAuthorized unless control.valid_value?(submitted[name])
+        end
       end
       submitted.permit(*@resource.permitted_fields.select { |name| field_writable?(@record, name) })
     end
