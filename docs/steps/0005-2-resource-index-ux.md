@@ -1,6 +1,6 @@
 # Step 0005.2 — Resource Index UX
 
-Status: Ruby 3.3/3.4 CI green; manual browser QA pending.
+Status: Ruby and real Chrome CI green; human/device/screen-reader QA pending.
 
 ## Goal
 
@@ -35,7 +35,7 @@ Make everyday model indexes useful with clickable sortable headers, compact filt
 - [x] Existing 50k Users test and access controls remain green
 - [ ] Physical mobile browser, keyboard and screen-reader visual QA
 
-CI evidence: [GitHub Actions run 40607479397](https://github.com/sergii/rekorra/actions/runs/40607479397), Ruby 3.3 and 3.4, **117 tests and 659 assertions, 0 failures/errors/skips** per job. The pre-existing 50,000-record Index test remains green. Mobile browser, keyboard and screen-reader QA remain pending.
+CI evidence: [GitHub Actions run 40607479397](https://github.com/sergii/rekorra/actions/runs/40607479397), Ruby 3.3 and 3.4, **117 tests and 659 assertions, 0 failures/errors/skips** per job. The pre-existing 50,000-record Index test remains green. Automated real-Chrome mobile and keyboard coverage passed in [Step 0005.3](0005-3-browser-acceptance.md); human screenshot inspection, physical-device and screen-reader QA remain pending.
 
 ## Not included
 

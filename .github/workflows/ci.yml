@@ -31,3 +31,45 @@ jobs:
         working-directory: test/dummy
       - name: Run integration tests
         run: bundle exec rake test
+
+  browser:
+    name: Browser acceptance (Chrome)
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      REDIS_URL: redis://127.0.0.1:6379/12
+      RAILS_ENV: test
+      RAILS_SYSTEM_TESTING_SCREENSHOT_HTML: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Verify Chrome is available
+        run: |
+          command -v google-chrome
+          google-chrome --version
+      - name: Prepare demo database
+        run: bundle exec rails db:prepare
+        working-directory: test/dummy
+      - name: Test real browser interaction and viewport layout
+        run: bundle exec ruby -Itest test/browser/resource_index_browser.rb
+      - name: Upload browser screenshots and failure HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rekorra-browser-acceptance
+          path: |
+            test/dummy/tmp/screenshots/
+            tmp/screenshots/
+          if-no-files-found: warn
