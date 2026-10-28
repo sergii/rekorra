@@ -29,7 +29,7 @@ The demo does not have custom views. The engine renders the resources.
 
 ## Compatibility matrix
 
-CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance and a separate installed-gem Rails host smoke. An additional integration job for MySQL 8.4 is pending CI; PostgreSQL 16 is already verified as the host's primary database. Solid Queue stays on SQLite. These checks do not yet establish production readiness. See [Step 0008.0](docs/steps/0008-production-readiness.md), [Step 0008.1](docs/steps/0008-1-postgresql.md) and [Step 0008.2](docs/steps/0008-2-mysql.md).
+CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance and a separate installed-gem Rails host smoke. PostgreSQL 16 and MySQL 8.4 have each passed dedicated full integration CI jobs as the host's primary database. Solid Queue stays on SQLite. This does not establish production throughput or release readiness. These checks do not yet establish production readiness. See [Step 0008.0](docs/steps/0008-production-readiness.md), [Step 0008.1](docs/steps/0008-1-postgresql.md) and [Step 0008.2](docs/steps/0008-2-mysql.md).
 
 ## Test
 
