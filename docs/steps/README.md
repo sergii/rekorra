@@ -33,3 +33,5 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0008.6 — Worker CI reliability](0008-6-worker-reliability.md) | Single-worker test queue and bounded SQLite lock wait | Sidekiq 7.3/pool compatibility, worker startup diagnostics | PR #27 CI green; post-merge pending |
 
 | [0008.7 - Worker resilience](0008-7-worker-resilience.md) | PostgreSQL primary/queue and 2 worker OS processes | SIGKILL and queued backlog resume | CI pending; in-flight rescue not tested |
+
+| [0008.8 - In-flight SIGKILL](0008-8-inflight-crash.md) | Real claimed job and child-process crash on PostgreSQL | Failed vs explicit retry, UI status and duplicate attempt | PR CI pending |
