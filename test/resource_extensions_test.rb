@@ -65,21 +65,26 @@ class ResourceExtensionsTest < ActionDispatch::IntegrationTest
     assert_equal %w[open reviewing closed], options.map { |option| option["value"] }.reject(&:empty?)
     assert_equal "open", options.find { |option| option["selected"] }["value"]
 
+    csrf = Nokogiri::HTML(response.body).at_css("form.rk-form input[name='authenticity_token']")["value"]
     patch "/backoffice/resources/cases/#{@case.id}", headers: headers,
-      params: { record: { state: "reviewing" } }
+      params: { authenticity_token: csrf, record: { state: "reviewing" } }
     assert_response :redirect
     assert_equal "reviewing", @case.reload.state
   end
 
   test "forged enum value is rejected before model assignment or persistence" do
+    get "/backoffice/resources/cases/#{@case.id}/edit", headers: headers
+    csrf = Nokogiri::HTML(response.body).at_css("form.rk-form input[name='authenticity_token']")["value"]
     patch "/backoffice/resources/cases/#{@case.id}", headers: headers,
-      params: { record: { state: "superadmin" } }
+      params: { authenticity_token: csrf, record: { state: "superadmin" } }
     assert_response :forbidden
     assert_equal "open", @case.reload.state
 
+    get "/backoffice/resources/cases/new", headers: headers
+    csrf = Nokogiri::HTML(response.body).at_css("form.rk-form input[name='authenticity_token']")["value"]
     assert_no_difference "CaseRecord.count" do
       post "/backoffice/resources/cases", headers: headers, params: {
-        record: { title: "FORGED-ENUM", organization_id: @acme.id,
+        authenticity_token: csrf, record: { title: "FORGED-ENUM", organization_id: @acme.id,
           state: "superadmin" }
       }
     end
