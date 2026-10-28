@@ -31,4 +31,7 @@
 
   // Browsers may restore the previous document through back/forward cache.
   window.addEventListener("pageshow", clearBusy);
+  // Clear loading UI before Turbo caches a page or finishes navigation.
+  document.addEventListener("turbo:before-cache", clearBusy);
+  document.addEventListener("turbo:load", clearBusy);
 })();

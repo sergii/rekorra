@@ -94,11 +94,18 @@ jobs:
         run: |
           gem build rekorra.gemspec --output "$RUNNER_TEMP/rekorra-built.gem"
           gem install --local "$RUNNER_TEMP/rekorra-built.gem" --install-dir "$RUNNER_TEMP/packaged-gems" --no-document --ignore-dependencies
-      - name: Boot a separate Rails app with the installed gem
+      - name: Install optional asset host integrations
+        run: gem install --no-document sprockets-rails importmap-rails turbo-rails stimulus-rails
+      - name: Boot four installed gem hosts and follow CSS/JS asset URLs
         run: |
           export GEM_PATH="$(bundle exec ruby -e 'puts Gem.path.join(":")'):$RUNNER_TEMP/packaged-gems"
-          cd "$RUNNER_TEMP"
-          env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" ruby "$GITHUB_WORKSPACE/test/packaging/external_host_smoke.rb"
+          for stack in propshaft sprockets propshaft-hotwire sprockets-hotwire; do
+            host_dir="$(mktemp -d "$RUNNER_TEMP/rekorra-${stack}-XXXXXX")"
+            (
+              cd "$host_dir"
+              env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" REKORRA_SMOKE_STACK="$stack" ruby "$GITHUB_WORKSPACE/test/packaging/external_host_smoke.rb"
+            )
+          done
 
   postgresql:
     name: PostgreSQL host (Rails 8.1 / Ruby 3.4)

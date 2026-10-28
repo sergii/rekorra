@@ -178,6 +178,21 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     assert_selector "form[data-rk-association-lookup] [role='status']", text: /options available/
   end
 
+  test "Turbo lifecycle clears loading indicators" do
+    visit "/backoffice/resources/users?per_page=10"
+    assert_selector "[data-rk-index] .rk-index-results"
+    %w[turbo:before-cache turbo:load].each do |event_name|
+      execute_script(<<~JS)
+        const panel = document.querySelector("[data-rk-index]");
+        panel.dataset.loading = "true";
+        panel.querySelector(".rk-index-results").setAttribute("aria-busy", "true");
+        document.dispatchEvent(new Event(#{event_name.to_json}));
+      JS
+      assert_nil evaluate_script('document.querySelector("[data-rk-index]").dataset.loading')
+      assert_nil evaluate_script('document.querySelector("[data-rk-index] .rk-index-results").getAttribute("aria-busy")')
+    end
+  end
+
   test "native typed controls remain inside mobile viewport" do
     page.driver.browser.execute_cdp("Emulation.setDeviceMetricsOverride",
       width: 390, height: 844, deviceScaleFactor: 1, mobile: true)

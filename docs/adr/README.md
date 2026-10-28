@@ -40,3 +40,6 @@
 - [ADR 0023 — PostgreSQL compatibility and split database topology](0023-postgresql-compatibility.md)
 
 Accepted means a design decision, not verified implementation.
+
+- [ADR 0024 - Real MySQL host compatibility](0024-mysql-compatibility.md)
+- [ADR 0025 - Pipeline-neutral installed Engine assets](0025-rails-host-assets.md)

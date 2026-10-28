@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.3 - Installed Rails asset hosts (CI green)
+- Added four independent installed-gem host smokes for Propshaft/Sprockets with and without Turbo/Stimulus railties.
+- Verify CSS and JS requests actually return HTTP 200 with expected content.
+- Clear transient index loading UI on Turbo lifecycle, with Chrome test.
+- See [Step 0008.3](docs/steps/0008-3-asset-hosts.md) and [ADR 0025](docs/adr/0025-rails-host-assets.md).
+
 ### Step 0008.2 - MySQL 8.4 host compatibility (CI green)
 - Added a service-backed MySQL 8.4 test-host job against Rails 8.1 / Ruby 3.4, preserving the independent SQLite queue.
 - Kept mysql2 test-host-only, outside the gem runtime dependencies.

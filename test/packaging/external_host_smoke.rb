@@ -8,8 +8,21 @@ require "pathname"
 require "fileutils"
 require "rack/mock"
 require "rails/all"
-require "propshaft"
-require "propshaft/railtie"
+stack = ENV.fetch("REKORRA_SMOKE_STACK", "propshaft")
+abort "Unexpected asset stack" unless %w[propshaft sprockets propshaft-hotwire sprockets-hotwire].include?(stack)
+sprockets = stack.start_with?("sprockets")
+hotwire = stack.end_with?("-hotwire")
+if sprockets
+  require "sprockets/railtie"
+else
+  require "propshaft"
+  require "propshaft/railtie"
+end
+if hotwire
+  require "importmap-rails"
+  require "turbo-rails"
+  require "stimulus-rails"
+end
 require "rekorra"
 
 spec = Gem::Specification.find_by_name("rekorra")
@@ -45,6 +58,22 @@ File.write("config/database.yml", <<~YAML)
     database: ":memory:"
 YAML
 
+if sprockets
+  FileUtils.mkdir_p("app/assets/config")
+  File.write("app/assets/config/manifest.js", <<~JS)
+    //= link rekorra/application.css
+    //= link rekorra/index.js
+    //= link rekorra/associations.js
+  JS
+end
+
+if hotwire
+  File.write("config/importmap.rb", <<~RUBY)
+    pin "@hotwired/turbo-rails", to: "turbo.min.js"
+    pin "@hotwired/stimulus", to: "stimulus.min.js"
+  RUBY
+end
+
 module RekorraExternalPackagingHost
   class Application < ::Rails::Application
     config.root = Pathname.new(Dir.pwd)
@@ -54,6 +83,11 @@ module RekorraExternalPackagingHost
     config.hosts.clear
     config.session_store :cookie_store, key: "_rekorra_external_smoke"
   end
+end
+
+if sprockets
+  RekorraExternalPackagingHost::Application.config.assets.compile = true
+  RekorraExternalPackagingHost::Application.config.assets.unknown_asset_fallback = false
 end
 
 Rekorra.configure do |config|
@@ -73,3 +107,28 @@ end
 
 puts "External host boot OK: installed #{spec.name} #{spec.version} from #{spec.full_gem_path}"
 puts "Mounted GET /backoffice => HTTP #{response.status}; packaged assets verified"
+
+
+# Following the generated layout links detects missing pipeline registration,
+# not just missing files in the gem archive.
+request = Rack::MockRequest.new(app)
+{
+  "rekorra/application" => ["css", "--rk-bg"],
+  "rekorra/index" => ["js", "data-rk-index"],
+  "rekorra/associations" => ["js", "data-rk-association-lookup"]
+}.each do |logical, (extension, marker)|
+  source = Regexp.escape(logical)
+  pattern = %r{(?:href|src)="([^"]*/assets/#{source}(?:-[a-f0-9]+)?\.#{extension}(?:\?[^"]*)?)"}
+  match = response.body.match(pattern)
+  abort "#{stack}: missing #{logical}.#{extension} link" unless match
+  asset = request.get(match[1].split("?").first, "HTTP_HOST" => "localhost")
+  unless asset.status == 200 && asset.body.include?(marker)
+    abort "#{stack}: invalid asset #{match[1]} HTTP #{asset.status}"
+  end
+end
+
+if hotwire
+  abort "Turbo engine was not loaded" unless defined?(Turbo::Engine)
+  abort "Stimulus engine was not loaded" unless defined?(Stimulus::Engine)
+end
+puts "#{stack}: packaged CSS and JavaScript served successfully"
