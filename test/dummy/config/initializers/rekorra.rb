@@ -3,6 +3,7 @@ require "sidekiq/api"
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
+  config.index_cursor_context_with = ->(actor) { "organization:#{actor.id}" }
   config.finding_rules.register :paid_but_pending, "PaidButPending"
 
   config.job_adapters.register :solid_queue,
@@ -73,6 +74,7 @@ Rekorra.configure do |config|
 
   config.resource :organizations, "OrganizationResource"
   config.resource :users, "UserResource"
+  config.resource :cursor_users, "CursorUserResource"
   config.resource :customers, "CustomerResource"
   config.resource :orders, "OrderResource"
   config.resource :sidekiq_orders, "SidekiqOrderResource"

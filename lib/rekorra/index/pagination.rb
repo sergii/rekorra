@@ -15,8 +15,8 @@ module Rekorra
 
       def strategy(value = nil)
         return @strategy if value.nil?
-        raise ConfigurationError, "Only offset pagination is implemented" unless value.to_sym == :offset
-        @strategy = :offset
+        raise ConfigurationError, "Unsupported pagination strategy" unless %i[offset keyset].include?(value.to_sym)
+        @strategy = value.to_sym
       end
 
       def per_page(value)

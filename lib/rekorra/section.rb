@@ -48,6 +48,20 @@ module Rekorra
       filters.each { |definition| definition.validate!(model) }
       invalid = sort_columns - model.column_names
       raise ConfigurationError, "Unknown Index sort columns: #{invalid.join(', ')}" if invalid.any?
+      if pagination.strategy == :keyset
+        raise ConfigurationError, "Keyset requires explicit sort_by" if sort_columns.empty?
+        permitted = %i[string text integer bigint decimal float date datetime]
+        invalid = sort_columns.reject do |name|
+          column = model.columns_hash[name]
+          column && !column.null && permitted.include?(column.type)
+        end
+        unless invalid.empty?
+          raise ConfigurationError, "Keyset sort columns must be non-null comparable scalars: #{invalid.join(', ')}"
+        end
+        unless model.primary_key.is_a?(String) && model.columns_hash.key?(model.primary_key)
+          raise ConfigurationError, "Keyset requires a scalar model primary key"
+        end
+      end
       if index_search_columns
         invalid = index_search_columns.reject do |name|
           model.columns_hash[name] && %i[string text].include?(model.columns_hash[name].type)

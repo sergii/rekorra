@@ -94,7 +94,18 @@
     <p class="rk-muted">No records match your search or filters.</p>
   <% end %>
   <nav class="rk-pagination" aria-label="Pagination">
-    <% if @query.page > 1 %>
+    <% if @query.keyset? %>
+      <% if @query.has_previous && @query.previous_cursor %>
+        <%= link_to "Previous", records_path(slug: params[:slug],
+          **@query.navigation_params.merge(cursor: @query.previous_cursor)) %>
+      <% end %>
+      <span>Cursor navigation · <%= @records.size %> records</span>
+      <% if @query.has_next && @query.next_cursor %>
+        <%= link_to "Next", records_path(slug: params[:slug],
+          **@query.navigation_params.merge(cursor: @query.next_cursor)) %>
+      <% end %>
+    <% else %>
+      <% if @query.page > 1 %>
       <%= link_to "Previous", records_path(slug: params[:slug],
         **@query.navigation_params.merge(page: @query.page - 1)) %>
     <% end %>
@@ -102,6 +113,7 @@
     <% if @query.has_next %>
       <%= link_to "Next", records_path(slug: params[:slug],
         **@query.navigation_params.merge(page: @query.page + 1)) %>
+    <% end %>
     <% end %>
   </nav>
 </section>

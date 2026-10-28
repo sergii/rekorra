@@ -6,4 +6,5 @@ module Rekorra
   class NotAuthenticated < Error; end
   class NotAuthorized < Error; end
   class UnknownResource < Error; end
+  class InvalidCursor < Error; end
 end

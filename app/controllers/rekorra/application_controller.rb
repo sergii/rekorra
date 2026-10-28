@@ -9,6 +9,7 @@ module Rekorra
     helper_method :rekorra_actor, :rekorra_theme, :allowed?, :scoped_for
     rescue_from NotAuthenticated, with: :not_authenticated
     rescue_from NotAuthorized, with: :not_authorized
+    rescue_from InvalidCursor, with: :invalid_cursor
     rescue_from UnknownResource, with: :unknown_resource
     rescue_from ActiveRecord::RecordNotFound, with: :unknown_resource
 
@@ -43,6 +44,10 @@ module Rekorra
     def rekorra_theme
       value = cookies[:rekorra_theme]
       %w[auto light dark].include?(value) ? value : "auto"
+    end
+
+    def invalid_cursor
+      render plain: "Invalid or expired pagination cursor", status: :bad_request
     end
 
     def not_authenticated

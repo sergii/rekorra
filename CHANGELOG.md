@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0005.1 — Keyset Cursor Pagination
+- Added opt-in keyset strategy to ordinary model indexes with ASC/DESC and Previous/Next navigation.
+- Added encrypted, expiring cursors bound to host tenant/actor context, resource query and authorized SQL scope.
+- Added separate CursorUserResource demo and cursor contract/security integration tests.
+- Kept offset behavior and no mandatory paginator gem.
+- See [Step 0005.1](docs/steps/0005-1-keyset-pagination.md).
+
 ### Step 0005 — Resource Index v2
 - Added static typed filters, declared sort columns, search and page-size configuration to ordinary Resource indexes.
 - Added scoped ActiveRecord/Arel filter/query plan, bounded offset pagination and parameter-preserving HTML controls.
