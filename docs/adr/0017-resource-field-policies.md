@@ -1,6 +1,6 @@
 # ADR 0017 — Resource field authorization and bounded relation lookup
 
-Status: Accepted as design for Step 0006, verification pending.
+Status: Accepted; Step 0006 automated Ruby and Chrome CI verified. Manual device QA pending.
 
 ## Decision
 
