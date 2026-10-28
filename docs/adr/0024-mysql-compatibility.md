@@ -1,6 +1,6 @@
 # ADR 0024 - Real MySQL compatibility without a driver dependency
 
-Status: Proposed, pending Step 0008.2 CI.
+Status: Accepted for Step 0008.2; CI passed on PR #20.
 
 ## Context
 
@@ -11,6 +11,10 @@ SQLite and PostgreSQL integration does not establish MySQL support. MySQL uses b
 Add a MySQL 8.4 + Redis GitHub Actions job on Rails 8.1 / Ruby 3.4. Switch only the demo's primary test DB via the existing REKORRA_TEST_DATABASE_URL, preserving its SQLite Solid Queue database. Fail unless ActiveRecord reports Mysql2 and run the full suite, including tenant security and 50k-row query bounds.
 
 Keep mysql2 test-host-only, not a dependency of the published Rekorra gem. Adjust test SQL instrumentation to recognize backticks without loosening SELECT limits or security assertions.
+
+## CI evidence
+
+[CI run 40676233797](https://github.com/sergii/rekorra/actions/runs/40676233797): primary adapter Mysql2, full 154-test/925-assertion suite green; all existing jobs green. The demo seed and 50k seed task use the adapter-portable duplicate-ignore behavior of insert_all without the unsupported MySQL unique_by option.
 
 ## Boundary
 
