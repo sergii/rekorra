@@ -5,6 +5,7 @@
 # no pre-existing demo Rails application.
 require "rubygems"
 require "pathname"
+require "fileutils"
 require "rack/mock"
 require "rails/all"
 require "propshaft"
@@ -31,6 +32,18 @@ end
     abort "Built gem is missing #{file}"
   end
 end
+
+# A real host has its own database configuration, even if the smoke request
+# does not query models. Keep it independent of test/dummy.
+FileUtils.mkdir_p("config")
+File.write("config/database.yml", <<~YAML)
+  development:
+    adapter: sqlite3
+    database: ":memory:"
+  test:
+    adapter: sqlite3
+    database: ":memory:"
+YAML
 
 module RekorraExternalPackagingHost
   class Application < ::Rails::Application
