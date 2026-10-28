@@ -149,6 +149,35 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     assert_selector "table.rk-index-table tbody tr", count: 10
   end
 
+  test "association search preserves unsaved draft fields and selected relation in Chrome" do
+    75.times do |n|
+      Customer.create!(organization: @acme, name: "Lookup Customer #{n.to_s.rjust(3, '0')}",
+        email: "lookup-#{n}@example.test")
+    end
+    target = Customer.create!(organization: @acme, name: "Lookup Customer Late",
+      email: "late-lookup@example.test")
+
+    visit "/backoffice/resources/orders/new"
+    assert_selector "form.rk-form input[name='record[number]']"
+    fill_in "record[number]", with: "UNSAVED-DRAFT-1"
+    fill_in "association_q[customer_id]", with: "Lookup Customer Late"
+    within("form[data-rk-association-lookup]") { click_button "Find options" }
+    assert_selector "select[name='record[customer_id]'] option[value='#{target.id}']"
+    assert_equal "UNSAVED-DRAFT-1", find("input[name='record[number]']").value
+    assert_equal "/backoffice/resources/orders/new", current_path
+
+    find("select[name='record[customer_id]']").find("option[value='#{target.id}']").select_option
+    fill_in "association_q[customer_id]", with: "No Such Customer"
+    within("form[data-rk-association-lookup]") { click_button "Find options" }
+    assert_selector "select[name='record[customer_id]'] option[value='#{target.id}']"
+    assert_equal target.id.to_s, find("select[name='record[customer_id]']").value
+    assert_equal "UNSAVED-DRAFT-1", find("input[name='record[number]']").value
+
+    fill_in "association_q[customer_id]", with: "Lookup Customer Late"
+    within("form[data-rk-association-lookup]") { click_button "Find options" }
+    assert_selector "form[data-rk-association-lookup] [role='status']", text: /options available/
+  end
+
   private
 
   def capture(name)

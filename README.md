@@ -76,7 +76,11 @@ end
 
 The existing host \`authorize_with\` adapter evaluates these predicates. Forbidden columns disappear from Index/Show/form controls, cannot be sorted/filtered by unauthorized actors and are rejected if forged in mutation parameters. Host SQL scoping and the policies of separate Activity/Findings integrations remain essential.
 
-Belongs-to form fields now offer a native GET search over the host's tenant-scoped relation, returning at most 50 matching records and pinning the previously selected value. No AJAX dependency. GET lookup reloads the form, so unsaved fields are not preserved during search; a draft-preserving picker is future work.
+Belongs-to form fields now offer a native GET search over the host's tenant-scoped relation, returning at most 50 matching records and pinning the previously selected value. Optional vanilla JavaScript now fetches scoped GET lookup results **without losing unsaved form values or the selected relation**. Without JS, native GET lookup still reloads the form and discards drafts. See [Step 0006.1](docs/steps/0006-1-association-picker.md).
+
+The optional [Pundit bridge](docs/steps/0006-2-pundit-adapter.md) provides separate authorization and SQL-scope adapters without adding a mandatory gem dependency.
+
+Rails enum forms support `field :state, as: :enum`, derived from host model `defined_enums` with POST/PATCH validation. See [Step 0006.3](docs/steps/0006-3-enum-fields.md).
 
 See [Step 0006](docs/steps/0006-advanced-resources.md).
 

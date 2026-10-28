@@ -30,3 +30,5 @@ A green CI run is necessary but not sufficient for a production-ready label. Kee
 13. **Browser CI:** real Chrome with Rails, Selenium/Capybara and screenshots. Run via the browser acceptance CI job or the command in Step 0005.3. Screenshots are a review artifact, not proof of human sign-off.
 
 14. **Advanced Resources:** read/write field authorization, forged field rejection, protected query predicates, tenant-scoped bounded association search and current selected value pinning.
+
+15. **Advanced Resource extensions:** real Pundit policy and scope, model-declared enum select and forged mutation, Chrome draft-safe belongs_to lookup; manual Safari/VoiceOver remains pending.

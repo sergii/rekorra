@@ -7,7 +7,11 @@
   <% @form_fields.each do |field| %>
     <div class="rk-field">
       <%= form.label field.name, field.label %>
-      <% if @field_options.key?(field.name) %>
+      <% if field.type == :enum %>
+        <%= form.select field.name,
+          record.class.defined_enums.fetch(field.name.to_s).keys.map { |value| [value.humanize, value] },
+          { include_blank: true } %>
+      <% elsif @field_options.key?(field.name) %>
         <%= form.select field.name, @field_options[field.name], { include_blank: true } %>
       <% elsif record.class.type_for_attribute(field.name.to_s).type == :text %>
         <%= form.text_area field.name, rows: 3 %>

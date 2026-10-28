@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Steps 0006.1–0006.3 — Advanced Resource Extensions
+- Optional progressive association lookup preserves unsaved form drafts and selected belongs_to records.
+- Optional Pundit authorization and strict SQL-scope adapter, tested with real policies.
+- Rails enum field widget and server-side value allowlist, with separate CaseRecord demo.
+- Real Chrome draft-preservation and Ruby security/adapter integration tests.
+- See [0006.1](docs/steps/0006-1-association-picker.md), [0006.2](docs/steps/0006-2-pundit-adapter.md), [0006.3](docs/steps/0006-3-enum-fields.md).
+
 ### Step 0006 — Advanced Resources
 - Added centralized Resource field-level read and write policies with explicit host authorization.
 - Prevented protected fields from leaking through ordinary Index/Show/form views, filters/sort or forged POST/PATCH payloads.

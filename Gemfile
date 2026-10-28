@@ -20,3 +20,6 @@ gem "sidekiq", "~> 7.3"
 # Browser acceptance only. Neither gem is a Rekorra runtime dependency.
 gem "capybara", "~> 3.40", group: :test
 gem "selenium-webdriver", "~> 4.30", group: :test
+
+# Optional Pundit adapter contract and policy scopes; test-host only.
+gem "pundit", "~> 2.5", group: :test
