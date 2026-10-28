@@ -48,6 +48,11 @@ module Rekorra
         @jobs
       end
 
+      def access_audit(&block)
+        @access_audit = AccessAudit::Definition.new.tap { |d| d.instance_eval(&block) } if block
+        @access_audit
+      end
+
       def activity(&block)
         @activity = Activity::Definition.new.tap { |definition| definition.instance_eval(&block) } if block
         @activity
@@ -107,6 +112,7 @@ module Rekorra
         index.validate_index!(model_class)
         findings&.validate!
         jobs&.validate!
+        access_audit&.validate!
         activity&.validate!(model_class)
         (index.fields + show.fields + form.fields).each do |field|
           if field.type == :enum && !model_class.defined_enums.key?(field.name.to_s)

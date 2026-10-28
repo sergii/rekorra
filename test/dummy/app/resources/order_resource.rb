@@ -46,6 +46,12 @@ class OrderResource < Rekorra::Resource
     limit 10
   end
 
+  access_audit do
+    source :active_record
+    authorize :view_access_audit?
+    limit 10
+  end
+
   activity do
     source :paper_trail
     fields :number, :status, :total_cents

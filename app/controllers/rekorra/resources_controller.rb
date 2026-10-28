@@ -31,6 +31,15 @@ module Rekorra
 
     def show
       authorize!(@record, :show?)
+      write_access_audit!(:show)
+      @access_audit_visible = @resource.access_audit &&
+        allowed?(@record, @resource.access_audit.policy)
+      @access_audit_entries = AccessAudit::Resolver.new(
+        definition: @resource.access_audit, record: @record,
+        tenant_key: @resource.access_audit ? access_audit_tenant_key : nil,
+        authorize: ->(subject, action) { allowed?(subject, action) },
+        registry: Rekorra.configuration.access_audit_adapters
+      ).call
       @findings_visible = @resource.findings && allowed?(@record, @resource.findings.policy)
       @finding_items = Findings::Resolver.new(
         resource: @resource, record: @record,
@@ -83,7 +92,7 @@ module Rekorra
       authorize!(@record, :create?)
       @record.assign_attributes(record_params)
       validate_foreign_keys!
-      if with_activity_actor { @record.save }
+      if with_activity_actor { audited_mutation(:create) { @record.save } }
         redirect_to record_path(slug: params[:slug], id: @record.to_param), notice: "Created"
       else
         load_field_options
@@ -101,7 +110,7 @@ module Rekorra
       @record.assign_attributes(record_params)
       authorize!(@record, :update?)
       validate_foreign_keys!
-      if with_activity_actor { @record.save }
+      if with_activity_actor { audited_mutation(:update) { @record.save } }
         redirect_to record_path(slug: params[:slug], id: @record.to_param), notice: "Updated"
       else
         load_field_options
@@ -111,11 +120,42 @@ module Rekorra
 
     def destroy
       authorize!(@record, :destroy?)
-      with_activity_actor { @record.destroy! }
+      with_activity_actor { audited_mutation(:destroy) { @record.destroy! } }
       redirect_to records_path(slug: params[:slug]), notice: "Deleted", status: :see_other
     end
 
     private
+
+    def access_audit_tenant_key
+      identify = Rekorra.configuration.access_audit_tenant_with
+      raise ConfigurationError, "Access Audit tenant callback missing" unless identify.respond_to?(:call)
+      identify.call(rekorra_actor)
+    end
+
+    def write_access_audit!(action)
+      definition = @resource.access_audit
+      return unless definition
+
+      identify = Rekorra.configuration.access_audit_actor_with
+      raise ConfigurationError, "Access Audit actor callback missing" unless identify.respond_to?(:call)
+      event = AccessAudit::Event.new(action: action, record_type: @model.name,
+        record_id: @record.id.to_s, actor_key: identify.call(rekorra_actor),
+        tenant_key: access_audit_tenant_key, request_id: request.request_id.to_s,
+        occurred_at: Time.current)
+      Rekorra.configuration.access_audit_adapters.fetch(definition.source_name).write!(event: event)
+    end
+
+    def audited_mutation(action)
+      return yield unless @resource.access_audit
+
+      # Host ActiveRecord audit storage can commit in the same transaction.
+      # A remote sink cannot provide distributed atomicity.
+      @model.transaction do
+        success = yield
+        write_access_audit!(action) if success
+        success
+      end
+    end
 
     def with_activity_actor(&block)
       definition = @resource.activity

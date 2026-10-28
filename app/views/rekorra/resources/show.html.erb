@@ -14,6 +14,24 @@
     <% end %>
   </dl>
 </section>
+<% if @access_audit_visible %>
+  <section class="rk-panel rk-access-audit" aria-labelledby="rk-access-audit-heading">
+    <h2 id="rk-access-audit-heading">Access Audit</h2>
+    <% if @access_audit_entries.empty? %>
+      <p class="rk-muted">No recorded access.</p>
+    <% else %>
+      <ol class="rk-access-audit__list">
+        <% @access_audit_entries.each do |entry| %>
+          <li>
+            <strong><%= entry.action.humanize %></strong>
+            <span>By <%= entry.actor_key %></span>
+            <time><%= l(entry.occurred_at, format: :long) %></time>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+  </section>
+<% end %>
 <% if @findings_visible %>
   <section class="rk-panel rk-findings" aria-labelledby="rk-findings-heading">
     <h2 id="rk-findings-heading">Findings</h2>

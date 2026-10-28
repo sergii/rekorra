@@ -13,6 +13,11 @@ Rekorra.configure do |config|
       links: ->(order) { order.demo_job_links.where(provider: "sidekiq") }
     )
 
+  config.access_audit_actor_with = ->(actor) { "demo-organization:#{actor.slug}" }
+  config.access_audit_tenant_with = ->(actor) { actor.slug }
+  config.access_audit_adapters.register :active_record,
+    Rekorra::AccessAudit::Adapters::ActiveRecord.new(model: "DemoAuditEntry")
+
   config.activity_actor_with = ->(actor) { "demo-organization:#{actor.slug}" }
   config.activity_adapters.register :paper_trail, Rekorra::Activity::Adapters::PaperTrail.new
   config.context_application = "rekorra-demo"
@@ -52,6 +57,7 @@ Rekorra.configure do |config|
     next actor.slug == "acme" if action == :edit_total_cents?
     next actor.slug == "acme" if action == :view_findings?
     next actor.slug == "acme" if action == :view_jobs?
+    next actor.slug == "acme" if action == :view_access_audit?
     next actor.slug == "acme" if action == :view_activity?
     next actor.slug == "acme" if action == :view_logs?
     next true if action == :view_issues?
