@@ -43,3 +43,5 @@ Accepted means a design decision, not verified implementation.
 
 - [ADR 0024 - Real MySQL host compatibility](0024-mysql-compatibility.md)
 - [ADR 0025 - Pipeline-neutral installed Engine assets](0025-rails-host-assets.md)
+
+- [ADR 0026 - Real worker-process E2E](0026-worker-e2e.md)
