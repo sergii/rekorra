@@ -1,6 +1,6 @@
 # Step 0006 — Advanced Resources: field policies and association lookup
 
-Status: Feature branch; CI pending.
+Status: Ruby 3.3/3.4 and headless Chrome CI green; manual device review pending.
 
 ## Goals
 
@@ -26,15 +26,17 @@ Improve ordinary Rails Resource CRUD, not Findings or a custom dashboard:
 
 ## Acceptance
 
-- [ ] Ruby 3.3 and 3.4 integration CI
-- [ ] Browser CI and existing Resource Index tests
-- [ ] Restricted fields absent from Index, Show and forms
-- [ ] Protected filters/sort and forged POST/PATCH rejected
-- [ ] Unprotected fields remain editable without privileged field access
-- [ ] Search over 100+ host records returns a matching late record
-- [ ] Selected relation remains available when it is outside the first 50
-- [ ] Search and mutation never leak or select foreign-tenant records
+- [x] Ruby 3.3 and 3.4 integration CI
+- [x] Browser CI and existing Resource Index tests
+- [x] Restricted fields absent from Index, Show and forms
+- [x] Protected filters/sort and forged POST/PATCH rejected
+- [x] Unprotected fields remain editable without privileged field access
+- [x] Search over 100+ host records returns a matching late record
+- [x] Selected relation remains available when it is outside the first 50
+- [x] Search and mutation never leak or select foreign-tenant records
 - [ ] Manual device/browser review
+
+CI evidence: [GitHub Actions run 40611376790](https://github.com/sergii/rekorra/actions/runs/40611376790), Ruby 3.3 and 3.4 each **127 tests / 720 assertions / 0 failures/errors**, and Chrome **6 tests / 42 assertions / 0 failures/errors**. Covers 125+ related Customer records, private-field mutation rejection and cross-tenant lookup. Manual device QA remains pending.
 
 ## Boundaries
 
