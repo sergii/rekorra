@@ -25,4 +25,4 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0007 — Access Audit](0007-access-audit.md) | Host-owned audit entries for Orders | Optional event/adapter contract, scoped write & read-only timeline | Merged; Ruby and Chrome CI green; manual QA pending |
 | [0008.0 — Rails compatibility](0008-production-readiness.md) | Installed-gem standalone host | Rails 8.0/8.1 with Ruby 3.3/3.4, package smoke | Merged; CI green |
 | [0008.1 — PostgreSQL compatibility](0008-1-postgresql.md) | Rails host primary DB in PostgreSQL 16, SQLite Solid Queue | Full integration, authorization, filters, keyset, audit | Merged; CI green |
-| [0008.2 — MySQL compatibility](0008-2-mysql.md) | Rails host primary DB in MySQL 8.4, SQLite Solid Queue | Full integration and 50k-row SQL bounds | CI pending |
+| [0008.2 — MySQL compatibility](0008-2-mysql.md) | Rails host primary DB in MySQL 8.4, SQLite Solid Queue | Full integration and 50k-row SQL bounds | PR #20 CI green; main validation pending |
