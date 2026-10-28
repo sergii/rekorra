@@ -156,7 +156,7 @@ class ResourceIndexUxTest < ActionDispatch::IntegrationTest
     get sort_email["href"], headers: auth
     assert_response :success
     assert doc.at_css("table.rk-index-table th[aria-sort='ascending']")
-    assert_nil doc.at_css("nav.rk-pagination a")&.text&.match?(/Previous/)
+    assert_nil doc.css("nav.rk-pagination a").find { |a| a.text == "Previous" }
   end
 
   test "responsive table has cell labels and native page navigation" do
