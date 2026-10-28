@@ -178,14 +178,41 @@ module Rekorra
         field_readable?(@record, field) && field_writable?(@record, field.name)
       end
       @field_options = {}
+      @association_searches = {}
       @form_fields.each do |field|
         reflection = @model.reflect_on_all_associations(:belongs_to).find do |entry|
           !entry.polymorphic? && entry.foreign_key == field.name.to_s
         end
         next unless reflection
 
-        candidates = scoped_for(reflection.klass).limit(100).to_a
-        @field_options[field.name] = candidates.select { |item| allowed?(item, :show?) }.map do |item|
+        model = reflection.klass
+        raw = params[:association_q]
+        value = raw.is_a?(ActionController::Parameters) ? raw[field.name.to_s] : nil
+        search = value.is_a?(String) ? value.strip.first(80) : ""
+        @association_searches[field.name] = search
+        relation = scoped_for(model)
+        if search.present?
+          column = %w[name email number].find do |name|
+            col = model.columns_hash[name]
+            col && %i[string text].include?(col.type)
+          end
+          if column
+            pattern = "%#{ActiveRecord::Base.sanitize_sql_like(search)}%"
+            relation = relation.where(model.arel_table[column].matches(pattern, "\\"))
+          else
+            relation = relation.none
+          end
+        end
+
+        candidates = relation.reorder(model.primary_key => :asc).limit(50).to_a
+        foreign_id = @record.public_send(reflection.foreign_key)
+        if foreign_id.present?
+          selected = scoped_for(model).find_by(model.primary_key => foreign_id)
+          candidates << selected if selected && !candidates.any? { |item| item.id == selected.id }
+        end
+        @field_options[field.name] = candidates.select do |item|
+          allowed?(item, :show?)
+        end.map do |item|
           [item.respond_to?(:name) ? item.name : item.to_param, item.id]
         end
       end
