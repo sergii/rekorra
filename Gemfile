@@ -30,6 +30,9 @@ gem "solid_queue", "~> 1.6.0"
 
 # Optional Redis-backed Sidekiq backend used only by the demo integration.
 gem "sidekiq", "~> 7.3"
+# Sidekiq 7.3 uses the connection_pool 2.x scheduler API; 3.0 breaks it.
+# This is test-host-only, not a published Rekorra dependency.
+gem "connection_pool", ">= 2.5", "< 3.0"
 
 # Browser acceptance only. Neither gem is a Rekorra runtime dependency.
 gem "capybara", "~> 3.40", group: :test
