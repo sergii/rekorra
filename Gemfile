@@ -30,3 +30,7 @@ gem "selenium-webdriver", "~> 4.30", group: :test
 
 # Optional Pundit adapter contract and policy scopes; test-host only.
 gem "pundit", "~> 2.5", group: :test
+
+# PostgreSQL compatibility job only. This remains a test-host dependency,
+# never a required runtime dependency of the Rekorra Engine.
+gem "pg", "~> 1.5", group: :test if ENV["REKORRA_TEST_DATABASE_URL"]&.start_with?("postgres")

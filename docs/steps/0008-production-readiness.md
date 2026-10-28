@@ -1,6 +1,6 @@
 # Step 0008.0 — Rails compatibility and installed gem
 
-Status: All feature-branch CI gates green on GitHub Actions run 40666858122; merge and post-merge CI pending.
+Status: Merged as PR #18; post-merge CI green. PostgreSQL gate follows in Step 0008.1.
 
 ## Scope
 
@@ -18,7 +18,9 @@ Status: All feature-branch CI gates green on GitHub Actions run 40666858122; mer
 - [x] Rails 8.1 + Ruby 3.4 integration
 - [x] Default Rails + Chrome acceptance
 - [x] Installed gem HTTP smoke
-- [ ] Post-merge CI green
+- [x] Post-merge CI green
+
+Post-merge evidence: [run 40667341789](https://github.com/sergii/rekorra/actions/runs/40667341789). Rails compatibility and installed package gates passed.
 
 ## Still open
 
