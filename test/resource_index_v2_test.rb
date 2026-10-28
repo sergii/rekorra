@@ -183,7 +183,7 @@ class ResourceIndexV2Test < ActionDispatch::IntegrationTest
     queries = []
     subscriber = ->(*args) do
       sql = args.last[:sql].to_s
-      queries << sql if sql.match?(/FROM "?users"?/i) && sql.match?(/\ASELECT\b/i)
+      queries << sql if sql.match?(/FROM\s+[`"]?users[`"]?/i) && sql.match?(/\ASELECT\b/i)
     end
     ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
       get_users(page: 30, per_page: 50, sort: "name", direction: "asc",
@@ -199,7 +199,7 @@ class ResourceIndexV2Test < ActionDispatch::IntegrationTest
     keyset_sql = []
     tracker = ->(*args) do
       sql = args.last[:sql].to_s
-      keyset_sql << sql if sql.match?(/\ASELECT\b/i) && sql.match?(/FROM "?users"?/i)
+      keyset_sql << sql if sql.match?(/\ASELECT\b/i) && sql.match?(/FROM\s+[`"]?users[`"]?/i)
     end
     ActiveSupport::Notifications.subscribed(tracker, "sql.active_record") do
       get "/backoffice/resources/cursor_users", headers: auth,
