@@ -48,6 +48,8 @@ Rekorra.configure do |config|
       next %i[index? show?].include?(action) &&
         (subject.is_a?(Class) || subject.id == actor.id)
     end
+    next actor.slug == "acme" if action == :view_total_cents?
+    next actor.slug == "acme" if action == :edit_total_cents?
     next actor.slug == "acme" if action == :view_findings?
     next actor.slug == "acme" if action == :view_jobs?
     next actor.slug == "acme" if action == :view_activity?

@@ -1,2 +1,22 @@
 <div class="rk-page-heading"><div><p class="rk-kicker"><%= link_to @resource.title, records_path(slug: params[:slug]) %></p><h1>Edit <%= @model.model_name.human %> #<%= @record.to_param %></h1></div></div>
-<section class="rk-panel"><%= render "form", record: @record %></section>
+<section class="rk-panel"><% if @association_searches&.any? %>
+  <div class="rk-association-lookups" aria-label="Search related records">
+    <% @association_searches.each do |field_name, value| %>
+      <%= form_with url: @record.persisted? ? edit_record_path(slug: params[:slug], id: @record.to_param) : new_record_path(slug: params[:slug]),
+        method: :get, local: true, class: "rk-association-lookup" do %>
+        <%= label_tag "rk-association-search-#{field_name}", "Find #{field_name.to_s.delete_suffix('_id').humanize}" %>
+        <div class="rk-association-lookup__row">
+          <%= search_field_tag "association_q[#{field_name}]", value,
+            id: "rk-association-search-#{field_name}", maxlength: 80,
+            placeholder: "Search by name" %>
+          <%= submit_tag "Find options", class: "rk-button rk-button--secondary" %>
+          <% if value.present? %>
+            <%= link_to "Clear", @record.persisted? ? edit_record_path(slug: params[:slug], id: @record.to_param) : new_record_path(slug: params[:slug]) %>
+          <% end %>
+        </div>
+        <p class="rk-muted">Up to 50 matching records are shown. Current selection remains available.</p>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+<%= render "form", record: @record %></section>

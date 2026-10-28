@@ -9,7 +9,7 @@
 </div>
 <section class="rk-panel">
   <dl class="rk-details">
-    <% @resource.show.fields.each do |field| %>
+    <% @show_fields.each do |field| %>
       <div><dt><%= field.label %></dt><dd><%= rekorra_field_value(@record, field) %></dd></div>
     <% end %>
   </dl>

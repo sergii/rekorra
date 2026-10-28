@@ -4,7 +4,7 @@
       <ul><% record.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
     </div>
   <% end %>
-  <% @resource.form.fields.each do |field| %>
+  <% @form_fields.each do |field| %>
     <div class="rk-field">
       <%= form.label field.name, field.label %>
       <% if @field_options.key?(field.name) %>

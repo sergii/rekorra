@@ -8,4 +8,4 @@ The host provides explicit auth, policy and ActiveRecord::Relation scope adapter
 
 Strings returned by custom renderers are escaped through ERB, and trusted SafeBuffer is developer-controlled. No custom frontend runtime or arbitrary SQL DSL is included.
 
-Follow-up: field-level permissions, advanced association pickers, custom components and Pundit integration.
+Step 0006 added explicit field-level read/write policies and bounded, scoped belongs_to lookup; see [ADR 0017](0017-resource-field-policies.md). Custom components, richer types and Pundit integration remain future work.

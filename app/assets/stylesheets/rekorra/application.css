@@ -184,3 +184,12 @@ html[data-theme="dark"] .rk-app {
 @media (prefers-reduced-motion: no-preference) {
   .rk-index-panel[data-loading="true"] .rk-index-results { transition: opacity 0.15s ease; }
 }
+
+/* Bounded, native association lookup controls (Step 0006). */
+.rk-association-lookups { display: grid; gap: 0.9rem; border-bottom: 1px solid var(--rk-line); margin-bottom: 1.25rem; padding-bottom: 1rem; }
+.rk-association-lookup { display: grid; gap: 0.4rem; }
+.rk-association-lookup label { font-weight: 650; font-size: 0.85rem; }
+.rk-association-lookup__row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.rk-association-lookup__row input[type="search"] { flex: 1 1 12rem; min-width: 0; }
+.rk-association-lookup__row .rk-button { min-height: 2.5rem; }
+.rk-association-lookup .rk-muted { font-size: 0.76rem; margin: 0; }

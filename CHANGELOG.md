@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0006 — Advanced Resources
+- Added centralized Resource field-level read and write policies with explicit host authorization.
+- Prevented protected fields from leaking through ordinary Index/Show/form views, filters/sort or forged POST/PATCH payloads.
+- Added bounded, tenant-scoped, server-rendered belongs_to search with pinned selection.
+- Added security/association integration tests, ADR 0017 and Step 0006 log.
+- See [Step 0006](docs/steps/0006-advanced-resources.md).
+
 ### Step 0005.3 — Chrome Browser Acceptance
 - Added six real headless Chrome Rails browser tests for desktop, mobile, keyboard and no-JS navigation.
 - Added screenshot artifacts and retained Capybara/Selenium as test-only dependencies.
