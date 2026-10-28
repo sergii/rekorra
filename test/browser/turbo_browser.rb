@@ -32,7 +32,7 @@ class TurboBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     assert_equal true, evaluate_script("window.Turbo.session.drive")
     assert_equal true, evaluate_script("Boolean(window.Stimulus)")
     execute_script("document.querySelector('main').setAttribute('data-controller', 'rekorra-probe')")
-    assert_equal true, evaluate_script("window.__rekorraProbeConnected >= 1")
+    assert_selector "main[data-rk-probe-connected='true']"
     execute_script("window.__rekorraTurboCount = 0; document.addEventListener('turbo:load', () => window.__rekorraTurboCount++)")
 
     click_link "Next"
