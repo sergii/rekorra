@@ -1,6 +1,6 @@
 # ADR 0025 - Pipeline-neutral installed Engine assets
 
-Status: Proposed pending PR #21 CI.
+Status: Accepted for Step 0008.3 following green CI run 40678405046.
 
 ## Context
 
@@ -15,3 +15,7 @@ Clear Index loading indicators on turbo:before-cache and turbo:load in addition 
 ## Deferred
 
 Real Turbo Drive and Stimulus controller E2E in an external browser, fingerprinted production asset builds, CSP policies and other production deployment variations. Passing these smoke tests does not claim complete Turbo/Stimulus support.
+
+## Verification
+
+[CI run 40678405046](https://github.com/sergii/rekorra/actions/runs/40678405046) passed all eight jobs, including four real installed-gem asset host variants. This does not expand the scope to production precompilation or actual external browser Hotwire navigation.

@@ -4,7 +4,7 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
-### Step 0008.3 - Installed Rails asset hosts (CI pending)
+### Step 0008.3 - Installed Rails asset hosts (CI green)
 - Added four independent installed-gem host smokes for Propshaft/Sprockets with and without Turbo/Stimulus railties.
 - Verify CSS and JS requests actually return HTTP 200 with expected content.
 - Clear transient index loading UI on Turbo lifecycle, with Chrome test.
