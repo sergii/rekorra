@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.7 - PostgreSQL multi-worker and queued-backlog restart
+- Real PostgreSQL primary and Solid Queue databases, two forked worker processes, 36 persisted job completions.
+- Supervisor group SIGKILL and 12 queued jobs, then replacement worker completion and no stale ready/claimed jobs.
+- Measured CI jobs/s is observational; in-flight claim recovery and throughput SLO remain out of scope.
+- See [Step 0008.7](docs/steps/0008-7-worker-resilience.md).
+
 ### Step 0008.6 - Worker reliability regression (issue #25)
 - Investigated failed Solid Queue artifacts: repeated SQLite busy locks in supervisor forked children; Sidekiq 7.3.9 scheduler failed against connection_pool 3.0.2.
 - Test-only one-worker/one-thread Solid Queue profile, no unnecessary dispatcher and 10s SQLite queue busy wait; unchanged 75s E2E overall deadline.

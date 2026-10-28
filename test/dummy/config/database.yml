@@ -22,8 +22,13 @@ test:
     database: db/test.sqlite3
     <% end %>
   queue:
+    <% if ENV["REKORRA_TEST_QUEUE_DATABASE_URL"] %>
+    url: <%= ENV.fetch("REKORRA_TEST_QUEUE_DATABASE_URL") %>
+    pool: 10
+    migrations_paths: db/queue_migrate
+    <% else %>
     <<: *default
     database: db/test_queue.sqlite3
     migrations_paths: db/queue_migrate
-    # Allow concurrent worker/supervisor metadata writes to serialize.
     timeout: 10000
+    <% end %>
