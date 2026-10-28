@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.5 phase 2 - Opt-in Hotwire browser acceptance
+- Added optional test-host Importmap, Turbo and Stimulus, imported through a real `application.js` entrypoint.
+- Chrome checks Turbo Drive pagination and browser-back navigation, Stimulus connect and loading-state cleanup.
+- Browser acceptance is separate from ordinary rake test discovery; a separately installed external-host browser journey and CSP remain unverified.
+- See [Step 0008.5](docs/steps/0008-5-production-assets.md).
+
 ### Step 0008.5 - Production asset precompile (phase 1)
 - Added independent installed-gem production `assets:precompile` smoke for Propshaft and Sprockets.
 - Verify three fingerprinted Rekorra CSS/JS files exist and contain the expected source behavior.
