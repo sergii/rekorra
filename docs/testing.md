@@ -20,6 +20,8 @@ bundle exec rake test
 
 Step 0008.3 adds installed gem asset HTTP checks across Propshaft/Sprockets and optional Turbo/Stimulus Railties. Browser validation of real Hotwire navigation in external hosts and production asset precompilation are still open.
 
+Step 0008.4 has a separate real worker process E2E gate with persistent primary/queue DBs and Redis, checking actual record updates, failure/retry state and provider-specific Jobs projections. Full worker crash recovery, exact-once and throughput guarantees remain open.
+
 A green CI run is necessary but not sufficient for a production-ready label. Keep unchecked gates in `docs/steps`.
 
 10. **Jobs:** real backend enqueue, scoped record mapping, forbidden policy, safe errors, missing/finished status and adapter interchangeability.
