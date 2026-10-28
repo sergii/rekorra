@@ -27,7 +27,7 @@ class WorkerSmoke
     ENV["REKORRA_DEMO_PASSWORD"] = "worker-e2e-ci-only"
     Sidekiq.redis { |redis| redis.flushdb }
     puts "Sidekiq #{Gem.loaded_specs.fetch('sidekiq').version}; connection_pool #{Gem.loaded_specs.fetch('connection_pool').version}"
-    puts "Queue SQLite busy_timeout=#{SolidQueue::Record.connection.select_value('PRAGMA busy_timeout')}ms"
+    puts "Queue SQLite adapter busy-handler timeout configured=#{SolidQueue::Record.connection.pool.db_config.configuration_hash.fetch(:timeout)}ms"
   end
 
   def call
