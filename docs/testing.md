@@ -23,3 +23,5 @@ A green CI run is necessary but not sufficient for a production-ready label. Kee
 10. **Jobs:** real backend enqueue, scoped record mapping, forbidden policy, safe errors, missing/finished status and adapter interchangeability.
 
 11. **Resource Index v2:** signed-off column allowlists, typed filters, SQL scope + page-size bounds, stable ordering, URL navigation, wildcard escaping and 50,000-row read test.
+
+12. **Resource Index UX:** sortable headings, normalized GET state, chip removal, empty Index headers, native filter disclosure, packaged progressive assets and offset/keyset regression.
