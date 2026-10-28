@@ -138,7 +138,7 @@ class ResourceIndexUxTest < ActionDispatch::IntegrationTest
 
   test "keyset sort header starts at first cursor page and preserves filters" do
     list("cursor_users", { sort: "name", direction: "asc",
-      per_page: "10", filters: { status: "active" } })
+      per_page: "5", filters: { status: "active" } })
     assert_response :success
     next_link = doc.css("nav.rk-pagination a").find { |a| a.text == "Next" }
     assert next_link
@@ -180,12 +180,12 @@ class ResourceIndexUxTest < ActionDispatch::IntegrationTest
     assert_select "section[data-rk-index] .rk-index-results"
     js = doc.at_css("script[src*='/assets/rekorra/index-']")
     assert js, "Engine should ship the progressive enhancement asset"
+    css = doc.at_css("link[rel='stylesheet']")["href"]
     get js["src"]
     assert_response :success
     assert_includes response.body, "markBusy"
     assert_includes response.body, "pageshow"
 
-    css = doc.at_css("link[rel='stylesheet']")["href"]
     get css
     assert_response :success
     assert_includes response.body, ".rk-index-filter-chip"
