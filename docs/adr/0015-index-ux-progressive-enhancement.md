@@ -1,6 +1,6 @@
 # ADR 0015 — Native-first Resource Index UX with optional loading hint
 
-Status: Accepted as the Step 0005.2 design; implementation validation pending.
+Status: Accepted; Step 0005.2 automated integration CI passed, manual browser QA pending.
 
 ## Decision
 
