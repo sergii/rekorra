@@ -37,4 +37,6 @@
 
 - [ADR 0022 — Version compatibility and packaging](0022-compatibility-packaging.md)
 
+- [ADR 0023 — PostgreSQL compatibility and split database topology](0023-postgresql-compatibility.md)
+
 Accepted means a design decision, not verified implementation.

@@ -88,7 +88,7 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal "create", row.action
     assert_equal created.id.to_s, row.record_id
     assert_not_includes row.attributes.inspect, "SECRET-ORDER-FIELD"
-    assert_not_includes row.attributes.inspect, "1100"
+    assert_not_includes row.attributes.values.map(&:to_s), "1100"
   end
 
   test "successful update emits one audit; unsuccessful validation emits none" do

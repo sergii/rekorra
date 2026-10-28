@@ -99,3 +99,54 @@ jobs:
           export GEM_PATH="$(bundle exec ruby -e 'puts Gem.path.join(":")'):$RUNNER_TEMP/packaged-gems"
           cd "$RUNNER_TEMP"
           env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" ruby "$GITHUB_WORKSPACE/test/packaging/external_host_smoke.rb"
+
+  postgresql:
+    name: PostgreSQL host (Rails 8.1 / Ruby 3.4)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: rekorra
+          POSTGRES_PASSWORD: rekorra_ci_only
+          POSTGRES_DB: rekorra_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rekorra -d rekorra_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      REKORRA_RAILS_SERIES: "8.1"
+      REKORRA_TEST_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_test
+      REDIS_URL: redis://127.0.0.1:6379/12
+      RAILS_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Show database and framework versions
+        run: |
+          bundle exec rails --version
+          bundle exec ruby -rpg -e 'puts "PostgreSQL driver #{PG.library_version}"'
+      - name: Prepare Rails demo with PostgreSQL primary and SQLite queue
+        run: bundle exec rails db:prepare
+        working-directory: test/dummy
+      - name: Verify real PostgreSQL host connection
+        run: |
+          bundle exec rails runner 'abort "Expected PostgreSQL" unless ActiveRecord::Base.connection.adapter_name == "PostgreSQL"; puts "Primary: #{ActiveRecord::Base.connection.adapter_name}"'
+        working-directory: test/dummy
+      - name: Run full scoped CRUD, Activity, Jobs, Index and cursor test suite
+        run: bundle exec rake test

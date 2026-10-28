@@ -23,4 +23,5 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0006.3 — Enum fields](0006-3-enum-fields.md) | CaseRecord with enum state | Declarative enum select, value validation | CI green; manual QA pending |
 | [0006.4 — Native typed forms](0006-4-native-typed-fields.md) | CaseRecord typed columns | ActiveRecord-derived HTML fields and strict structured-input validation | CI green; device QA pending |
 | [0007 — Access Audit](0007-access-audit.md) | Host-owned audit entries for Orders | Optional event/adapter contract, scoped write & read-only timeline | Merged; Ruby and Chrome CI green; manual QA pending |
-| [0008.0 — Rails compatibility](0008-production-readiness.md) | Installed-gem standalone host | Rails 8.0/8.1 with Ruby 3.3/3.4, package smoke | CI validation pending |
+| [0008.0 — Rails compatibility](0008-production-readiness.md) | Installed-gem standalone host | Rails 8.0/8.1 with Ruby 3.3/3.4, package smoke | Merged; CI green |
+| [0008.1 — PostgreSQL compatibility](0008-1-postgresql.md) | Rails host primary DB in PostgreSQL 16, SQLite Solid Queue | Full integration, authorization, filters, keyset, audit | CI green; post-merge pending |

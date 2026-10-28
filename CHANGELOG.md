@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.1 — PostgreSQL host compatibility
+- Added real PostgreSQL 16 CI service and full Rails 8.1 / Ruby 3.4 integration test run using PostgreSQL primary.
+- Preserved independent SQLite Solid Queue database and all existing Rails compatibility/Chrome/packaging gates.
+- Corrected a flaky Access Audit privacy assertion to compare exact persisted values instead of timestamp substrings.
+- See [Step 0008.1](docs/steps/0008-1-postgresql.md).
+
 ### Step 0008.0 — Compatibility and packaging
 - Added Ruby 3.3/3.4 × Rails 8.0/8.1 four-way integration CI.
 - Added isolated .gem build and standalone Rails host HTTP/asset smoke.

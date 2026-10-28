@@ -13,8 +13,14 @@ development:
 
 test:
   primary:
+    <% if ENV["REKORRA_TEST_DATABASE_URL"] %>
+    # Only the Rails host's primary test DB changes; Solid Queue remains SQLite.
+    url: <%= ENV.fetch("REKORRA_TEST_DATABASE_URL") %>
+    pool: 5
+    <% else %>
     <<: *default
     database: db/test.sqlite3
+    <% end %>
   queue:
     <<: *default
     database: db/test_queue.sqlite3
