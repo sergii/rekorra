@@ -63,6 +63,23 @@ end
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
+## Advanced Resources (Step 0006)
+
+Use one explicit field policy declaration to govern Index, Show, forms and protected POST/PATCH attributes:
+
+\`\`\`ruby
+class OrderResource < Rekorra::Resource
+  model "Order"
+  field_policy :total_cents, read: :view_total_cents?, write: :edit_total_cents?
+end
+\`\`\`
+
+The existing host \`authorize_with\` adapter evaluates these predicates. Forbidden columns disappear from Index/Show/form controls, cannot be sorted/filtered by unauthorized actors and are rejected if forged in mutation parameters. Host SQL scoping and the policies of separate Activity/Findings integrations remain essential.
+
+Belongs-to form fields now offer a native GET search over the host's tenant-scoped relation, returning at most 50 matching records and pinning the previously selected value. No AJAX dependency. GET lookup reloads the form, so unsaved fields are not preserved during search; a draft-preserving picker is future work.
+
+See [Step 0006](docs/steps/0006-advanced-resources.md).
+
 ## Generic Resource Index v2 (Step 0005)
 
 All ordinary model pages can configure static typed filters, sort/search columns and bounded pagination:

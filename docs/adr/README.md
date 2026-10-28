@@ -26,4 +26,6 @@
 
 - [ADR 0016 — Browser acceptance](0016-browser-acceptance.md)
 
+- [ADR 0017 — Field permissions and association lookup](0017-resource-field-policies.md)
+
 Accepted means a design decision, not verified implementation.

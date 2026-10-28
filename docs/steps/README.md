@@ -17,3 +17,4 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0005.1 — Keyset Pagination](0005-1-keyset-pagination.md) | Alternate Cursor Users page | Encrypted scope-bound keyset strategy and bidirectional HTML navigation | CI green; browser QA pending |
 | [0005.2 — Resource Index UX](0005-2-resource-index-ux.md) | Users and Cursor Users tables | Clickable headers, compact filters, filter chips, optional loading hint | CI green; browser QA pending |
 | [0005.3 — Chrome Acceptance](0005-3-browser-acceptance.md) | Mounted Rails host in Chrome | Desktop, 390/320 px, keyboard, JS-off, screenshot artifacts | Chrome CI green; human QA pending |
+| [0006 — Advanced Resources](0006-advanced-resources.md) | Protected totals, searchable Customer picker | Field-level policies, scoped bounded belongs_to lookup | Feature branch; CI pending |
