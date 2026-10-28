@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.0 — Compatibility and packaging
+- Added Ruby 3.3/3.4 × Rails 8.0/8.1 four-way integration CI.
+- Added isolated .gem build and standalone Rails host HTTP/asset smoke.
+- Explicitly retained production-readiness caveats.
+- See [Step 0008.0](docs/steps/0008-production-readiness.md).
+
 ### Step 0007 — Access Audit
 - Added provider-neutral, opt-in Access Audit event, registry, resolver and read-only timeline with a separate policy.
 - Added host-owned ActiveRecord adapter and demo storage; no runtime audit gem or Rekorra migrations.
