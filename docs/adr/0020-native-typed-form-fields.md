@@ -1,6 +1,6 @@
 # ADR 0020 — Native Rails typed forms and strict structured input
 
-Status: Accepted for Step 0006.4; automated integration tests green.
+Status: Accepted; Step 0006.4 Ruby integration and real Chrome CI green.
 
 Determine form controls from host model ActiveRecord column metadata rather than a parallel type DSL. Keep explicit enum and belongs_to selectors as higher-priority controls.
 

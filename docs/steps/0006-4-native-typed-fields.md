@@ -1,6 +1,6 @@
 # Step 0006.4 — Native Typed Form Controls
 
-Status: Ruby 3.3/3.4 CI green; mobile browser acceptance and human device QA pending.
+Status: Ruby 3.3/3.4 and Chrome CI green; human device QA pending.
 
 ## Delivered
 
@@ -17,7 +17,10 @@ Status: Ruby 3.3/3.4 CI green; mobile browser acceptance and human device QA pen
 - [x] Checkbox false, nullable values and valid decimal/date/time submission.
 - [x] Forged invalid typed inputs rejected without partial changes.
 - [x] Cross-tenant association assignment rejected.
+- [x] Chrome 390 px mobile form rendering without horizontal overflow.
 - [ ] Human mobile Safari, VoiceOver and locale/timezone review.
+
+CI evidence: [GitHub Actions run 40650265053](https://github.com/sergii/rekorra/actions/runs/40650265053): Ruby 3.3/3.4 each 142 tests, 850 assertions, zero failures/errors; Chrome 8 tests, 58 assertions, zero failures/errors.
 
 ## Boundaries
 
