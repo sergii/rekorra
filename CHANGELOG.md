@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.5 - Production asset precompile (phase 1)
+- Added independent installed-gem production `assets:precompile` smoke for Propshaft and Sprockets.
+- Verify three fingerprinted Rekorra CSS/JS files exist and contain the expected source behavior.
+- Real Turbo/Stimulus external-host browser E2E and production CSP remain open.
+- See [Step 0008.5](docs/steps/0008-5-production-assets.md).
+
 ### Step 0008.4 - Real worker E2E (CI green)
 - Added separate worker-process E2E for Solid Queue and Sidekiq with persisted SQLite, Redis and HTTP checks.
 - Verified real worker transitions, failed/retrying behavior and tenant isolation without faking terminal timestamps.
