@@ -33,7 +33,9 @@ jobs:
         run: RAILS_ENV=test bundle exec rails db:prepare
         working-directory: test/dummy
       - name: Report resolved versions
-        run: bundle exec ruby -e 'require "rails"; puts "Rails #{Rails.version} / Ruby #{RUBY_VERSION}"'
+        run: |
+          bundle exec rails --version
+          ruby --version
       - name: Run integration tests
         run: bundle exec rake test
 
@@ -91,8 +93,9 @@ jobs:
       - name: Build distributable gem and inspect package contents
         run: |
           gem build rekorra.gemspec --output "$RUNNER_TEMP/rekorra-built.gem"
-          gem install --local "$RUNNER_TEMP/rekorra-built.gem" --no-document --ignore-dependencies
+          gem install --local "$RUNNER_TEMP/rekorra-built.gem" --install-dir "$RUNNER_TEMP/packaged-gems" --no-document --ignore-dependencies
       - name: Boot a separate Rails app with the installed gem
         run: |
+          export GEM_PATH="$(bundle exec ruby -e 'puts Gem.path.join(":")'):$RUNNER_TEMP/packaged-gems"
           cd "$RUNNER_TEMP"
-          env -u BUNDLE_GEMFILE -u RUBYOPT ruby "$GITHUB_WORKSPACE/test/packaging/external_host_smoke.rb"
+          env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" ruby "$GITHUB_WORKSPACE/test/packaging/external_host_smoke.rb"
