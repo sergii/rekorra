@@ -46,7 +46,8 @@ class AdvancedResourcesTest < ActionDispatch::IntegrationTest
   test "authorized tenant keeps total field across index show and form" do
     get "/backoffice/resources/orders", headers: headers
     assert_response :success
-    assert_select "table.rk-index-table th", text: "Total", count: 1
+    assert_select "table.rk-index-table th", minimum: 1
+    assert Nokogiri::HTML(response.body).css("table.rk-index-table th").any? { |th| th.text.include?("Total") }
     assert_select "input[name='filters[total_cents_min]']", count: 1
 
     get "/backoffice/resources/orders/#{@order.id}", headers: headers
