@@ -33,6 +33,9 @@ CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance an
 
 ## Test
 
+**External effects:** Step 0008.10 tests a host-owned primary-DB transactional outbox against a separate localhost HTTP provider backed by its own PostgreSQL database. A lost ACK is an unknown outcome, not an assumed failure; redelivery is safe only when the receiver honors the same idempotency key. This is not a general-purpose Rekorra delivery API or proof of exactly-once effects. See [Step 0008.10](docs/steps/0008-10-transactional-outbox.md).
+
+
 **Recovery safety:** Rekorra's Jobs UI stays read-only. Step 0008.9 uses a host-owned policy-gated recovery service and an idempotency key to protect one local database mutation. It is a demonstration, not an automatically safe general-purpose retry API. See [Step 0008.9](docs/steps/0008-9-idempotency-recovery.md).
 
 
