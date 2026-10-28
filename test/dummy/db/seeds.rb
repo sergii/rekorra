@@ -68,5 +68,5 @@ if acme.users.count < 65
       updated_at: now
     }
   end
-  User.insert_all(rows, unique_by: :index_users_on_organization_id_and_email)
+  User.insert_all(rows)
 end
