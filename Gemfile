@@ -16,3 +16,7 @@ gem "solid_queue", "~> 1.6.0"
 
 # Optional Redis-backed Sidekiq backend used only by the demo integration.
 gem "sidekiq", "~> 7.3"
+
+# Browser acceptance only. Neither gem is a Rekorra runtime dependency.
+gem "capybara", "~> 3.40", group: :test
+gem "selenium-webdriver", "~> 4.30", group: :test
