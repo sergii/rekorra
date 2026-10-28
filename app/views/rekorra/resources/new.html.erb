@@ -2,7 +2,7 @@
 <section class="rk-panel"><% if @association_searches&.any? %>
   <div class="rk-association-lookups" aria-label="Search related records">
     <% @association_searches.each do |field_name, value| %>
-      <%= form_with url: record.persisted? ? edit_record_path(slug: params[:slug], id: record.to_param) : new_record_path(slug: params[:slug]),
+      <%= form_with url: @record.persisted? ? edit_record_path(slug: params[:slug], id: @record.to_param) : new_record_path(slug: params[:slug]),
         method: :get, local: true, class: "rk-association-lookup" do %>
         <%= label_tag "rk-association-search-#{field_name}", "Find #{field_name.to_s.delete_suffix('_id').humanize}" %>
         <div class="rk-association-lookup__row">
@@ -11,7 +11,7 @@
             placeholder: "Search by name" %>
           <%= submit_tag "Find options", class: "rk-button rk-button--secondary" %>
           <% if value.present? %>
-            <%= link_to "Clear", record.persisted? ? edit_record_path(slug: params[:slug], id: record.to_param) : new_record_path(slug: params[:slug]) %>
+            <%= link_to "Clear", @record.persisted? ? edit_record_path(slug: params[:slug], id: @record.to_param) : new_record_path(slug: params[:slug]) %>
           <% end %>
         </div>
         <p class="rk-muted">Up to 50 matching records are shown. Current selection remains available.</p>
