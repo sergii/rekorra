@@ -206,7 +206,7 @@ class KeysetPaginationTest < ActionDispatch::IntegrationTest
     statements = []
     subscriber = ->(*args) do
       sql = args.last[:sql].to_s
-      statements << sql if sql.match?(/\ASELECT\b/i) && sql.match?(/FROM "?users"?/i)
+      statements << sql if sql.match?(/\ASELECT\b/i) && sql.match?(/FROM\s+[`"]?users[`"]?/i)
     end
     ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
       list({ sort: "name", per_page: "50" })
