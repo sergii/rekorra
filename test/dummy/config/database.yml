@@ -25,3 +25,5 @@ test:
     <<: *default
     database: db/test_queue.sqlite3
     migrations_paths: db/queue_migrate
+    # Allow concurrent worker/supervisor metadata writes to serialize.
+    timeout: 10000
