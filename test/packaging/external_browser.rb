@@ -166,6 +166,7 @@ module ExternalBrowserRekorraHost
 end
 
 Rekorra.configure do |config|
+  config.importmap_enabled = true
   config.authenticate_with = ->(_controller) { ExternalTenant.find_by!(slug: "acme") }
   config.authorize_with = ->(_actor, _subject, action) {
     action == :access? || %i[index? show? create? edit? update?].include?(action)
