@@ -278,3 +278,34 @@ jobs:
           host_dir="$(mktemp -d "$RUNNER_TEMP/rekorra-production-XXXXXX")"
           cd "$host_dir"
           env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" REKORRA_ASSET_STACK="${{ matrix.stack }}" ruby "$GITHUB_WORKSPACE/test/packaging/production_assets.rb"
+
+
+  turbo_browser:
+    name: Turbo Drive real Chrome acceptance
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      REKORRA_RAILS_SERIES: "8.1"
+      REDIS_URL: redis://127.0.0.1:6379/12
+      RAILS_ENV: test
+      REKORRA_HOTWIRE_BROWSER: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Prepare Hotwire-enabled demo host
+        run: bundle exec rails db:prepare
+        working-directory: test/dummy
+      - name: Run real Turbo browser navigation
+        run: bundle exec ruby -Itest test/browser/turbo_browser_test.rb
