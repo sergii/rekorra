@@ -342,3 +342,49 @@ jobs:
           host_dir="$(mktemp -d "$RUNNER_TEMP/rekorra-browser-XXXXXX")"
           cd "$host_dir"
           env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" REKORRA_EXTERNAL_BROWSER_STACK="${{ matrix.stack }}" ruby "$GITHUB_WORKSPACE/test/packaging/external_browser.rb"
+
+  worker_resilience:
+    name: PostgreSQL 2-worker SIGKILL backlog recovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: rekorra
+          POSTGRES_PASSWORD: rekorra_ci_only
+          POSTGRES_DB: rekorra_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rekorra -d rekorra_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      RAILS_ENV: test
+      REKORRA_RAILS_SERIES: "8.1"
+      REKORRA_WORKER_PROCESSES: "2"
+      REKORRA_TEST_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_test
+      REKORRA_TEST_QUEUE_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_queue_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Create independent PostgreSQL queue database
+        run: |
+          bundle exec ruby -rpg -e 'c = PG.connect(ENV.fetch("REKORRA_TEST_DATABASE_URL")); c.exec("CREATE DATABASE rekorra_queue_test"); c.close'
+      - name: Prepare primary and queue PostgreSQL databases
+        run: bundle exec rails db:prepare
+        working-directory: test/dummy
+      - name: Execute two real workers and SIGKILL/backlog restart
+        run: bundle exec ruby test/worker_e2e/resilience_smoke.rb
+      - name: Upload child and supervisor logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rekorra-worker-resilience-logs
+          path: test/dummy/tmp/worker-resilience-logs/
+          if-no-files-found: warn
