@@ -95,11 +95,13 @@ class OutboxDispatchSmoke
       key: "dispatch:unknown:#{@token}").last
     stop_provider
     launch_provider(crash_key: key_for(unknown))
+    dispatcher = make_dispatcher
     check(dispatcher.dispatch_once! == :uncertain, "Expected lost-ACK uncertainty")
     check(unknown.reload.status == "unknown" && requests(key_for(unknown)) == 1,
       "Lost-ACK side effect must be committed and UNKNOWN")
     stop_provider
     launch_provider(crash_key: "none")
+    dispatcher = make_dispatcher
     sleep 1.15
     check(dispatcher.dispatch_once! == :reconciled, "Unknown event not reconciled")
     check(unknown.reload.delivered? && requests(key_for(unknown)) == 1,
@@ -144,6 +146,7 @@ class OutboxDispatchSmoke
     check(failure.reload.status == "unknown" && failure.dispatch_attempts == 0,
       "Review failed to reset bounded attempts")
     launch_provider(crash_key: "none")
+    dispatcher = make_dispatcher
     check(dispatcher.dispatch_once! == :delivered && failure.reload.delivered?,
       "Approved operator recovery did not deliver")
     check(requests(key_for(failure)) == 1, "Review recovery duplicated provider effect")
