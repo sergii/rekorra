@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.5 - Installed-gem Chrome Hotwire and CSP acceptance (PR #26)
+- Added two external Rails host Chrome jobs (Propshaft/Sprockets), using the built installed gem outside the repository.
+- Verified real Turbo/Stimulus, pagination/back, draft-safe association lookup, persisted forms, enforced nonce CSP and asset HTTP 200.
+- Added opt-in `config.importmap_enabled` for host-owned Importmap loading, false by default and no mandatory Hotwire dependencies.
+- Full production deployment, reverse proxy, CDN/cache behavior, Safari/VoiceOver and production security review remain open.
+- See [Step 0008.5](docs/steps/0008-5-production-assets.md) and [ADR 0027](docs/adr/0027-host-importmap-hotwire.md).
+
 ### Step 0008.5 phase 2 - Opt-in Hotwire browser acceptance
 - Added optional test-host Importmap, Turbo and Stimulus, imported through a real `application.js` entrypoint.
 - Chrome checks Turbo Drive pagination and browser-back navigation, Stimulus connect and loading-state cleanup.

@@ -46,7 +46,7 @@ Real Chrome acceptance is a separate CI job (Chrome and Redis required for local
 
 GitHub Actions saves screenshots under its **rekorra-browser-acceptance** artifact. See [Step 0005.3](docs/steps/0005-3-browser-acceptance.md). Human visual and screen-reader QA are not yet complete.
 
-The host app needs no npm/yarn, React/Vue or frontend compilation. Rekorra ships HTML, CSS and optional vanilla JavaScript. Step 0008.3 checks packaged assets in independent Propshaft/Sprockets hosts with optional Turbo/Stimulus railties. This is not a full external-host Hotwire browser E2E. See [Step 0008.3](docs/steps/0008-3-asset-hosts.md).
+The host app needs no npm/yarn, React/Vue or frontend compilation. Rekorra ships HTML, CSS and optional vanilla JavaScript. Step 0008.3 checks packaged assets in independent Propshaft/Sprockets hosts with optional Turbo/Stimulus railties. Step 0008.5 additionally verifies real Chrome Turbo Drive, form/association search, and nonce-based CSP in independently installed-gem host fixtures under both pipelines. This is not a production CDN/deployment certification. See [Step 0008.3](docs/steps/0008-3-asset-hosts.md) and [Step 0008.5](docs/steps/0008-5-production-assets.md).
 
 ## Configure a host application
 
@@ -64,6 +64,18 @@ Rekorra.configure do |config|
   config.resource :orders, "OrderResource"
 end
 ```
+
+### Optional host Importmap/Hotwire integration
+
+A Rails host that installs and configures `importmap-rails`, `turbo-rails` and `stimulus-rails` can explicitly enable its Importmap in the Rekorra layout:
+
+```ruby
+Rekorra.configure do |config|
+  config.importmap_enabled = true
+end
+```
+
+The host must provide its own `config/importmap.rb` pins and `app/javascript/application.js` importing Turbo/Stimulus. Importmap remains disabled by default; no Hotwire gems are Rekorra runtime dependencies. Enabling it without installing the helper is a host configuration error. See [Step 0008.5](docs/steps/0008-5-production-assets.md).
 
 Security hooks are **required**. Authentication alone never grants data access; all read/write paths depend on scoped relations and authorization. These snippets illustrate contracts, not a complete production policy.
 
