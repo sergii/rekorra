@@ -7,6 +7,8 @@
     <title>Rekorra</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%# Opt-in host test fixture, not an engine runtime dependency. %>
+    <%= javascript_importmap_tags if Rails.env.test? && ENV["REKORRA_HOTWIRE_BROWSER"] == "1" %>
     <%= stylesheet_link_tag "rekorra/application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "rekorra/index", defer: true %>
     <%= javascript_include_tag "rekorra/associations", defer: true %>
