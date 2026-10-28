@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0005.2 — Resource Index UX
+- Added sortable headers with accessible sort direction on ordinary model tables.
+- Added native compact filters, removable active filter chips, empty-page headings and responsive styles.
+- Added optional no-dependency JS loading hints with plain-HTML fallback.
+- Added integration and asset tests, ADR 0015 and step notes.
+- See [Step 0005.2](docs/steps/0005-2-resource-index-ux.md).
+
 ### Step 0005.1 — Keyset Cursor Pagination
 - Added opt-in keyset strategy to ordinary model indexes with ASC/DESC and Previous/Next navigation.
 - Added encrypted, expiring cursors bound to host tenant/actor context, resource query and authorized SQL scope.

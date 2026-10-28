@@ -104,6 +104,12 @@ To test a large index, from `test/dummy`, run `bundle exec rails db:prepare db:s
 
 See [Step 0005](docs/steps/0005-resource-index-v2.md).
 
+### Resource Index UX (Step 0005.2)
+
+Ordinary model tables now provide clickable sortable headings, native collapsible filter controls, removable validated filter chips, responsive rows and full-page GET navigation. Sorting drops the old page or keyset cursor, while preserving normalized search and filters. A tiny packaged vanilla JS asset optionally shows a best-effort loading indicator. HTML forms, links and pagination all work without JavaScript.
+
+See [Step 0005.2](docs/steps/0005-2-resource-index-ux.md).
+
 ## Findings (Step 0004)
 
 Host-owned read-only rules can declare a business mismatch without requiring new tables or a background process:

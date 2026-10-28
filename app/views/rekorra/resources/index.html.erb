@@ -4,8 +4,9 @@
     <%= link_to "New record", new_record_path(slug: params[:slug]), class: "rk-button" %>
   <% end %>
 </div>
-<section class="rk-panel">
-  <%= form_with url: records_path(slug: params[:slug]), method: :get, local: true, class: "rk-index-controls" do |form| %>
+<section class="rk-panel rk-index-panel" data-rk-index>
+  <%= form_with url: records_path(slug: params[:slug]), method: :get,
+    local: true, class: "rk-index-controls", data: { rk_index_form: true } do |form| %>
     <div class="rk-index-controls__main">
       <div class="rk-index-control rk-index-control--search">
         <%= form.label :q, "Search" %>
@@ -27,93 +28,144 @@
           { selected: @query.per_page } %>
       </div>
     </div>
+
     <% if @resource.index.filters.any? %>
-      <div class="rk-index-controls__filters">
-        <% @resource.index.filters.each do |filter| %>
-          <% case filter.type %>
-          <% when :select %>
-            <div class="rk-index-control">
-              <%= label_tag "rk-filter-#{filter.name}", filter.label %>
-              <%= select_tag "filters[#{filter.name}]",
-                options_for_select(filter.options, @query.filter_values[filter.name]),
-                include_blank: "All", id: "rk-filter-#{filter.name}" %>
-            </div>
-          <% when :boolean %>
-            <div class="rk-index-control">
-              <%= label_tag "rk-filter-#{filter.name}", filter.label %>
-              <%= select_tag "filters[#{filter.name}]",
-                options_for_select([["Yes", "true"], ["No", "false"]],
-                  @query.filter_values[filter.name]),
-                include_blank: "All", id: "rk-filter-#{filter.name}" %>
-            </div>
-          <% when :date_range %>
-            <% %w[from to].each do |bound| %>
-              <% key = "#{filter.name}_#{bound}" %>
+      <details class="rk-index-advanced" <%= "open" if @query.filter_values.any? %>>
+        <summary>Filters<% if @query.filter_values.any? %> <span class="rk-index-filter-count"><%= @query.filter_values.length %> active</span><% end %></summary>
+        <div class="rk-index-controls__filters">
+          <% @resource.index.filters.each do |filter| %>
+            <% case filter.type %>
+            <% when :select %>
               <div class="rk-index-control">
-                <%= label_tag "rk-filter-#{key}", "#{filter.label} #{bound}" %>
-                <%= date_field_tag "filters[#{key}]", @query.filter_values[key], id: "rk-filter-#{key}" %>
+                <%= label_tag "rk-filter-#{filter.name}", filter.label %>
+                <%= select_tag "filters[#{filter.name}]",
+                  options_for_select(filter.options, @query.filter_values[filter.name]),
+                  include_blank: "All", id: "rk-filter-#{filter.name}" %>
               </div>
-            <% end %>
-          <% when :number_range %>
-            <% %w[min max].each do |bound| %>
-              <% key = "#{filter.name}_#{bound}" %>
+            <% when :boolean %>
               <div class="rk-index-control">
-                <%= label_tag "rk-filter-#{key}", "#{filter.label} #{bound}" %>
-                <%= number_field_tag "filters[#{key}]", @query.filter_values[key], id: "rk-filter-#{key}" %>
+                <%= label_tag "rk-filter-#{filter.name}", filter.label %>
+                <%= select_tag "filters[#{filter.name}]",
+                  options_for_select([["Yes", "true"], ["No", "false"]],
+                    @query.filter_values[filter.name]),
+                  include_blank: "All", id: "rk-filter-#{filter.name}" %>
               </div>
+            <% when :date_range %>
+              <% %w[from to].each do |bound| %>
+                <% key = "#{filter.name}_#{bound}" %>
+                <div class="rk-index-control">
+                  <%= label_tag "rk-filter-#{key}", "#{filter.label} #{bound}" %>
+                  <%= date_field_tag "filters[#{key}]", @query.filter_values[key], id: "rk-filter-#{key}" %>
+                </div>
+              <% end %>
+            <% when :number_range %>
+              <% %w[min max].each do |bound| %>
+                <% key = "#{filter.name}_#{bound}" %>
+                <div class="rk-index-control">
+                  <%= label_tag "rk-filter-#{key}", "#{filter.label} #{bound}" %>
+                  <%= number_field_tag "filters[#{key}]", @query.filter_values[key], id: "rk-filter-#{key}" %>
+                </div>
+              <% end %>
             <% end %>
           <% end %>
-        <% end %>
-      </div>
+        </div>
+      </details>
     <% end %>
     <div class="rk-index-controls__actions">
       <%= form.submit "Apply", class: "rk-button" %>
-      <%= link_to "Reset", records_path(slug: params[:slug]), class: "rk-button rk-button--secondary" %>
+      <%= link_to "Reset", records_path(slug: params[:slug]), class: "rk-button rk-button--secondary",
+        data: { rk_index_nav: true } %>
     </div>
   <% end %>
-  <% if @records.any? %>
+
+  <% if @query.filter_values.any? %>
+    <div class="rk-index-active-filters" aria-label="Active filters">
+      <% @query.filter_values.each do |key, value| %>
+        <%= link_to records_path(slug: params[:slug],
+          **rekorra_index_without_filter(@query, key)),
+          class: "rk-index-filter-chip", data: { rk_index_nav: true },
+          aria: { label: "Remove #{rekorra_index_filter_label(@resource.index, key)} filter" } do %>
+          <span><%= rekorra_index_filter_label(@resource.index, key) %>: <%= value %></span>
+          <span aria-hidden="true">×</span>
+        <% end %>
+      <% end %>
+      <%= link_to "Clear filters", records_path(slug: params[:slug],
+        **@query.navigation_params.except(:filters)), data: { rk_index_nav: true } %>
+    </div>
+  <% end %>
+
+  <div class="rk-index-results">
+    <div class="rk-index-results__status" aria-live="polite">
+      <span><%= @records.size %> records on this page</span>
+      <span class="rk-index-loading" role="status">Loading records…</span>
+    </div>
     <div class="rk-table-scroll">
-      <table class="rk-table">
-        <thead><tr>
-          <% @resource.index.fields.each do |field| %><th scope="col"><%= field.label %></th><% end %>
-          <th scope="col">Actions</th>
-        </tr></thead>
-        <tbody>
-          <% @records.each do |record| %>
-            <tr>
-              <% @resource.index.fields.each do |field| %>
-                <td data-label="<%= field.label %>"><%= rekorra_field_value(record, field) %></td>
-              <% end %>
-              <td data-label="Actions"><%= link_to "View", record_path(slug: params[:slug], id: record.to_param) %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+        <table class="rk-table rk-index-table">
+          <thead><tr>
+            <% @resource.index.fields.each do |field| %>
+              <% sortable = @query.sort_columns.include?(field.name.to_s) %>
+              <% selected = sortable && @query.sort == field.name.to_s %>
+              <th scope="col" <%= "aria-sort=#{@query.direction == 'asc' ? 'ascending' : 'descending'}" if selected %>>
+                <% if sortable %>
+                  <% next_direction = selected && @query.direction == "asc" ? "descending" : "ascending" %>
+                  <%= link_to records_path(slug: params[:slug],
+                    **rekorra_index_sort_params(@query, field.name)),
+                    class: "rk-sort-link", data: { rk_index_nav: true },
+                    aria: { label: "Sort by #{field.label} #{next_direction}" } do %>
+                    <span><%= field.label %></span>
+                    <span class="rk-sort-link__icon" aria-hidden="true"><%= selected ? (@query.direction == "asc" ? "↑" : "↓") : "↕" %></span>
+                  <% end %>
+                <% else %>
+                  <%= field.label %>
+                <% end %>
+              </th>
+            <% end %>
+            <th scope="col">Actions</th>
+          </tr></thead>
+          <tbody>
+            <% @records.each do |record| %>
+              <tr>
+                <% @resource.index.fields.each do |field| %>
+                  <td data-label="<%= field.label %>"><%= rekorra_field_value(record, field) %></td>
+                <% end %>
+                <td data-label="Actions">
+                  <%= link_to "View", record_path(slug: params[:slug], id: record.to_param) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
     </div>
-  <% else %>
-    <p class="rk-muted">No records match your search or filters.</p>
-  <% end %>
+    <% if @records.empty? %>
+      <p class="rk-muted" role="status">No records match your search or filters.</p>
+    <% end %>
+  </div>
+
   <nav class="rk-pagination" aria-label="Pagination">
     <% if @query.keyset? %>
       <% if @query.has_previous && @query.previous_cursor %>
         <%= link_to "Previous", records_path(slug: params[:slug],
-          **@query.navigation_params.merge(cursor: @query.previous_cursor)) %>
+          **@query.navigation_params.merge(cursor: @query.previous_cursor)),
+          data: { rk_index_nav: true } %>
       <% end %>
       <span>Cursor navigation · <%= @records.size %> records</span>
       <% if @query.has_next && @query.next_cursor %>
         <%= link_to "Next", records_path(slug: params[:slug],
-          **@query.navigation_params.merge(cursor: @query.next_cursor)) %>
+          **@query.navigation_params.merge(cursor: @query.next_cursor)),
+          data: { rk_index_nav: true } %>
       <% end %>
     <% else %>
       <% if @query.page > 1 %>
-      <%= link_to "Previous", records_path(slug: params[:slug],
-        **@query.navigation_params.merge(page: @query.page - 1)) %>
-    <% end %>
-    <span>Page <%= @query.page %> · <%= @records.size %> records</span>
-    <% if @query.has_next %>
-      <%= link_to "Next", records_path(slug: params[:slug],
-        **@query.navigation_params.merge(page: @query.page + 1)) %>
-    <% end %>
+        <%= link_to "Previous", records_path(slug: params[:slug],
+          **@query.navigation_params.merge(page: @query.page - 1)),
+          data: { rk_index_nav: true } %>
+      <% end %>
+      <span>Page <%= @query.page %> · <%= @records.size %> records</span>
+      <% if @query.has_next %>
+        <%= link_to "Next", records_path(slug: params[:slug],
+          **@query.navigation_params.merge(page: @query.page + 1)),
+          data: { rk_index_nav: true } %>
+      <% end %>
     <% end %>
   </nav>
 </section>
