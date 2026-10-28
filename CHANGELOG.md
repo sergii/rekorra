@@ -4,6 +4,15 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.11 phase 1 - Durable outbox scanner and leases
+- Host-owned primary-DB scanner with atomic claim tokens, lease expiration, bounded attempts and review state. No need to enqueue to a second queue DB to discover a committed outbox event.
+- Reconcile unknown provider outcomes before any POST; ensure an expired lease owner cannot override another scanner's state; disallow arbitrary untrusted provider endpoints.
+- Operator re-open is tenant/policy/reason gated and audited. Aggregate host metrics include review/lease states.
+- Dedicated PostgreSQL E2E covers two competing real scanner processes, SIGKILL while holding a lease, expiry/reclaim, lost ACK and provider receipt reconciliation, provider outage and reviewed redelivery.
+- No general-purpose Rekorra retry UI, published Engine runtime change, or exactly-once external effect claim.
+- See [Step 0008.11](docs/steps/0008-11-outbox-dispatch.md).
+
+
 ### Step 0008.10 - Transactional outbox and external delivery
 - Host-owned PostgreSQL outbox intent is committed atomically with the tenant-key idempotency ledger and local business effect.
 - Independent HTTP provider process persists to a separate PostgreSQL DB, dies after commit and before ACK; failed delivery is marked uncertain.
