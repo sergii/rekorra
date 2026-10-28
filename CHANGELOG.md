@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.2 - MySQL 8.4 host compatibility (CI pending)
+- Added a service-backed MySQL 8.4 test-host job against Rails 8.1 / Ruby 3.4, preserving the independent SQLite queue.
+- Kept mysql2 test-host-only, outside the gem runtime dependencies.
+- Recognize MySQL backtick-quoted table names in SQL query-bound tests.
+- See [Step 0008.2](docs/steps/0008-2-mysql.md) and [ADR 0024](docs/adr/0024-mysql-compatibility.md).
+
 ### Step 0008.1 — PostgreSQL host compatibility
 - Added real PostgreSQL 16 CI service and full Rails 8.1 / Ruby 3.4 integration test run using PostgreSQL primary.
 - Preserved independent SQLite Solid Queue database and all existing Rails compatibility/Chrome/packaging gates.
