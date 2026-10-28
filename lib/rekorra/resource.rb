@@ -68,11 +68,42 @@ module Rekorra
         @external_links || []
       end
 
+      # Policies are centralized per column so Index, Show, forms, search,
+      # sorting and filtering share the same field-level access rules.
+      def field_policy(column, read: nil, write: nil)
+        @field_policies ||= {}
+        name = column.to_s
+        unless name.match?(/\A[a-z][a-z0-9_]*\z/) && !@field_policies.key?(name)
+          raise ConfigurationError, "Invalid or duplicate field policy: #{name}"
+        end
+        policies = { read: read, write: write }
+        policies.each do |operation, policy|
+          next if policy.nil?
+          unless policy.is_a?(Symbol) && policy.to_s.end_with?("?")
+            raise ConfigurationError, "#{operation} policy must be a predicate symbol"
+          end
+        end
+        @field_policies[name] = policies.freeze
+      end
+
+      def field_policies
+        @field_policies || {}
+      end
+
+      def policy_for(column, operation)
+        field_policies.dig(column.to_s, operation)
+      end
+
       def permitted_fields
         form.fields.map(&:name).select { |name| model_class.column_names.include?(name.to_s) }
       end
 
       def validate!
+        field_policies.each_key do |column|
+          unless model_class.column_names.include?(column)
+            raise ConfigurationError, "Unknown field policy column: #{column}"
+          end
+        end
         index.validate_index!(model_class)
         findings&.validate!
         jobs&.validate!

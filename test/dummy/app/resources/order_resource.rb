@@ -4,6 +4,8 @@ class OrderResource < Rekorra::Resource
   model "Order"
   search_by :number, :status
 
+  field_policy :total_cents, read: :view_total_cents?, write: :edit_total_cents?
+
   index do
     field :number
     field :customer

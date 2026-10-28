@@ -13,12 +13,18 @@ module Rekorra
         raise ConfigurationError, "Missing index cursor context adapter" unless callback.respond_to?(:call)
         callback.call(rekorra_actor)
       end
+      @denied_columns = @resource.field_policies.filter_map do |column, rules|
+        column if rules[:read] && !allowed?(@model, rules[:read])
+      end
+      @index_fields = @resource.index.fields.reject { |field| @denied_columns.include?(field.name.to_s) }
+      @index_filters = @resource.index.filters.reject { |filter| @denied_columns.include?(filter.name) }
       @query = Query.new(resource: @resource, scope: scoped_for(@model),
         search: params[:q], sort: params[:sort], direction: params[:direction],
         page: params[:page], per_page: params[:per_page], filters: params[:filters],
-        cursor: params[:cursor], cursor_context: identity)
+        cursor: params[:cursor], cursor_context: identity,
+        denied_columns: @denied_columns)
       @records = @query.call.select { |item| allowed?(item, :show?) }
-      @visible_associations = visible_associations(@records, @resource.index.fields)
+      @visible_associations = visible_associations(@records, @index_fields)
     end
 
     def show
@@ -41,7 +47,8 @@ module Rekorra
         authorize: ->(subject, action) { allowed?(subject, action) },
         registry: Rekorra.configuration.activity_adapters
       ).call
-      @visible_associations = visible_associations([@record], @resource.show.fields)
+      @show_fields = @resource.show.fields.select { |field| field_readable?(@record, field) }
+      @visible_associations = visible_associations([@record], @show_fields)
       @context_entries = Context::Resolver.new(
         resource: @resource, record: @record, actor: rekorra_actor,
         configuration: Rekorra.configuration,
@@ -70,8 +77,9 @@ module Rekorra
 
     def create
       authorize!(@model, :create?)
-      @record = @model.new(record_params)
+      @record = @model.new
       authorize!(@record, :create?)
+      @record.assign_attributes(record_params)
       validate_foreign_keys!
       if with_activity_actor { @record.save }
         redirect_to record_path(slug: params[:slug], id: @record.to_param), notice: "Created"
@@ -131,7 +139,22 @@ module Rekorra
     end
 
     def record_params
-      params.require(:record).permit(*@resource.permitted_fields)
+      submitted = params.require(:record)
+      @resource.permitted_fields.each do |name|
+        next unless submitted.key?(name)
+        raise NotAuthorized unless field_writable?(@record, name)
+      end
+      submitted.permit(*@resource.permitted_fields.select { |name| field_writable?(@record, name) })
+    end
+
+    def field_readable?(record, field)
+      policy = @resource.policy_for(field.name, :read)
+      !policy || (allowed?(@model, policy) && allowed?(record, policy))
+    end
+
+    def field_writable?(record, name)
+      policy = @resource.policy_for(name, :write)
+      !policy || (allowed?(@model, policy) && allowed?(record, policy))
     end
 
     def validate_foreign_keys!
@@ -151,8 +174,11 @@ module Rekorra
     end
 
     def load_field_options
+      @form_fields = @resource.form.fields.select do |field|
+        field_readable?(@record, field) && field_writable?(@record, field.name)
+      end
       @field_options = {}
-      @resource.form.fields.each do |field|
+      @form_fields.each do |field|
         reflection = @model.reflect_on_all_associations(:belongs_to).find do |entry|
           !entry.polymorphic? && entry.foreign_key == field.name.to_s
         end

@@ -10,8 +10,18 @@ module Rekorra
       :next_cursor, :previous_cursor, :per_page, :filter_values, :sort_columns
 
     def initialize(resource:, scope:, search:, sort:, direction:, page:,
-      per_page: nil, filters: nil, cursor: nil, cursor_context: nil)
+      per_page: nil, filters: nil, cursor: nil, cursor_context: nil, denied_columns: [])
       @resource, @scope = resource, scope
+      @denied_columns = Array(denied_columns).map(&:to_s).freeze
+      if @denied_columns.include?(sort.to_s)
+        raise NotAuthorized
+      end
+      supplied = filters.is_a?(Hash) || filters.is_a?(ActionController::Parameters) ? filters : {}
+      supplied.each_key do |key|
+        if @denied_columns.any? { |name| key.to_s == name || key.to_s.start_with?("#{name}_") }
+          raise NotAuthorized
+        end
+      end
       @search = search.is_a?(String) ? search.strip.first(160) : ""
       @page = [[Integer(page, exception: false) || 1, 1].max, MAX_PAGE].min
       @direction = direction == "desc" ? "desc" : "asc"
@@ -32,6 +42,7 @@ module Rekorra
       else
         resource.index.fields.map(&:name).map(&:to_s) & model.column_names
       end
+      @sort_columns -= @denied_columns
       @sort = @sort_columns.include?(sort.to_s) ? sort.to_s : model.primary_key.to_s
       @raw_filters = filters.is_a?(Hash) || filters.is_a?(ActionController::Parameters) ? filters : {}
       @filter_values = {}
@@ -85,6 +96,7 @@ module Rekorra
 
     def apply_search(relation, model)
       names = @resource.index.index_search_columns || @resource.search_by.map(&:to_s)
+      names = names.reject { |name| @denied_columns.include?(name.to_s) }
       names = names.select { |name|
         column = model.columns_hash[name.to_s]
         column && %i[string text].include?(column.type)
@@ -100,6 +112,7 @@ module Rekorra
     def apply_filters(relation, model)
       table = model.arel_table
       @resource.index.filters.each do |filter|
+        next if @denied_columns.include?(filter.name)
         name = filter.name
         column = model.columns_hash.fetch(name)
         case filter.type

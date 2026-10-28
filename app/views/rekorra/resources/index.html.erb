@@ -29,11 +29,11 @@
       </div>
     </div>
 
-    <% if @resource.index.filters.any? %>
+    <% if @index_filters.any? %>
       <details class="rk-index-advanced" <%= "open" if @query.filter_values.any? %>>
         <summary>Filters<% if @query.filter_values.any? %> <span class="rk-index-filter-count"><%= @query.filter_values.length %> active</span><% end %></summary>
         <div class="rk-index-controls__filters">
-          <% @resource.index.filters.each do |filter| %>
+          <% @index_filters.each do |filter| %>
             <% case filter.type %>
             <% when :select %>
               <div class="rk-index-control">
@@ -102,7 +102,7 @@
     <div class="rk-table-scroll">
         <table class="rk-table rk-index-table">
           <thead><tr>
-            <% @resource.index.fields.each do |field| %>
+            <% @index_fields.each do |field| %>
               <% sortable = @query.sort_columns.include?(field.name.to_s) %>
               <% selected = sortable && @query.sort == field.name.to_s %>
               <th scope="col" <%= "aria-sort=#{@query.direction == 'asc' ? 'ascending' : 'descending'}" if selected %>>
@@ -126,7 +126,7 @@
             <% @records.each do |record| %>
               <tr>
                 <% @resource.index.fields.each do |field| %>
-                  <td data-label="<%= field.label %>"><%= rekorra_field_value(record, field) %></td>
+                  <td data-label="<%= field.label %>"><%= field_readable?(record, field) ? rekorra_field_value(record, field) : "Restricted" %></td>
                 <% end %>
                 <td data-label="Actions">
                   <%= link_to "View", record_path(slug: params[:slug], id: record.to_param) %>
