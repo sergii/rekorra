@@ -1,6 +1,6 @@
 # Step 0008.8 - SIGKILL of an in-flight Solid Queue job
 
-Status: PR CI pending. Issue #29.
+Status: Implemented in PR #30; [16/16 green CI, run 40718100382](https://github.com/sergii/rekorra/actions/runs/40718100382). Post-merge verification is recorded in the PR timeline. Issue #29.
 
 ## Verified implementation behavior (Solid Queue v1.6.0)
 
