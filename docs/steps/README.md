@@ -28,4 +28,4 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0008.2 — MySQL compatibility](0008-2-mysql.md) | Rails host primary DB in MySQL 8.4, SQLite Solid Queue | Full integration and 50k-row SQL bounds | Merged; post-merge CI green |
 | [0008.3 — Asset host compatibility](0008-3-asset-hosts.md) | Standalone installed Rails hosts, Propshaft/Sprockets and optional Hotwire | Asset HTTP delivery and Turbo lifecycle cleanup | Merged; post-merge CI green |
 | [0008.4 — Real worker E2E](0008-4-real-workers.md) | Standalone Solid Queue and Sidekiq OS workers, SQLite + Redis | Real execution, failed/retrying, scoped statuses | Merged; post-merge CI green |
-| [0008.5 — Production assets](0008-5-production-assets.md) | Installed gem in two production hosts | Propshaft/Sprockets precompile + real demo-host Turbo/Stimulus Chrome | Phase 2 PR #24; external-host/CSP gate pending |
+| [0008.5 — Production assets](0008-5-production-assets.md) | Installed gem in two production hosts | Propshaft/Sprockets precompile, demo + installed-gem Chrome Turbo/Stimulus/CSP | PR #26 CI pending; live deployment QA pending |

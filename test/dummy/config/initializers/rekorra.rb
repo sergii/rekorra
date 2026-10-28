@@ -3,6 +3,7 @@ require "sidekiq/api"
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
+  config.importmap_enabled = ENV["REKORRA_HOTWIRE_BROWSER"] == "1"
   config.index_cursor_context_with = ->(actor) { "organization:#{actor.id}" }
   config.finding_rules.register :paid_but_pending, "PaidButPending"
 

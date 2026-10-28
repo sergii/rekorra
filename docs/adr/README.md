@@ -45,3 +45,5 @@ Accepted means a design decision, not verified implementation.
 - [ADR 0025 - Pipeline-neutral installed Engine assets](0025-rails-host-assets.md)
 
 - [ADR 0026 - Real worker-process E2E](0026-worker-e2e.md)
+
+- [ADR 0027 - Host-owned optional Importmap and enforced CSP](0027-host-importmap-hotwire.md)

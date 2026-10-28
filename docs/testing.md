@@ -18,7 +18,7 @@ bundle install
 bundle exec rake test
 ```
 
-Step 0008.3 adds installed gem asset HTTP checks across Propshaft/Sprockets and optional Turbo/Stimulus Railties. Browser validation of real Hotwire navigation in external hosts and production asset precompilation are still open.
+Step 0008.3 checks installed gem asset HTTP delivery across Propshaft/Sprockets. Step 0008.5 adds real production `assets:precompile` for both pipelines plus separate Chrome tests of Turbo/Stimulus in demo and installed-gem external hosts. The external host CI enforces nonce-based CSP, checks actual asset HTTP 200 and real form/association behavior. A production deployment, CDN and its caching/security headers remain outside this test.
 
 Step 0008.4 has a separate real worker process E2E gate with persistent primary/queue DBs and Redis, checking actual record updates, failure/retry state and provider-specific Jobs projections. Full worker crash recovery, exact-once and throughput guarantees remain open.
 
