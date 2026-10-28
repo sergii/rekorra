@@ -22,4 +22,6 @@
 
 - [ADR 0014 — Secure Keyset Cursor Pagination](0014-keyset-pagination.md)
 
+- [ADR 0015 — Resource Index UX progressive enhancement](0015-index-ux-progressive-enhancement.md)
+
 Accepted means a design decision, not verified implementation.
