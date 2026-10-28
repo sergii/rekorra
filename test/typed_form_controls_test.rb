@@ -89,6 +89,8 @@ class TypedFormControlsTest < ActionDispatch::IntegrationTest
       { flagged: "yes" }, { flagged: ["1"] },
       { due_on: "2026-02-30" }, { due_on: "2026-10-28 OR 1=1" },
       { estimated_hours: "NaN" }, { estimated_hours: "1e400" },
+      { estimated_hours: "9999999.00" }, { estimated_hours: "2.555" },
+      { flagged: "" },
       { reviewed_at: "2026-13-28T12:00" },
       { reviewed_at: "2026-10-28T25:00" }
     ].each do |invalid|
