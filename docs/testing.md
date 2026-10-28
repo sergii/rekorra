@@ -18,6 +18,8 @@ bundle install
 bundle exec rake test
 ```
 
+Step 0008.3 adds installed gem asset HTTP checks across Propshaft/Sprockets and optional Turbo/Stimulus Railties. Browser validation of real Hotwire navigation in external hosts and production asset precompilation are still open.
+
 A green CI run is necessary but not sufficient for a production-ready label. Keep unchecked gates in `docs/steps`.
 
 10. **Jobs:** real backend enqueue, scoped record mapping, forbidden policy, safe errors, missing/finished status and adapter interchangeability.

@@ -29,7 +29,7 @@ The demo does not have custom views. The engine renders the resources.
 
 ## Compatibility matrix
 
-CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance and a separate installed-gem Rails host smoke. PostgreSQL 16 and MySQL 8.4 have each passed dedicated full integration CI jobs as the host's primary database. Solid Queue stays on SQLite. This does not establish production throughput or release readiness. These checks do not yet establish production readiness. See [Step 0008.0](docs/steps/0008-production-readiness.md), [Step 0008.1](docs/steps/0008-1-postgresql.md) and [Step 0008.2](docs/steps/0008-2-mysql.md).
+CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance and a separate installed-gem Rails host smoke. PostgreSQL 16 and MySQL 8.4 have each passed dedicated full integration CI jobs as the host's primary database. Solid Queue stays on SQLite. This does not establish production throughput or release readiness. These checks do not yet establish production readiness. See [Step 0008.0](docs/steps/0008-production-readiness.md), [Step 0008.1](docs/steps/0008-1-postgresql.md) and [Step 0008.2](docs/steps/0008-2-mysql.md), plus [Step 0008.3](docs/steps/0008-3-asset-hosts.md).
 
 ## Test
 
@@ -46,7 +46,7 @@ Real Chrome acceptance is a separate CI job (Chrome and Redis required for local
 
 GitHub Actions saves screenshots under its **rekorra-browser-acceptance** artifact. See [Step 0005.3](docs/steps/0005-3-browser-acceptance.md). Human visual and screen-reader QA are not yet complete.
 
-The host app needs no npm/yarn, React/Vue or frontend compilation. Rekorra ships HTML and CSS. Stimulus/Turbo support is deliberately deferred until baseline HTML behavior is verified.
+The host app needs no npm/yarn, React/Vue or frontend compilation. Rekorra ships HTML, CSS and optional vanilla JavaScript. Step 0008.3 checks packaged assets in independent Propshaft/Sprockets hosts with optional Turbo/Stimulus railties. This is not a full external-host Hotwire browser E2E. See [Step 0008.3](docs/steps/0008-3-asset-hosts.md).
 
 ## Configure a host application
 
