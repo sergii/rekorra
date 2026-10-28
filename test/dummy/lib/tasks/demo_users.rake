@@ -20,7 +20,7 @@ namespace :demo do
           updated_at: now
         }
       end
-      User.insert_all(records, unique_by: :index_users_on_organization_id_and_email)
+      User.insert_all(records)
     end
     puts "Demo users: #{org.users.count}"
   end
