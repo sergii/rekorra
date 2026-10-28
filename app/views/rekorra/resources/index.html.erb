@@ -99,8 +99,7 @@
       <span><%= @records.size %> records on this page</span>
       <span class="rk-index-loading" role="status">Loading records…</span>
     </div>
-    <% if @records.any? %>
-      <div class="rk-table-scroll">
+    <div class="rk-table-scroll">
         <table class="rk-table rk-index-table">
           <thead><tr>
             <% @resource.index.fields.each do |field| %>
@@ -136,9 +135,9 @@
             <% end %>
           </tbody>
         </table>
-      </div>
-    <% else %>
-      <p class="rk-muted">No records match your search or filters.</p>
+    </div>
+    <% if @records.empty? %>
+      <p class="rk-muted" role="status">No records match your search or filters.</p>
     <% end %>
   </div>
 
