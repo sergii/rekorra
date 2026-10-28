@@ -178,6 +178,21 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     assert_selector "form[data-rk-association-lookup] [role='status']", text: /options available/
   end
 
+  test "native typed controls remain inside mobile viewport" do
+    page.driver.browser.execute_cdp("Emulation.setDeviceMetricsOverride",
+      width: 390, height: 844, deviceScaleFactor: 1, mobile: true)
+    visit "/backoffice/resources/cases/new"
+    assert_selector "input[type='checkbox'][name='record[flagged]']"
+    assert_selector "input[type='date'][name='record[due_on]']"
+    assert_selector "input[type='number'][name='record[estimated_hours]']"
+    assert_selector "input[type='datetime-local'][name='record[reviewed_at]']"
+    assert_selector "textarea[name='record[notes]']"
+    assert_selector "select[name='record[state]']"
+    assert_operator evaluate_script("document.documentElement.scrollWidth"), :<=,
+      evaluate_script("window.innerWidth") + 1
+    capture("mobile-typed-form")
+  end
+
   private
 
   def capture(name)

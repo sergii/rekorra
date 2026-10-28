@@ -31,4 +31,6 @@
 - [ADR 0018 — Optional Pundit](0018-optional-pundit.md)
 - [ADR 0019 — Form extensions](0019-form-extensions.md)
 
+- [ADR 0020 — Native typed form fields](0020-native-typed-form-fields.md)
+
 Accepted means a design decision, not verified implementation.

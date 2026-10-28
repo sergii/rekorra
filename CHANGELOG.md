@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0006.4 — Native Typed Form Fields
+- Inferred Rails checkbox/number/date/datetime-local/textarea inputs from host columns.
+- Rejected invalid structured POST/PATCH values before assignment.
+- Added CaseRecord demo typed attributes, CRUD/security and browser checks.
+- See [Step 0006.4](docs/steps/0006-4-native-typed-fields.md).
+
 ### Steps 0006.1–0006.3 — Advanced Resource Extensions
 - Optional progressive association lookup preserves unsaved form drafts and selected belongs_to records.
 - Optional Pundit authorization and strict SQL-scope adapter, tested with real policies.
