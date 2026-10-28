@@ -50,7 +50,7 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     assert_no_text "Other Tenant Secret"
     assert_selector "a.rk-sort-link[aria-label='Sort by Name ascending']"
 
-    click_link "Sort by Name ascending"
+    find("a[aria-label='Sort by Name ascending']").click
     assert_selector "th[aria-sort='ascending'] a.rk-sort-link"
     assert_equal "name", URI.parse(current_url).query.then {
       |query| Rack::Utils.parse_nested_query(query)["sort"]
@@ -65,7 +65,7 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     assert_no_text "Other Tenant Secret"
     assert_selector "table.rk-index-table tbody tr"
 
-    click_link "Remove Status filter"
+    find("a[aria-label='Remove Status filter']").click
     assert_no_selector "a.rk-index-filter-chip"
     capture("desktop-users")
   end
@@ -121,7 +121,7 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     click_link "Next"
     assert_selector "nav[aria-label='Pagination'] a", text: "Previous"
     assert_includes current_url, "cursor="
-    click_link "Sort by Email ascending"
+    find("a[aria-label='Sort by Email ascending']").click
     assert_selector "th[aria-sort='ascending'] a.rk-sort-link"
     refute_includes current_url, "cursor="
     assert_selector "table.rk-index-table tbody tr", count: 10
@@ -138,7 +138,7 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     click_button "Apply"
     assert_selector "a.rk-index-filter-chip"
     assert_selector "table.rk-index-table tbody tr"
-    click_link "Remove Role filter"
+    find("a[aria-label='Remove Role filter']").click
     assert_no_selector "a.rk-index-filter-chip"
     click_link "Next"
     assert_text "Page 2"
