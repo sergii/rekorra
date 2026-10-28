@@ -26,7 +26,6 @@ module Rekorra
       else value.to_s
       end
     end
-  end
 
     # Clicking a sortable table header always starts at the first result page.
     # Cursor/page are deliberately absent: the new sort invalidates both.
@@ -57,4 +56,5 @@ module Rekorra
       suffix = name.delete_prefix(filter.name).delete_prefix("_")
       suffix.empty? ? filter.label : "#{filter.label} #{suffix}"
     end
+  end
 end
