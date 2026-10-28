@@ -59,7 +59,7 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
 
     find("details.rk-index-advanced summary").click
     find("select[name='filters[status]']").select("active")
-    click_button "Apply"
+    within("form[data-rk-index-form]") { click_button "Apply" }
     assert_selector "details.rk-index-advanced[open]"
     assert_selector "a.rk-index-filter-chip"
     assert_no_text "Other Tenant Secret"
@@ -135,7 +135,7 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     assert_selector "table.rk-index-table tbody tr", count: 10
     find("details.rk-index-advanced summary").click
     find("select[name='filters[role]']").select("admin")
-    click_button "Apply"
+    within("form[data-rk-index-form]") { click_button "Apply" }
     assert_selector "a.rk-index-filter-chip"
     assert_selector "table.rk-index-table tbody tr"
     find("a[aria-label='Remove Role filter']").click
