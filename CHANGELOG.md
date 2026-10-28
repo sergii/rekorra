@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0007 — Access Audit
+- Added provider-neutral, opt-in Access Audit event, registry, resolver and read-only timeline with a separate policy.
+- Added host-owned ActiveRecord adapter and demo storage; no runtime audit gem or Rekorra migrations.
+- Instrumented authorized Order Show and successful CRUD, with audit/domain transaction coupling in the demo.
+- Added security tests and ADR 0021; PaperTrail Activity remains a separate module.
+- See [Step 0007](docs/steps/0007-access-audit.md).
+
 ### Step 0006.4 — Native Typed Form Fields
 - Inferred Rails checkbox/number/date/datetime-local/textarea inputs from host columns.
 - Rejected invalid structured POST/PATCH values before assignment.

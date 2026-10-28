@@ -33,4 +33,6 @@
 
 - [ADR 0020 — Native typed form fields](0020-native-typed-form-fields.md)
 
+- [ADR 0021 — Host-owned Access Audit](0021-access-audit.md)
+
 Accepted means a design decision, not verified implementation.
