@@ -250,3 +250,31 @@ jobs:
           name: rekorra-worker-e2e-logs
           path: test/dummy/tmp/worker-e2e/
           if-no-files-found: warn
+
+  production_assets:
+    name: Production assets matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: [propshaft, sprockets]
+    env:
+      RAILS_ENV: production
+      SECRET_KEY_BASE: production-assets-ci-only-not-real
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Install optional asset pipeline and packaged gem
+        run: |
+          gem install --no-document sprockets-rails
+          gem build rekorra.gemspec --output "$RUNNER_TEMP/rekorra-built.gem"
+          gem install --local "$RUNNER_TEMP/rekorra-built.gem" --install-dir "$RUNNER_TEMP/packaged-gems" --no-document --ignore-dependencies
+      - name: Compile and inspect production assets from independent host
+        run: |
+          export GEM_PATH="$(bundle exec ruby -e 'puts Gem.path.join(":")'):$RUNNER_TEMP/packaged-gems"
+          host_dir="$(mktemp -d "$RUNNER_TEMP/rekorra-production-XXXXXX")"
+          cd "$host_dir"
+          env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" REKORRA_ASSET_STACK="${{ matrix.stack }}" ruby "$GITHUB_WORKSPACE/test/packaging/production_assets.rb"
