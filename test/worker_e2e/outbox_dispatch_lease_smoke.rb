@@ -166,8 +166,8 @@ class OutboxDispatchSmoke
   end
 
   def requests(key)
-    row = @external.exec_params("SELECT requests FROM provider_receipts WHERE operation_key = $1", [key])[0]
-    row ? row.fetch("requests").to_i : 0
+    result = @external.exec_params("SELECT requests FROM provider_receipts WHERE operation_key = $1", [key])
+    result.ntuples.zero? ? 0 : result[0].fetch("requests").to_i
   end
 
   def endpoint
