@@ -1,6 +1,6 @@
 # Step 0008.4 - Real worker process E2E
 
-Status: PR #22 [Green CI 40682599257](https://github.com/sergii/rekorra/actions/runs/40682599257); post-merge CI pending.
+Status: Merged in PR #22; [post-merge CI 40682950631](https://github.com/sergii/rekorra/actions/runs/40682950631) passed. Worker reliability follow-up in [Step 0008.6](0008-6-worker-reliability.md).
 
 ## Context
 
@@ -20,7 +20,7 @@ Each provider gets successful, failing and cross-tenant jobs. A real HTTP reques
 - [x] Sidekiq completed job remains Unavailable rather than fake Finished
 - [x] Foreign tenant identifiers stay absent from authorized pages
 - [x] Existing CI jobs remain green
-- [ ] Post-merge CI green
+- [x] Post-merge CI green
 
 ## Boundaries
 

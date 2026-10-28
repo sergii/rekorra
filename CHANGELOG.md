@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.6 - Worker reliability regression (issue #25)
+- Investigated failed Solid Queue artifacts: repeated SQLite busy locks in supervisor forked children; Sidekiq 7.3.9 scheduler failed against connection_pool 3.0.2.
+- Test-only one-worker/one-thread Solid Queue profile, no unnecessary dispatcher and 10s SQLite queue busy wait; unchanged 75s E2E overall deadline.
+- Pin compatible connection_pool 2.x in demo/test Gemfile, without touching the published Rekorra gemspec.
+- Detect exited worker parents; include first failure signatures in CI logs while retaining full worker log artifacts.
+- See [Step 0008.6](docs/steps/0008-6-worker-reliability.md) and [issue #25](https://github.com/sergii/rekorra/issues/25).
+
 ### Step 0008.5 - Installed-gem Chrome Hotwire and CSP acceptance (PR #26)
 - Added two external Rails host Chrome jobs (Propshaft/Sprockets), using the built installed gem outside the repository.
 - Verified real Turbo/Stimulus, pagination/back, draft-safe association lookup, persisted forms, enforced nonce CSP and asset HTTP 200.

@@ -33,6 +33,9 @@ CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance an
 
 ## Test
 
+Worker E2E CI has a dedicated single-worker SQLite queue fixture to avoid concurrent metadata writes, and the demo/test host constrains connection_pool for Sidekiq 7.3 compatibility. These are **not** production throughput defaults. See [Step 0008.6](docs/steps/0008-6-worker-reliability.md).
+
+
 From the root:
 
 ```sh

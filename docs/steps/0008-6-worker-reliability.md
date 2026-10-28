@@ -1,6 +1,6 @@
 # Step 0008.6 - Worker CI reliability
 
-Status: PR CI pending. Tracks [issue #25](https://github.com/sergii/rekorra/issues/25).
+Status: PR #27 has multiple independent green full CI runs; post-merge verification pending. Tracks [issue #25](https://github.com/sergii/rekorra/issues/25).
 
 ## Root cause evidence
 
@@ -17,11 +17,11 @@ The artifact also shows Sidekiq 7.3.9 scheduler crashed with `connection_pool 3.
 
 ## Acceptance
 
-- [ ] Actual Solid Queue success + failure + tenant isolation in GitHub Actions
-- [ ] Actual Sidekiq success + retry + tenant isolation in GitHub Actions
-- [ ] More than one independent green CI run without re-running failed jobs
+- [x] Actual Solid Queue success + failure + tenant isolation in GitHub Actions
+- [x] Actual Sidekiq success + retry + tenant isolation in GitHub Actions
+- [x] More than one independent green CI run without re-running failed jobs
 - [ ] Main post-merge CI green
-- [ ] No recurrent `database is locked` / Sidekiq scheduler signature in worker logs
+- [x] No recurrent `database is locked` / Sidekiq scheduler signature in inspected successful worker log artifact
 
 ## Boundaries
 
