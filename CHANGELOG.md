@@ -4,6 +4,13 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.9 - Idempotency and Recovery Operations
+- Add host-only unique tenant-scoped operation ledger for atomic local business effects and replay-safe worker.
+- Add explicit host authorization, linked-job and class checks, durable operator retry decision, and global failed/aged claim health snapshot.
+- Real PostgreSQL E2E: SIGKILL claimed worker after effect commit; approved retry; duplicate independent enqueue, tenant isolation, failed/finished read-only UI status.
+- No published gem retry UI, new runtime dependency or exactly-once external-effect claim.
+- See [Step 0008.9](docs/steps/0008-9-idempotency-recovery.md).
+
 ### Step 0008.8 - In-flight worker SIGKILL and explicit retry
 - New real OS worker E2E kills the exact process running a claimed long job under a live Solid Queue supervisor.
 - Verify ProcessExitError and Rekorra Failed state without automatic retry; then use official FailedExecution#retry and assert Finished.
