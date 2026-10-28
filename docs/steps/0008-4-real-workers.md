@@ -1,6 +1,6 @@
 # Step 0008.4 - Real worker process E2E
 
-Status: PR #22, CI validation pending.
+Status: PR #22 [Green CI 40682599257](https://github.com/sergii/rekorra/actions/runs/40682599257); post-merge CI pending.
 
 ## Context
 
@@ -14,14 +14,18 @@ Each provider gets successful, failing and cross-tenant jobs. A real HTTP reques
 
 ## Acceptance
 
-- [ ] Solid Queue worker executes and persists business effect, with finished execution
-- [ ] Solid Queue worker failure persists and Rekorra shows Failed without exception text
-- [ ] Sidekiq worker executes against real Redis/SQLite and failure enters RetrySet
-- [ ] Sidekiq completed job remains Unavailable rather than fake Finished
-- [ ] Foreign tenant identifiers stay absent from authorized pages
-- [ ] Existing CI jobs remain green
+- [x] Solid Queue worker executes and persists business effect, with finished execution
+- [x] Solid Queue worker failure persists and Rekorra shows Failed without exception text
+- [x] Sidekiq worker executes against real Redis/SQLite and failure enters RetrySet
+- [x] Sidekiq completed job remains Unavailable rather than fake Finished
+- [x] Foreign tenant identifiers stay absent from authorized pages
+- [x] Existing CI jobs remain green
 - [ ] Post-merge CI green
 
 ## Boundaries
 
 No throughput, crash recovery, exactly-once semantics, multi-worker concurrency guarantees, Sidekiq retry exhaustion/dead jobs, distributed transaction guarantees, or production monitoring is claimed.
+
+## CI evidence
+
+[Green CI 40682599257](https://github.com/sergii/rekorra/actions/runs/40682599257): nine of nine GitHub Actions jobs passed, including actual Solid Queue and Sidekiq subprocess execution. Both backends changed persisted business data and exposed provider-specific states with tenant isolation; queue-process logs were uploaded as CI artifacts. All existing compatibility jobs stayed green.

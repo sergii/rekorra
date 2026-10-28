@@ -4,7 +4,7 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
-### Step 0008.4 - Real worker E2E (CI pending)
+### Step 0008.4 - Real worker E2E (CI green)
 - Added separate worker-process E2E for Solid Queue and Sidekiq with persisted SQLite, Redis and HTTP checks.
 - Verified real worker transitions, failed/retrying behavior and tenant isolation without faking terminal timestamps.
 - Preserved completed Solid Queue records in the test host to prove Finished status.

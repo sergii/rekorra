@@ -1,6 +1,6 @@
 # ADR 0026 - Real worker execution and provider-specific completion semantics
 
-Status: Proposed, pending Step 0008.4 CI.
+Status: Accepted following [Green CI 40682599257](https://github.com/sergii/rekorra/actions/runs/40682599257).
 
 ## Rationale
 
@@ -15,3 +15,7 @@ Solid Queue retained completion records can be shown as Finished. Sidekiq succes
 ## Limits
 
 This is a finite E2E integration gate. Production concurrency, crash recovery, retries over full backoff windows, dead-set exhaustion, exactly-once execution and cross-database atomicity require their own tests.
+
+## Verified evidence
+
+[Green CI 40682599257](https://github.com/sergii/rekorra/actions/runs/40682599257): all nine jobs passed, including real worker processes and scoped Rekorra HTTP status views. Production worker crash recovery, retry exhaustion and exactly-once execution remain unproven.
