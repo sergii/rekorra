@@ -1,6 +1,6 @@
 # ADR 0022 — Version compatibility and isolated gem packaging
 
-Status: Accepted for Step 0008.0; final integration verification pending.
+Status: Accepted and tested in CI run 40666858122; post-merge verification pending.
 
 ## Decision
 
