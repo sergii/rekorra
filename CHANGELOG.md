@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.4 - Real worker E2E (CI green)
+- Added separate worker-process E2E for Solid Queue and Sidekiq with persisted SQLite, Redis and HTTP checks.
+- Verified real worker transitions, failed/retrying behavior and tenant isolation without faking terminal timestamps.
+- Preserved completed Solid Queue records in the test host to prove Finished status.
+- See [Step 0008.4](docs/steps/0008-4-real-workers.md) and [ADR 0026](docs/adr/0026-worker-e2e.md).
+
 ### Step 0008.3 - Installed Rails asset hosts (CI green)
 - Added four independent installed-gem host smokes for Propshaft/Sprockets with and without Turbo/Stimulus railties.
 - Verify CSS and JS requests actually return HTTP 200 with expected content.

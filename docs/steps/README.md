@@ -26,4 +26,5 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0008.0 — Rails compatibility](0008-production-readiness.md) | Installed-gem standalone host | Rails 8.0/8.1 with Ruby 3.3/3.4, package smoke | Merged; CI green |
 | [0008.1 — PostgreSQL compatibility](0008-1-postgresql.md) | Rails host primary DB in PostgreSQL 16, SQLite Solid Queue | Full integration, authorization, filters, keyset, audit | Merged; CI green |
 | [0008.2 — MySQL compatibility](0008-2-mysql.md) | Rails host primary DB in MySQL 8.4, SQLite Solid Queue | Full integration and 50k-row SQL bounds | Merged; post-merge CI green |
-| [0008.3 — Asset host compatibility](0008-3-asset-hosts.md) | Standalone installed Rails hosts, Propshaft/Sprockets and optional Hotwire | Asset HTTP delivery and Turbo lifecycle cleanup | PR #21 CI green; post-merge pending |
+| [0008.3 — Asset host compatibility](0008-3-asset-hosts.md) | Standalone installed Rails hosts, Propshaft/Sprockets and optional Hotwire | Asset HTTP delivery and Turbo lifecycle cleanup | Merged; post-merge CI green |
+| [0008.4 — Real worker E2E](0008-4-real-workers.md) | Standalone Solid Queue and Sidekiq OS workers, SQLite + Redis | Real execution, failed/retrying, scoped statuses | PR #22 CI green; post-merge pending |

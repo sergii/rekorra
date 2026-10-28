@@ -199,6 +199,10 @@ Sidekiq Redis must be running for this optional view; its API is eventually cons
 
 See [Step 0003.1](docs/steps/0003-1-sidekiq.md).
 
+## Real worker process acceptance (Step 0008.4)
+
+An independent CI job starts real Solid Queue and Sidekiq worker subprocesses against persisted SQLite and Redis, then verifies actual domain effects and tenant-scoped Jobs UI output. It does not use perform_now or fake completion timestamps. Successful Sidekiq jobs remain Unavailable once Redis forgets the JID, rather than being treated as confirmed Finished. See [Step 0008.4](docs/steps/0008-4-real-workers.md).
+
 ## Background Jobs (Step 0003)
 
 The demo host uses Solid Queue with explicit `Order -> DemoJobLink -> ActiveJob ID` correlations. The engine renders provider-neutral job metadata and requires a distinct permission.

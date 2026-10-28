@@ -213,3 +213,40 @@ jobs:
         working-directory: test/dummy
       - name: Run full integration tests including 50k users
         run: bundle exec rake test
+
+  worker_e2e:
+    name: Real Solid Queue and Sidekiq workers (Rails 8.1 / Ruby 3.4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      REKORRA_RAILS_SERIES: "8.1"
+      REDIS_URL: redis://127.0.0.1:6379/12
+      RAILS_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Prepare primary and queue databases
+        run: bundle exec rails db:prepare
+        working-directory: test/dummy
+      - name: Execute true worker subprocesses and scoped HTTP status checks
+        run: bundle exec ruby test/worker_e2e/worker_smoke.rb
+      - name: Upload worker logs for CI diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rekorra-worker-e2e-logs
+          path: test/dummy/tmp/worker-e2e/
+          if-no-files-found: warn
