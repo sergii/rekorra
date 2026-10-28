@@ -51,8 +51,6 @@ class OutboxDispatchSmoke
     rescue WorkerOutboxDispatcher::UnsafeEndpoint
       puts "PASS: untrusted plain HTTP provider rejected"
     end
-    dispatcher = make_dispatcher
-
     # 12 intents exist only in the primary DB. No queue jobs were enqueued.
     bulk = 12.times.map { |i|
       WorkerOutboxOperation.apply_once!(order_id: order.id,
@@ -61,6 +59,7 @@ class OutboxDispatchSmoke
     check(order.reload.total_cents == 94, "Atomic local effect lost")
     check(bulk.all? { |e| e.status == "pending" }, "Outbox unexpectedly pre-delivered")
     launch_provider(crash_key: "none")
+    dispatcher = make_dispatcher
     run_two_dispatchers("concurrent")
     check(bulk.all? { |e| e.reload.delivered? }, "Concurrent scanners failed to drain")
     pids = bulk.map { |e| e.reload.last_dispatcher_pid }.uniq
