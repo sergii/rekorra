@@ -150,6 +150,6 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
   def capture(name)
     directory = Rails.root.join("tmp", "screenshots", "index-acceptance")
     FileUtils.mkdir_p(directory)
-    page.save_screenshot(directory.join("#{name}.png").to_s, full: true)
+    page.save_screenshot(directory.join("#{name}.png").to_s)
   end
 end
