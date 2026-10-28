@@ -47,6 +47,7 @@ class ResourceExtensionsTest < ActionDispatch::IntegrationTest
     @alice = Customer.create!(organization: @acme, name: "Alice", email: "alice@example.test")
     @bob = Customer.create!(organization: @globex, name: "Bob", email: "bob@example.test")
     @order = Order.create!(customer: @alice, number: "EXT-ACME", status: "pending", total_cents: 1000)
+    @case = CaseRecord.create!(organization: @acme, title: "Demo Case", state: "open")
     @foreign = Order.create!(customer: @bob, number: "EXT-GLOBEX", status: "pending", total_cents: 2000)
   end
 
@@ -58,28 +59,28 @@ class ResourceExtensionsTest < ActionDispatch::IntegrationTest
   end
 
   test "Rails enum renders allowlisted choices and persists valid values" do
-    get "/backoffice/resources/orders/#{@order.id}/edit", headers: headers
+    get "/backoffice/resources/cases/#{@case.id}/edit", headers: headers
     assert_response :success
-    options = Nokogiri::HTML(response.body).css("select[name='record[status]'] option")
-    assert_equal %w[pending paid fulfilled], options.map { |option| option["value"] }.reject(&:empty?)
-    assert_equal "pending", options.find { |option| option["selected"] }["value"]
+    options = Nokogiri::HTML(response.body).css("select[name='record[state]'] option")
+    assert_equal %w[open reviewing closed], options.map { |option| option["value"] }.reject(&:empty?)
+    assert_equal "open", options.find { |option| option["selected"] }["value"]
 
-    patch "/backoffice/resources/orders/#{@order.id}", headers: headers,
-      params: { record: { status: "paid" } }
+    patch "/backoffice/resources/cases/#{@case.id}", headers: headers,
+      params: { record: { state: "reviewing" } }
     assert_response :redirect
-    assert_equal "paid", @order.reload.status
+    assert_equal "reviewing", @case.reload.state
   end
 
   test "forged enum value is rejected before model assignment or persistence" do
-    patch "/backoffice/resources/orders/#{@order.id}", headers: headers,
-      params: { record: { status: "superadmin" } }
+    patch "/backoffice/resources/cases/#{@case.id}", headers: headers,
+      params: { record: { state: "superadmin" } }
     assert_response :forbidden
-    assert_equal "pending", @order.reload.status
+    assert_equal "open", @case.reload.state
 
-    assert_no_difference "Order.count" do
-      post "/backoffice/resources/orders", headers: headers, params: {
-        record: { number: "FORGED-ENUM", customer_id: @alice.id,
-          status: "superadmin", total_cents: 10 }
+    assert_no_difference "CaseRecord.count" do
+      post "/backoffice/resources/cases", headers: headers, params: {
+        record: { title: "FORGED-ENUM", organization_id: @acme.id,
+          state: "superadmin" }
       }
     end
     assert_response :forbidden
@@ -87,8 +88,8 @@ class ResourceExtensionsTest < ActionDispatch::IntegrationTest
 
   test "invalid enum DSL declaration fails closed" do
     klass = Class.new(Rekorra::Resource) do
-      model "Order"
-      form { field :number, as: :enum }
+      model "CaseRecord"
+      form { field :title, as: :enum }
     end
     assert_raises(Rekorra::ConfigurationError) { klass.validate! }
     spec = Gem::Specification.load(File.expand_path("../rekorra.gemspec", __dir__))

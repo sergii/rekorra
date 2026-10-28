@@ -83,7 +83,7 @@ class OrderResource < Rekorra::Resource
   form do
     field :number
     field :customer_id
-    field :status, as: :enum
+    field :status
     field :total_cents, label: "Total in cents"
   end
 end
