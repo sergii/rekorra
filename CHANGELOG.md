@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0008.8 - In-flight worker SIGKILL and explicit retry
+- New real OS worker E2E kills the exact process running a claimed long job under a live Solid Queue supervisor.
+- Verify ProcessExitError and Rekorra Failed state without automatic retry; then use official FailedExecution#retry and assert Finished.
+- Persist two distinct starts to demonstrate at-least-once side-effect risk, without exactly-once claims or changing published gem dependencies.
+- See [Step 0008.8](docs/steps/0008-8-inflight-crash.md) and [issue #29](https://github.com/sergii/rekorra/issues/29).
+
 ### Step 0008.7 - PostgreSQL multi-worker and queued-backlog restart
 - Real PostgreSQL primary and Solid Queue databases, two forked worker processes, 36 persisted job completions.
 - Supervisor group SIGKILL and 12 queued jobs, then replacement worker completion and no stale ready/claimed jobs.
