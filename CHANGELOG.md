@@ -4,6 +4,12 @@ Changes are grouped by vertical increments. For validation evidence and outstand
 
 ## Unreleased
 
+### Step 0005.3 — Chrome Browser Acceptance
+- Added six real headless Chrome Rails browser tests for desktop, mobile, keyboard and no-JS navigation.
+- Added screenshot artifacts and retained Capybara/Selenium as test-only dependencies.
+- Documented the human accessibility and physical-device checks still pending.
+- See [Step 0005.3](docs/steps/0005-3-browser-acceptance.md).
+
 ### Step 0005.2 — Resource Index UX
 - Added sortable headers with accessible sort direction on ordinary model tables.
 - Added native compact filters, removable active filter chips, empty-page headings and responsive styles.

@@ -24,4 +24,6 @@
 
 - [ADR 0015 — Resource Index UX progressive enhancement](0015-index-ux-progressive-enhancement.md)
 
+- [ADR 0016 — Browser acceptance](0016-browser-acceptance.md)
+
 Accepted means a design decision, not verified implementation.

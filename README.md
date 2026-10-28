@@ -36,6 +36,12 @@ RAILS_ENV=test bundle exec ruby test/dummy/bin/rails db:prepare
 bundle exec rake test
 ```
 
+Real Chrome acceptance is a separate CI job (Chrome and Redis required for local runs):
+
+    RAILS_ENV=test REDIS_URL=redis://127.0.0.1:6379/12 bundle exec ruby -Itest test/browser/resource_index_browser.rb
+
+GitHub Actions saves screenshots under its **rekorra-browser-acceptance** artifact. See [Step 0005.3](docs/steps/0005-3-browser-acceptance.md). Human visual and screen-reader QA are not yet complete.
+
 The host app needs no npm/yarn, React/Vue or frontend compilation. Rekorra ships HTML and CSS. Stimulus/Turbo support is deliberately deferred until baseline HTML behavior is verified.
 
 ## Configure a host application
