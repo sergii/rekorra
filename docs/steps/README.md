@@ -39,3 +39,5 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0008.9 - Idempotency and recovery](0008-9-idempotency-recovery.md) | Tenant-scoped durable operation key, trusted approved retry, aggregate monitoring | Actual crash, no duplicate local effect, safe refusal | Merged PR #31; 17/17 main CI green; external APIs/outbox deferred |
 
 | [0008.10 - Transactional Outbox](0008-10-transactional-outbox.md) | Atomic host-owned outbox and independent HTTP provider fixture | Provider ACK loss, dedupe and reconciliation E2E | PR CI pending; real external providers not tested |
+
+| [0008.11 - Durable outbox dispatch](0008-11-outbox-dispatch.md) | Competing primary-DB leases, process crash recovery, operator review | Two scanners and independent HTTP provider | PR CI pending; production provider policies deferred |

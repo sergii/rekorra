@@ -33,6 +33,9 @@ CI runs Rails 8.0 and 8.1 on Ruby 3.3 and 3.4, plus Chrome browser acceptance an
 
 ## Test
 
+**Outbox dispatch:** Step 0008.11 adds an optional host-owned scanner with atomic primary-DB leases, bounded attempts, reconciliation-before-redelivery and trusted operator review. It does not add an always-on daemon or third-party provider integration to the Rekorra Engine. See [Step 0008.11](docs/steps/0008-11-outbox-dispatch.md).
+
+
 **External effects:** Step 0008.10 tests a host-owned primary-DB transactional outbox against a separate localhost HTTP provider backed by its own PostgreSQL database. A lost ACK is an unknown outcome, not an assumed failure; redelivery is safe only when the receiver honors the same idempotency key. This is not a general-purpose Rekorra delivery API or proof of exactly-once effects. See [Step 0008.10](docs/steps/0008-10-transactional-outbox.md).
 
 

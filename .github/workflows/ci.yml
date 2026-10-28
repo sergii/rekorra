@@ -528,3 +528,50 @@ jobs:
           name: rekorra-transactional-outbox-provider-logs
           path: test/dummy/tmp/worker-outbox/
           if-no-files-found: warn
+
+
+  worker_outbox_leases:
+    name: PostgreSQL concurrent outbox scanners, SIGKILL leases and operator review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: rekorra
+          POSTGRES_PASSWORD: rekorra_ci_only
+          POSTGRES_DB: rekorra_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rekorra -d rekorra_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      RAILS_ENV: test
+      REKORRA_RAILS_SERIES: "8.1"
+      REKORRA_TEST_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_test
+      REKORRA_TEST_QUEUE_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_queue_test
+      REKORRA_EXTERNAL_DATABASE_URL: postgresql://rekorra:rekorra_ci_only@127.0.0.1:5432/rekorra_external_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Create dedicated queue and external provider databases
+        run: |
+          bundle exec ruby -rpg -e 'c = PG.connect(ENV.fetch("REKORRA_TEST_DATABASE_URL")); %w[rekorra_queue_test rekorra_external_test].each { |name| c.exec("CREATE DATABASE #{name}") }; c.close'
+      - name: Prepare primary and queue schemas
+        run: bundle exec rails db:prepare
+        working-directory: test/dummy
+      - name: Run true competing scanner processes and crash recovery
+        run: bundle exec ruby test/worker_e2e/outbox_dispatch_lease_smoke.rb
+      - name: Upload remote provider and scanner process logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rekorra-outbox-dispatcher-leases
+          path: test/dummy/tmp/worker-outbox-dispatch/
+          if-no-files-found: warn
