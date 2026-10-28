@@ -309,3 +309,36 @@ jobs:
         working-directory: test/dummy
       - name: Run real Turbo browser navigation
         run: bundle exec ruby -Itest test/browser/turbo_browser.rb
+
+  external_hotwire_browser:
+    name: Installed gem Chrome + CSP (${{ matrix.stack }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: [propshaft, sprockets]
+    env:
+      RAILS_ENV: test
+      REKORRA_HOTWIRE_BROWSER: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Verify real Chrome is installed
+        run: |
+          command -v google-chrome
+          google-chrome --version
+      - name: Install independent Rails host integration and packaged gem
+        run: |
+          gem install --no-document sprockets-rails importmap-rails turbo-rails stimulus-rails
+          gem build rekorra.gemspec --output "$RUNNER_TEMP/rekorra-built.gem"
+          gem install --local "$RUNNER_TEMP/rekorra-built.gem" --install-dir "$RUNNER_TEMP/packaged-gems" --no-document --ignore-dependencies
+      - name: Execute real Chrome browser against externally installed gem and enforced CSP
+        run: |
+          export GEM_PATH="$(bundle exec ruby -e 'puts Gem.path.join(":")'):$RUNNER_TEMP/packaged-gems"
+          host_dir="$(mktemp -d "$RUNNER_TEMP/rekorra-browser-XXXXXX")"
+          cd "$host_dir"
+          env -u BUNDLE_GEMFILE -u RUBYOPT GEM_PATH="$GEM_PATH" REKORRA_EXTERNAL_BROWSER_STACK="${{ matrix.stack }}" ruby "$GITHUB_WORKSPACE/test/packaging/external_browser.rb"
