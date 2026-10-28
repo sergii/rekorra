@@ -1,0 +1,10 @@
+# E2E worker-only process profile. All test jobs enqueue immediately.
+# Keep a real OS worker but avoid unnecessary dispatcher/scheduler writers
+# contending for the dedicated SQLite queue database in GitHub Actions.
+test:
+  dispatchers: []
+  workers:
+    - queues: "*"
+      threads: 1
+      processes: 1
+      polling_interval: 0.25

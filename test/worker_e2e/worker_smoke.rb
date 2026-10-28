@@ -10,6 +10,8 @@ require "securerandom"
 require "fileutils"
 require "timeout"
 
+STDOUT.sync = true
+
 abort "Worker E2E is test-only" unless Rails.env.test?
 abort "Dedicated Redis DB required" unless ENV.fetch("REDIS_URL", "").end_with?("/12")
 
@@ -24,6 +26,8 @@ class WorkerSmoke
     @token = SecureRandom.hex(5)
     ENV["REKORRA_DEMO_PASSWORD"] = "worker-e2e-ci-only"
     Sidekiq.redis { |redis| redis.flushdb }
+    puts "Sidekiq #{Gem.loaded_specs.fetch('sidekiq').version}; connection_pool #{Gem.loaded_specs.fetch('connection_pool').version}"
+    puts "Queue SQLite adapter busy-handler timeout configured=#{SolidQueue::Record.connection.pool.db_config.configuration_hash.fetch(:timeout)}ms"
   end
 
   def call
@@ -64,7 +68,7 @@ class WorkerSmoke
     check(status_code(foreign, sidekiq: false) == 404, "Solid Queue leaked tenant record")
 
     pid = launch("solid", ["bundle", "exec", "rake", "solid_queue:start"])
-    wait_for("Solid Queue success/failure") do
+    wait_for("Solid Queue success/failure", worker_pid: pid) do
       order.reload.receipt_generated_at &&
         ::SolidQueue::Job.find_by(active_job_id: successful.job_id)&.finished_at &&
         ::SolidQueue::Job.find_by(active_job_id: other.job_id)&.finished_at &&
@@ -95,7 +99,7 @@ class WorkerSmoke
 
     pid = launch("sidekiq", ["bundle", "exec", "sidekiq", "-r", "./config/environment.rb",
       "-q", "default", "-c", "1"])
-    wait_for("Sidekiq success/retry") do
+    wait_for("Sidekiq success/retry", worker_pid: pid) do
       order.reload.receipt_generated_at &&
         foreign.reload.receipt_generated_at &&
         ::Sidekiq::RetrySet.new.any? { |job| job.jid == failing_jid }
@@ -152,17 +156,24 @@ class WorkerSmoke
     pid
   end
 
-  def wait_for(label)
+  def wait_for(label, worker_pid:)
     deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + MAX_SECONDS
     until yield
+      exited, status = Process.waitpid2(worker_pid, Process::WNOHANG)
+      raise "#{label}: worker exited early (#{status.inspect})" if exited
       raise "#{label} timed out after #{MAX_SECONDS}s" if Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
       sleep 0.25
     end
     puts "Observed #{label} in real backend storage"
   rescue StandardError
     @log_dir.children.each do |path|
-      warn "--- #{path.basename} (tail) ---"
-      warn File.readlines(path).last(45).join
+      lines = File.readlines(path)
+      warn "--- #{path.basename}: first 20 lines ---"
+      warn lines.first(20).join
+      warn "--- #{path.basename}: first failure signatures ---"
+      warn lines.grep(/SQLite3::BusyException|database is locked|StatementTimeout|ArgumentError|NoMethodError|FATAL|uncaught/i).first(15).join
+      warn "--- #{path.basename}: last 60 lines ---"
+      warn lines.last(60).join
     end
     raise
   end

@@ -29,3 +29,5 @@ Every increment is vertically complete in the demo and the gem. Each record trac
 | [0008.3 — Asset host compatibility](0008-3-asset-hosts.md) | Standalone installed Rails hosts, Propshaft/Sprockets and optional Hotwire | Asset HTTP delivery and Turbo lifecycle cleanup | Merged; post-merge CI green |
 | [0008.4 — Real worker E2E](0008-4-real-workers.md) | Standalone Solid Queue and Sidekiq OS workers, SQLite + Redis | Real execution, failed/retrying, scoped statuses | Merged; post-merge CI green |
 | [0008.5 — Production assets](0008-5-production-assets.md) | Installed gem in two production hosts | Propshaft/Sprockets precompile, demo + installed-gem Chrome Turbo/Stimulus/CSP | PR #26 CI pending; live deployment QA pending |
+
+| [0008.6 — Worker CI reliability](0008-6-worker-reliability.md) | Single-worker test queue and bounded SQLite lock wait | Sidekiq 7.3/pool compatibility, worker startup diagnostics | PR #27 CI green; post-merge pending |
