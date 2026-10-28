@@ -109,6 +109,9 @@ module Rekorra
         jobs&.validate!
         activity&.validate!(model_class)
         (index.fields + show.fields + form.fields).each do |field|
+          if field.type == :enum && !model_class.defined_enums.key?(field.name.to_s)
+            raise ConfigurationError, "Enum field #{field.name} must be a declared ActiveRecord enum"
+          end
           next if model_class.column_names.include?(field.name.to_s)
           next if model_class.reflect_on_association(field.name)
 

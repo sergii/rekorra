@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
+  enum :status, { pending: "pending", paid: "paid", fulfilled: "fulfilled" }
   has_paper_trail on: %i[create update destroy]
   belongs_to :customer
   has_many :demo_job_links, dependent: :destroy
