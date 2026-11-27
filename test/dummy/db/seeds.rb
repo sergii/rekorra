@@ -16,7 +16,7 @@ end
 ticket_a = Ticket.find_or_create_by!(number: "ACME-1001") do |ticket|
   ticket.customer = alice
   ticket.status = "pending"
-  ticket.estimated_minutes = 25000
+  ticket.estimated_minutes = 120
 end
 # Demonstrate a real change event while keeping the seeded end state stable.
 ticket_a.update!(status: "completed") unless ticket_a.status == "completed"
@@ -29,16 +29,16 @@ ticket_a.update!(
 ticket_b = Ticket.find_or_create_by!(number: "ACME-1002") do |ticket|
   ticket.customer = bob
   ticket.status = "pending"
-  ticket.estimated_minutes = 7800
+  ticket.estimated_minutes = 45
 end
 Ticket.find_or_create_by!(number: "GLOBEX-9001") do |ticket|
   ticket.customer = other
   ticket.status = "completed"
-  ticket.estimated_minutes = 9900
+  ticket.estimated_minutes = 60
 end
-Interaction.find_or_create_by!(ticket: ticket_a, status: "logged") { |interaction| interaction.duration_minutes = 25000 }
+Interaction.find_or_create_by!(ticket: ticket_a, status: "logged") { |interaction| interaction.duration_minutes = 120 }
 # Intentionally inconsistent sample, so the Findings panel has an example.
-Interaction.find_or_create_by!(ticket: ticket_b, status: "logged") { |interaction| interaction.duration_minutes = 7800 }
+Interaction.find_or_create_by!(ticket: ticket_b, status: "logged") { |interaction| interaction.duration_minutes = 45 }
 
 puts "Rekorra demo records ready: login acme or globex with REKORRA_DEMO_PASSWORD"
 
