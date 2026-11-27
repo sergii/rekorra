@@ -34,17 +34,17 @@ class InFlightCrashSmoke
     acme = Organization.find_or_create_by!(slug: "acme") { |org| org.name = "Acme" }
     customer = Customer.create!(organization: acme, name: "In-flight #{@token}",
       email: "inflight-#{@token}@worker.test")
-    order = Order.create!(customer: customer, number: "INFLIGHT-#{@token}",
-      status: "pending", total_cents: 10)
+    ticket = Ticket.create!(customer: customer, number: "INFLIGHT-#{@token}",
+      status: "pending", estimated_minutes: 10)
     probe = WorkerResilienceProbe.create!(token: @token)
     active_job = WorkerInFlightCrashJob.perform_later(probe.id)
     check(active_job.job_id.present?, "Missing ActiveJob ID")
-    DemoJobLink.create!(order: order, active_job_id: active_job.job_id,
+    DemoJobLink.create!(ticket: ticket, active_job_id: active_job.job_id,
       job_class_name: "WorkerInFlightCrashJob", provider: "solid_queue",
       queue_name: "default")
     job = SolidQueue::Job.find_by!(active_job_id: active_job.job_id)
     check(probe.reload.started_at.nil?, "Job started without worker")
-    check_status(order, active_job.job_id, "Queued")
+    check_status(ticket, active_job.job_id, "Queued")
 
     launch
     claimed = nil
@@ -58,7 +58,7 @@ class InFlightCrashSmoke
     worker_pid = probe.reload.started_pid
     check(Process.kill(0, worker_pid) == 1, "Claimed worker PID not alive")
     check(job.reload.finished_at.nil?, "Job completed before SIGKILL")
-    check_status(order, active_job.job_id, "Running")
+    check_status(ticket, active_job.job_id, "Running")
     puts "IN-FLIGHT: job_id=#{active_job.job_id}, claimed worker_pid=#{worker_pid}, attempt=1"
 
     # Do not kill the supervisor: it must detect this *child* exiting, fail
@@ -75,7 +75,7 @@ class InFlightCrashSmoke
       "Unexpected failure type #{failure.exception_class.inspect}")
     check(probe.reload.execution_count == 1 && probe.finished_at.nil?,
       "Killed job committed a completed effect")
-    check_status(order, active_job.job_id, "Failed")
+    check_status(ticket, active_job.job_id, "Failed")
     puts "PASS: killed claimed job marked Failed with ProcessExitError and shown by Rekorra"
 
     wait_for("replacement worker registered") do
@@ -106,7 +106,7 @@ class InFlightCrashSmoke
       "Failed execution not cleared by official retry")
     check(SolidQueue::ClaimedExecution.where(job_id: job.id).none?,
       "Claim stuck after successful retry")
-    check_status(order, active_job.job_id, "Finished")
+    check_status(ticket, active_job.job_id, "Finished")
 
     puts "PASS: official retry finished on new worker PID=#{probe.started_pid}"
     puts "PASS: durable attempt_count=2 demonstrates at-least-once side-effect risk; no exactly-once claim"
@@ -116,11 +116,11 @@ class InFlightCrashSmoke
 
   private
 
-  def check_status(order, job_id, expected)
+  def check_status(ticket, job_id, expected)
     auth = ActionController::HttpAuthentication::Basic.encode_credentials(
       "acme", ENV.fetch("REKORRA_DEMO_PASSWORD"))
     response = Rack::MockRequest.new(Rails.application).get(
-      "/backoffice/resources/orders/#{order.id}",
+      "/backoffice/resources/tickets/#{ticket.id}",
       "HTTP_HOST" => "localhost", "HTTP_AUTHORIZATION" => auth)
     check(response.status == 200, "Rekorra returned HTTP #{response.status}")
     doc = Nokogiri::HTML(response.body)

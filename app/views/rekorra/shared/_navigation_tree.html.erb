@@ -1,0 +1,13 @@
+<ul class="rk-navigation-tree">
+  <% node[:items].each do |item| %>
+    <li><%= link_to item[:label], records_path(slug: item[:slug]), aria: { current: params[:slug] == item[:slug] ? "page" : nil } %></li>
+  <% end %>
+  <% node[:groups].each do |label, child| %>
+    <li>
+      <details open>
+        <summary><%= label %></summary>
+        <%= render "rekorra/shared/navigation_tree", node: child %>
+      </details>
+    </li>
+  <% end %>
+</ul>

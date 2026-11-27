@@ -43,17 +43,17 @@ class WorkerOutboxSmoke
     acme = Organization.find_or_create_by!(slug: "acme") { |o| o.name = "Acme" }
     customer = Customer.create!(organization: acme, name: "Outbox #{@token}",
       email: "outbox-#{@token}@worker.test")
-    order = Order.create!(customer: customer, number: "OUTBOX-#{@token}",
-      status: "pending", total_cents: 10)
-    other = Order.create!(customer: customer, number: "OUTBOX-OTHER-#{@token}",
-      status: "pending", total_cents: 10)
+    ticket = Ticket.create!(customer: customer, number: "OUTBOX-#{@token}",
+      status: "pending", estimated_minutes: 10)
+    other = Ticket.create!(customer: customer, number: "OUTBOX-OTHER-#{@token}",
+      status: "pending", estimated_minutes: 10)
 
     rollback_key = "outbox:rollback:#{@token}"
-    Order.transaction do
-      WorkerOutboxOperation.apply_once!(order_id: order.id, key: rollback_key)
+    Ticket.transaction do
+      WorkerOutboxOperation.apply_once!(ticket_id: ticket.id, key: rollback_key)
       raise ActiveRecord::Rollback
     end
-    check(order.reload.total_cents == 10, "Rolled-back local effect committed")
+    check(ticket.reload.estimated_minutes == 10, "Rolled-back local effect committed")
     check(WorkerRecoveryEffect.where(idempotency_key: rollback_key).none?,
       "Rolled-back idempotency marker committed")
     check(WorkerOutboxEvent.where(operation_key: rollback_key).none?,
@@ -61,16 +61,16 @@ class WorkerOutboxSmoke
     puts "PASS: rollback removes business effect, idempotency marker and outbox intent atomically"
 
     key_a = "outbox:delivery:#{@token}"
-    result, event_a = WorkerOutboxOperation.apply_once!(order_id: order.id, key: key_a)
-    check(result == :applied && order.reload.total_cents == 17, "First atomic operation incorrect")
-    repeated, same_event = WorkerOutboxOperation.apply_once!(order_id: order.id, key: key_a)
+    result, event_a = WorkerOutboxOperation.apply_once!(ticket_id: ticket.id, key: key_a)
+    check(result == :applied && ticket.reload.estimated_minutes == 17, "First atomic operation incorrect")
+    repeated, same_event = WorkerOutboxOperation.apply_once!(ticket_id: ticket.id, key: key_a)
     check(repeated == :already_applied && same_event.id == event_a.id, "Duplicate created another outbox event")
-    check(order.reload.total_cents == 17, "Duplicate applied local effect twice")
+    check(ticket.reload.estimated_minutes == 17, "Duplicate applied local effect twice")
     begin
-      WorkerOutboxOperation.apply_once!(order_id: other.id, key: key_a)
-      raise "Key collision permitted for another order"
+      WorkerOutboxOperation.apply_once!(ticket_id: other.id, key: key_a)
+      raise "Key collision permitted for another ticket"
     rescue WorkerRecoveryEffect::KeyCollision, WorkerOutboxOperation::KeyCollision
-      check(other.reload.total_cents == 10, "Key collision changed another order")
+      check(other.reload.estimated_minutes == 10, "Key collision changed another ticket")
     end
     puts "PASS: tenant-scoped key enforces single local mutation and outbox event"
 
@@ -104,8 +104,8 @@ class WorkerOutboxSmoke
     puts "PASS: manual retry re-sent the SAME key, provider deduplicated two deliveries into one effect"
 
     key_b = "outbox:reconcile:#{@token}"
-    _, event_b = WorkerOutboxOperation.apply_once!(order_id: other.id, key: key_b)
-    check(other.reload.total_cents == 17, "Reconciliation business effect missing")
+    _, event_b = WorkerOutboxOperation.apply_once!(ticket_id: other.id, key: key_b)
+    check(other.reload.estimated_minutes == 17, "Reconciliation business effect missing")
     stop_provider
     launch_provider(crash_key: external_key(event_b))
     job_b = WorkerOutboxDeliveryJob.perform_later(event_b.id, @port_file.to_s)
@@ -138,8 +138,8 @@ class WorkerOutboxSmoke
       "Incorrect aggregate outbox health")
     check(WorkerOutboxEvent.where(organization_id: acme.id).count == 2,
       "Unexpected tenant outbox event count")
-    check(receipt_count(nil) == 2 && order.reload.total_cents == 17 &&
-      other.reload.total_cents == 17, "Lost or duplicated business effects")
+    check(receipt_count(nil) == 2 && ticket.reload.estimated_minutes == 17 &&
+      other.reload.estimated_minutes == 17, "Lost or duplicated business effects")
     puts "PASS: 2 local effects, 2 remote effects, 2 delivered outbox intents and zero unknowns"
   ensure
     shutdown

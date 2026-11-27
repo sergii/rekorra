@@ -12,8 +12,8 @@ class ExternalLinksTest < ActionDispatch::IntegrationTest
     @globex = Organization.create!(name: "Globex", slug: "globex")
     @alice = Customer.create!(organization: @acme, name: "Alice", email: "alice@example.test")
     @bob = Customer.create!(organization: @globex, name: "Bob", email: "bob@example.test")
-    @order = Order.create!(customer: @alice, number: "A-100", status: "paid", total_cents: 1000)
-    @foreign = Order.create!(customer: @bob, number: "B-200", status: "paid", total_cents: 1000)
+    @ticket = Ticket.create!(customer: @alice, number: "A-100", status: "completed", estimated_minutes: 1000)
+    @foreign = Ticket.create!(customer: @bob, number: "B-200", status: "completed", estimated_minutes: 1000)
   end
 
   teardown { ENV["REKORRA_DEMO_PASSWORD"] = @previous_password }
@@ -24,7 +24,7 @@ class ExternalLinksTest < ActionDispatch::IntegrationTest
   end
 
   test "show page renders authorized provider URLs as safe external links" do
-    get "/backoffice/resources/orders/#{@order.id}", headers: headers
+    get "/backoffice/resources/tickets/#{@ticket.id}", headers: headers
     assert_response :success
     anchors = Nokogiri::HTML(response.body).css("a.rk-external-link")
     assert_equal ["See logs", "Find related issues"], anchors.map(&:text)
@@ -38,13 +38,13 @@ class ExternalLinksTest < ActionDispatch::IntegrationTest
     query = CGI.parse(uri.query)
     assert_equal ["-24h"], query.fetch("startTime")
     assert_equal ["now"], query.fetch("endTime")
-    assert_includes query.fetch("query").first, "order_id=#{@order.id}"
+    assert_includes query.fetch("query").first, "ticket_id=#{@ticket.id}"
     assert_includes query.fetch("query").first, "tenant_id=#{@acme.id}"
 
     issues = URI.parse(links.fetch("Find related issues")["href"])
     assert_equal "github.com", issues.host
     assert_equal "/sergii/rekorra/issues", issues.path
-    assert_equal ["order_id:#{@order.id}"], CGI.parse(issues.query).fetch("q")
+    assert_equal ["ticket_id:#{@ticket.id}"], CGI.parse(issues.query).fetch("q")
 
     anchors.each do |anchor|
       assert_equal "_blank", anchor["target"]
@@ -55,27 +55,27 @@ class ExternalLinksTest < ActionDispatch::IntegrationTest
   end
 
   test "external link policies hide forbidden providers" do
-    get "/backoffice/resources/orders/#{@foreign.id}", headers: headers("globex")
+    get "/backoffice/resources/tickets/#{@foreign.id}", headers: headers("globex")
     assert_response :success
     assert_select "a.rk-external-link", text: "See logs", count: 0
     assert_select "a.rk-external-link", text: "Find related issues", count: 1
   end
 
   test "a cross-tenant record cannot expose links" do
-    get "/backoffice/resources/orders/#{@foreign.id}", headers: headers
+    get "/backoffice/resources/tickets/#{@foreign.id}", headers: headers
     assert_response :not_found
     assert_not_includes response.body, "See logs"
   end
 
   test "anonymous requests cannot expose links" do
-    get "/backoffice/resources/orders/#{@order.id}"
+    get "/backoffice/resources/tickets/#{@ticket.id}"
     assert_response :unauthorized
     assert_not_includes response.body, "See logs"
   end
 
   test "resolver cannot create an off-allowlist URL" do
     definition = Rekorra::ExternalLink.new(:unsafe, label: "Unsafe", provider: :url,
-      authorize: :show?, base_url: "https://evil.example", path: "/orders")
+      authorize: :show?, base_url: "https://evil.example", path: "/tickets")
     assert_raises(Rekorra::ConfigurationError) { resolve(definition) }
   end
 
@@ -101,9 +101,9 @@ class ExternalLinksTest < ActionDispatch::IntegrationTest
   test "query params are encoded, not appended unescaped" do
     definition = Rekorra::ExternalLink.new(:search, label: "Search", provider: :url,
       authorize: :show?, base_url: "https://github.com", path: "/issues",
-      params: ->(_record) { { q: 'status:"error" & order=42' } })
+      params: ->(_record) { { q: 'status:"error" & ticket=42' } })
     result = resolve(definition).first
-    assert_equal ['status:"error" & order=42'], CGI.parse(URI(result.url).query).fetch("q")
+    assert_equal ['status:"error" & ticket=42'], CGI.parse(URI(result.url).query).fetch("q")
     assert_includes result.url, "%26"
   end
 
@@ -118,7 +118,7 @@ class ExternalLinksTest < ActionDispatch::IntegrationTest
 
   test "unconfigured provider stays hidden" do
     definition = Rekorra::ExternalLink.new(:logs, label: "See logs", provider: :sumo_logic,
-      authorize: :show?, query: "order_id:42")
+      authorize: :show?, query: "ticket_id:42")
     configuration = Rekorra::Configuration.new
     configuration.external_link_allowed_hosts = ["service.sumologic.com"]
     assert_empty resolve(definition, configuration: configuration)
@@ -128,7 +128,7 @@ class ExternalLinksTest < ActionDispatch::IntegrationTest
 
   def resolve(definition, allow: true, configuration: Rekorra.configuration)
     resource = Struct.new(:external_links).new([definition])
-    Rekorra::ExternalLinks::Resolver.new(resource: resource, record: @order,
+    Rekorra::ExternalLinks::Resolver.new(resource: resource, record: @ticket,
       configuration: configuration, authorize: ->(_record, _action) { allow }).call
   end
 end

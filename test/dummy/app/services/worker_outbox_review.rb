@@ -9,7 +9,7 @@ class WorkerOutboxReview
     raise Rejected, "Operator required" unless actor.is_a?(Organization)
     raise Rejected, "Cross-tenant outbox intent" unless event.organization_id == actor.id
     raise Rejected, "Recovery policy denied" unless
-      Rekorra.configuration.authorize_with.call(actor, event.order, :retry_job?) == true
+      Rekorra.configuration.authorize_with.call(actor, event.ticket, :retry_job?) == true
     raise Rejected, "Reason required" unless
       reason.is_a?(String) && reason.strip.length.between?(12, 500)
 

@@ -12,6 +12,6 @@ class CustomerResource < Rekorra::Resource
   show do
     field :name
     field :email
-    association :orders
+    association :tickets
   end
 end

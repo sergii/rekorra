@@ -41,8 +41,8 @@ class OutboxDispatchSmoke
     globex = Organization.find_or_create_by!(slug: "globex") { |o| o.name = "Globex" }
     customer = Customer.create!(organization: acme, name: "Dispatch #{@token}",
       email: "dispatch-#{@token}@worker.test")
-    order = Order.create!(customer: customer, number: "DISPATCH-#{@token}",
-      status: "pending", total_cents: 10)
+    ticket = Ticket.create!(customer: customer, number: "DISPATCH-#{@token}",
+      status: "pending", estimated_minutes: 10)
 
     begin
       WorkerOutboxDispatcher.new(endpoint: "http://example.com:80",
@@ -53,10 +53,10 @@ class OutboxDispatchSmoke
     end
     # 12 intents exist only in the primary DB. No queue jobs were enqueued.
     bulk = 12.times.map { |i|
-      WorkerOutboxOperation.apply_once!(order_id: order.id,
+      WorkerOutboxOperation.apply_once!(ticket_id: ticket.id,
         key: "dispatch:bulk:#{@token}:#{i}").last
     }
-    check(order.reload.total_cents == 94, "Atomic local effect lost")
+    check(ticket.reload.estimated_minutes == 94, "Atomic local effect lost")
     check(bulk.all? { |e| e.status == "pending" }, "Outbox unexpectedly pre-delivered")
     launch_provider(crash_key: "none")
     dispatcher = make_dispatcher
@@ -69,7 +69,7 @@ class OutboxDispatchSmoke
     puts "PASS: 12 atomic intents discovered without Solid Queue enqueue; two real scanner PIDs delivered once each"
 
     # Kill a scanner AFTER an atomic lease, before any HTTP request.
-    leased = WorkerOutboxOperation.apply_once!(order_id: order.id,
+    leased = WorkerOutboxOperation.apply_once!(ticket_id: ticket.id,
       key: "dispatch:leased:#{@token}").last
     holder = spawn_scanner("held", { "REKORRA_DISPATCH_HOLD_AFTER_CLAIM" => "1" })
     wait_for("held lease persisted") do
@@ -91,7 +91,7 @@ class OutboxDispatchSmoke
     puts "PASS: SIGKILLed dispatcher left durable lease; reclaim after expiry and stale-token fencing succeeded"
 
     # Remote DB commit followed by lost response: scanners reconcile UNKNOWN.
-    unknown = WorkerOutboxOperation.apply_once!(order_id: order.id,
+    unknown = WorkerOutboxOperation.apply_once!(ticket_id: ticket.id,
       key: "dispatch:unknown:#{@token}").last
     stop_provider
     launch_provider(crash_key: key_for(unknown))
@@ -109,7 +109,7 @@ class OutboxDispatchSmoke
     puts "PASS: remote commit-before-ACK-loss recovered by read-only reconciliation, no duplicate POST"
 
     # No provider: exponential backoff and bounded attempts become review.
-    failure = WorkerOutboxOperation.apply_once!(order_id: order.id,
+    failure = WorkerOutboxOperation.apply_once!(ticket_id: ticket.id,
       key: "dispatch:review:#{@token}").last
     stop_provider
     3.times do |i|

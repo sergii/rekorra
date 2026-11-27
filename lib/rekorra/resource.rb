@@ -18,6 +18,12 @@ module Rekorra
         @title || model_class.model_name.human.pluralize
       end
 
+      # Navigation metadata never grants access to a resource.
+      def navigation(group: nil, position: nil, hidden: nil)
+        @navigation = { group: group, position: position, hidden: hidden }.freeze if group || position || !hidden.nil?
+        @navigation || {}
+      end
+
       def search_by(*names)
         @search_columns = names.map(&:to_sym) unless names.empty?
         @search_columns || []

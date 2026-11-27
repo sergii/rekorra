@@ -4,7 +4,7 @@ Status: Proposed; architecture notes, not implemented.
 
 ## Distinct identifiers
 
-- Business reference: order, customer, tenant, organization.
+- Business reference: ticket, customer, tenant, organization.
 - `request_id`: one HTTP request.
 - `trace_id` / `span_id`: OpenTelemetry context for distributed operations.
 - `job_id`: one background task (including retries as provider-specific metadata).
@@ -12,7 +12,7 @@ Status: Proposed; architecture notes, not implemented.
 - External reference: Jira issue, GitHub issue, Intercom conversation, Sentry error, etc.
 - Investigation ID: optional Rekorra grouping, not a replacement for all identifiers.
 
-Don't assume a request ID equals a trace ID or that a trace contains the entire payment lifecycle. Rekorra should use IDs to generate provider links and resolve permitted context; not replicate full traces/log archives.
+Don't assume a request ID equals a trace ID or that a trace contains the entire interaction lifecycle. Rekorra should use IDs to generate provider links and resolve permitted context; not replicate full traces/log archives.
 
 ## Proposed modules (not yet implemented)
 
@@ -21,7 +21,7 @@ Don't assume a request ID equals a trace ID or that a trace contains the entire 
 - `EvidenceRef`: provenance, timestamp, confidence, and validation method.
 - Future read-only context tools for AI/MCP/Rovo, subject to the same policies.
 
-An Investigation may initially have only an external issue identifier; no order/customer ID is required.
+An Investigation may initially have only an external issue identifier; no ticket/customer ID is required.
 
 ## Adjacent but separate
 

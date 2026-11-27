@@ -4,10 +4,10 @@ Status: Ruby 3.3 and 3.4 integration CI passed; browser visual verification pend
 
 ## Demo host application
 
-- Adds optional `support_issue_id`, `support_issue_key`, and `trace_id` fields to the Order table, without adding any tables to Rekorra itself.
-- Seeds a fictional Jira issue and fictional trace on Order ACME-1001 (not a real provider connection).
+- Adds optional `support_issue_id`, `support_issue_key`, and `trace_id` fields to the Ticket table, without adding any tables to Rekorra itself.
+- Seeds a fictional Jira issue and fictional trace on Ticket ACME-1001 (not a real provider connection).
 - Registers an Organization resource with read-only permissions and tenant scoping.
-- Order context links to Customer and Organization and displays Jira issue / Datadog trace identities.
+- Ticket context links to Customer and Organization and displays Jira issue / Datadog trace identities.
 
 ## Rekorra engine and DSL
 

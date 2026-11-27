@@ -24,9 +24,23 @@
         <% end %>
       </div>
     </header>
-    <main class="rk-shell rk-main">
-      <% if notice.present? %><p class="rk-notice"><%= notice %></p><% end %>
-      <%= yield %>
-    </main>
+    <% navigation = rekorra_navigation %>
+    <div class="<%= navigation ? "rk-workspace-shell" : "" %>">
+      <% if navigation %>
+        <aside class="rk-sidebar">
+          <details open>
+            <summary>Navigation</summary>
+            <nav aria-label="Backoffice resources">
+              <%= link_to "Overview", root_path %>
+              <%= render "rekorra/shared/navigation_tree", node: navigation %>
+            </nav>
+          </details>
+        </aside>
+      <% end %>
+      <main class="rk-shell rk-main">
+        <% if notice.present? %><p class="rk-notice"><%= notice %></p><% end %>
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>

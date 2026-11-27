@@ -10,8 +10,8 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     @globex = Organization.create!(name: "Globex", slug: "globex")
     @alice = Customer.create!(organization: @acme, name: "Alice", email: "audit-alice@example.test")
     @bob = Customer.create!(organization: @globex, name: "Bob", email: "audit-bob@example.test")
-    @order = Order.create!(customer: @alice, number: "AUDIT-OWN", status: "pending", total_cents: 500)
-    @foreign = Order.create!(customer: @bob, number: "AUDIT-FOREIGN", status: "pending", total_cents: 900)
+    @ticket = Ticket.create!(customer: @alice, number: "AUDIT-OWN", status: "pending", estimated_minutes: 500)
+    @foreign = Ticket.create!(customer: @bob, number: "AUDIT-FOREIGN", status: "pending", estimated_minutes: 900)
   end
 
   teardown do
@@ -23,8 +23,8 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
       ActionController::HttpAuthentication::Basic.encode_credentials(tenant, "test-password") }
   end
 
-  def path(order)
-    "/backoffice/resources/orders/#{order.id}"
+  def path(ticket)
+    "/backoffice/resources/tickets/#{ticket.id}"
   end
 
   def csrf(source, target, tenant = "acme")
@@ -35,14 +35,14 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
 
   test "show records an authorized access with tenant, actor, ID and request correlation" do
     assert_difference("DemoAuditEntry.count", 1) do
-      get path(@order), headers: headers
+      get path(@ticket), headers: headers
     end
     assert_response :success
     entry = DemoAuditEntry.last
     assert_equal "acme", entry.tenant_key
     assert_equal "demo-organization:acme", entry.actor_key
-    assert_equal "Order", entry.record_type
-    assert_equal @order.id.to_s, entry.record_id
+    assert_equal "Ticket", entry.record_type
+    assert_equal @ticket.id.to_s, entry.record_id
     assert_equal "show", entry.action
     assert entry.request_id.present?
     assert entry.occurred_at
@@ -55,7 +55,7 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     assert_no_difference("DemoAuditEntry.count") do
       get path(@foreign), headers: headers
       assert_response :not_found
-      get path(@order)
+      get path(@ticket)
       assert_response :unauthorized
     end
   end
@@ -66,25 +66,25 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal "globex", DemoAuditEntry.last.tenant_key
     assert_select "section.rk-access-audit", count: 0
 
-    get path(@order), headers: headers
+    get path(@ticket), headers: headers
     assert_response :success
     assert_select "section.rk-access-audit li", count: 1
     assert_not_includes response.body, "demo-organization:globex"
   end
 
   test "create audit uses the actual persisted ID and contains no submitted attribute values" do
-    url = "/backoffice/resources/orders"
+    url = "/backoffice/resources/tickets"
     token = csrf("#{url}/new", url)
     assert_difference("DemoAuditEntry.count", 1) do
       post url, headers: headers, params: {
         authenticity_token: token,
         record: { number: "SECRET-ORDER-FIELD", status: "pending",
-          total_cents: "1100", customer_id: @alice.id }
+          estimated_minutes: "1100", customer_id: @alice.id }
       }
       assert_response :redirect
     end
     row = DemoAuditEntry.last
-    created = Order.find_by!(number: "SECRET-ORDER-FIELD")
+    created = Ticket.find_by!(number: "SECRET-ORDER-FIELD")
     assert_equal "create", row.action
     assert_equal created.id.to_s, row.record_id
     assert_not_includes row.attributes.inspect, "SECRET-ORDER-FIELD"
@@ -92,15 +92,15 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "successful update emits one audit; unsuccessful validation emits none" do
-    target = path(@order)
+    target = path(@ticket)
     token = csrf("#{target}/edit", target)
     assert_difference("DemoAuditEntry.where(action: 'update').count", 1) do
       patch target, headers: headers, params: {
-        authenticity_token: token, record: { status: "fulfilled" }
+        authenticity_token: token, record: { status: "resolved" }
       }
     end
     assert_response :redirect
-    assert_equal "fulfilled", @order.reload.status
+    assert_equal "resolved", @ticket.reload.status
 
     token = csrf("#{target}/edit", target)
     assert_no_difference("DemoAuditEntry.where(action: 'update').count") do
@@ -112,14 +112,14 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "successful destroy is logged with deleted record ID" do
-    target = path(@order)
+    target = path(@ticket)
     token = csrf(target, target)
     assert_difference("DemoAuditEntry.where(action: 'destroy').count", 1) do
       delete target, headers: headers, params: { authenticity_token: token }
     end
     assert_response :see_other
-    assert_not Order.exists?(id: @order.id)
-    assert_equal @order.id.to_s, DemoAuditEntry.last.record_id
+    assert_not Ticket.exists?(id: @ticket.id)
+    assert_equal @ticket.id.to_s, DemoAuditEntry.last.record_id
   end
 
   test "forged protected mutation never emits a successful operation" do
@@ -127,11 +127,11 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     token = csrf("#{target}/edit", target, "globex")
     assert_no_difference("DemoAuditEntry.where(action: 'update').count") do
       patch target, headers: headers("globex"), params: {
-        authenticity_token: token, record: { total_cents: "10" }
+        authenticity_token: token, record: { estimated_minutes: "10" }
       }
     end
     assert_response :forbidden
-    assert_equal 900, @foreign.reload.total_cents
+    assert_equal 900, @foreign.reload.estimated_minutes
   end
 
   test "adapter failure rolls back the model update in the host DB transaction" do
@@ -140,16 +140,16 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     failing = Object.new
     failing.define_singleton_method(:write!) { |event:| raise "AUDIT STORAGE UNAVAILABLE" }
     failing.define_singleton_method(:entries) { |**_kwargs| [] }
-    target = path(@order)
+    target = path(@ticket)
     token = csrf("#{target}/edit", target)
     begin
       registry.register :active_record, failing
       assert_raises(RuntimeError) do
         patch target, headers: headers, params: {
-          authenticity_token: token, record: { status: "fulfilled" }
+          authenticity_token: token, record: { status: "resolved" }
         }
       end
-      assert_equal "pending", @order.reload.status
+      assert_equal "pending", @ticket.reload.status
       assert_equal 0, DemoAuditEntry.where(action: "update").count
     ensure
       registry.register :active_record, original
@@ -158,9 +158,9 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
 
   test "read adapter cannot fetch another tenant even with the same numeric ID" do
     DemoAuditEntry.create!(tenant_key: "globex", actor_key: "globex-operator",
-      record_type: "Order", record_id: @order.id.to_s, action: "show",
+      record_type: "Ticket", record_id: @ticket.id.to_s, action: "show",
       request_id: "other-tenant", occurred_at: Time.current)
-    get path(@order), headers: headers
+    get path(@ticket), headers: headers
     assert_response :success
     assert_not_includes response.body, "globex-operator"
     assert_select "section.rk-access-audit li", count: 1
@@ -183,12 +183,12 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     definition.limit 10
     definition.validate!
     denied = Rekorra::AccessAudit::Resolver.new(
-      definition: definition, record: @order, tenant_key: "acme",
+      definition: definition, record: @ticket, tenant_key: "acme",
       registry: registry, authorize: ->(*_args) { false }).call
     assert_empty denied
     assert_equal false, called
     granted = Rekorra::AccessAudit::Resolver.new(
-      definition: definition, record: @order, tenant_key: "acme",
+      definition: definition, record: @ticket, tenant_key: "acme",
       registry: registry, authorize: ->(*_args) { true }).call
     assert_equal "other-provider", granted.first.actor_key
     assert_equal true, called
@@ -197,14 +197,14 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
   test "Audit contracts reject injected metadata and unbounded provider results" do
     assert_raises(Rekorra::ConfigurationError) do
       Rekorra::AccessAudit::Event.new(
-        action: :show, record_type: "Order", record_id: "1",
+        action: :show, record_type: "Ticket", record_id: "1",
         tenant_key: "acme", actor_key: "actor\nforged", request_id: "req",
         occurred_at: Time.current
       )
     end
     assert_raises(Rekorra::ConfigurationError) do
       Rekorra::AccessAudit::Event.new(
-        action: :arbitrary, record_type: "Order", record_id: "1",
+        action: :arbitrary, record_type: "Ticket", record_id: "1",
         tenant_key: "acme", actor_key: "actor", request_id: "req",
         occurred_at: Time.current
       )
@@ -226,7 +226,7 @@ class AccessAuditIntegrationTest < ActionDispatch::IntegrationTest
     defn.limit 10
     assert_raises(Rekorra::ConfigurationError) do
       Rekorra::AccessAudit::Resolver.new(definition: defn.tap { |d| d.source :test },
-        record: @order, tenant_key: "acme", registry: registry,
+        record: @ticket, tenant_key: "acme", registry: registry,
         authorize: ->(*_args) { true }).call
     end
   end

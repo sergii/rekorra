@@ -10,8 +10,8 @@ class FindingsIntegrationTest < ActionDispatch::IntegrationTest
     @globex = Organization.create!(name: "Globex", slug: "globex")
     @alice = Customer.create!(organization: @acme, name: "Alice", email: "alice@example.test")
     @bob = Customer.create!(organization: @globex, name: "Bob", email: "bob@example.test")
-    @order = Order.create!(customer: @alice, number: "ACME-FIND", status: "pending", total_cents: 1200)
-    @foreign = Order.create!(customer: @bob, number: "GLOBEX-FIND", status: "pending", total_cents: 1600)
+    @ticket = Ticket.create!(customer: @alice, number: "ACME-FIND", status: "pending", estimated_minutes: 1200)
+    @foreign = Ticket.create!(customer: @bob, number: "GLOBEX-FIND", status: "pending", estimated_minutes: 1600)
   end
 
   teardown { ENV["REKORRA_DEMO_PASSWORD"] = @password }
@@ -21,47 +21,47 @@ class FindingsIntegrationTest < ActionDispatch::IntegrationTest
       ActionController::HttpAuthentication::Basic.encode_credentials(slug, "test-password") }
   end
 
-  def show(order = @order, slug: "acme")
-    get "/backoffice/resources/orders/#{order.id}", headers: headers(slug)
+  def show(ticket = @ticket, slug: "acme")
+    get "/backoffice/resources/tickets/#{ticket.id}", headers: headers(slug)
   end
 
-  def capture(order, cents)
-    Payment.create!(order: order, status: "captured", amount_cents: cents)
+  def capture(ticket, minutes)
+    Interaction.create!(ticket: ticket, status: "logged", duration_minutes: minutes)
   end
 
-  test "captured payment and pending Order produces a structured finding" do
-    capture(@order, 1000)
-    capture(@order, 200)
+  test "logged interaction and pending Ticket produces a structured finding" do
+    capture(@ticket, 1000)
+    capture(@ticket, 200)
     show
     assert_response :success
     assert_select "section.rk-findings li.rk-findings__item", count: 1
-    assert_select "section.rk-findings strong", text: "Payment captured, order still pending"
+    assert_select "section.rk-findings strong", text: "Interaction logged, ticket still pending"
     assert_select "section.rk-findings .rk-badge", text: "Warning"
-    assert_includes response.body, "Captured (cents)"
+    assert_includes response.body, "Logged (minutes)"
     assert_includes response.body, "1200"
   end
 
-  test "no payment, partial payment, wrong payment status and advanced order are clear" do
+  test "no interaction, partial interaction, wrong interaction status and advanced ticket are clear" do
     show
     assert_response :success
     assert_select "section.rk-findings li.rk-findings__item", count: 0
 
-    capture(@order, 1199)
+    capture(@ticket, 1199)
     show
     assert_select "section.rk-findings li.rk-findings__item", count: 0
 
-    Payment.create!(order: @order, status: "authorized", amount_cents: 5000)
+    Interaction.create!(ticket: @ticket, status: "authorized", duration_minutes: 5000)
     show
     assert_select "section.rk-findings li.rk-findings__item", count: 0
 
-    capture(@order, 1)
-    @order.update!(status: "paid")
+    capture(@ticket, 1)
+    @ticket.update!(status: "completed")
     show
     assert_select "section.rk-findings li.rk-findings__item", count: 0
   end
 
-  test "zero-total orders are ignored" do
-    @order.update!(total_cents: 0)
+  test "zero-total tickets are ignored" do
+    @ticket.update!(estimated_minutes: 0)
     show
     assert_response :success
     assert_select "section.rk-findings li.rk-findings__item", count: 0
@@ -72,18 +72,18 @@ class FindingsIntegrationTest < ActionDispatch::IntegrationTest
     show(@foreign, slug: "globex")
     assert_response :success
     assert_select "section.rk-findings", count: 0
-    assert_not_includes response.body, "Captured (cents)"
+    assert_not_includes response.body, "Logged (minutes)"
 
     show(@foreign)
     assert_response :not_found
-    assert_not_includes response.body, "Payment captured, order still pending"
+    assert_not_includes response.body, "Interaction logged, ticket still pending"
   end
 
   test "anonymous requests cannot see evidence" do
-    capture(@order, 1200)
-    get "/backoffice/resources/orders/#{@order.id}"
+    capture(@ticket, 1200)
+    get "/backoffice/resources/tickets/#{@ticket.id}"
     assert_response :unauthorized
-    assert_not_includes response.body, "Captured (cents)"
+    assert_not_includes response.body, "Logged (minutes)"
   end
 
   test "resolver skips rule without policy and does not invoke it" do
@@ -91,9 +91,9 @@ class FindingsIntegrationTest < ActionDispatch::IntegrationTest
     rule = Object.new
     rule.define_singleton_method(:evaluate) { |record:| invoked = true; nil }
     registry = Rekorra::Findings::Registry.new
-    registry.register(:paid_but_pending, rule)
+    registry.register(:logged_but_pending, rule)
     findings = Rekorra::Findings::Resolver.new(
-      resource: OrderResource, record: @order, registry: registry,
+      resource: TicketResource, record: @ticket, registry: registry,
       authorize: ->(_record, _action) { false }
     ).call
     assert_empty findings
@@ -117,11 +117,11 @@ class FindingsIntegrationTest < ActionDispatch::IntegrationTest
     definition.limit 10
     definition.validate!
     resource = Struct.new(:findings).new(definition)
-    results = Rekorra::Findings::Resolver.new(resource: resource, record: @order,
+    results = Rekorra::Findings::Resolver.new(resource: resource, record: @ticket,
       authorize: ->(_record, _action) { true }, registry: registry).call
     assert_equal ["manual_review"], results.map(&:code)
     assert_equal "info", results.first.severity
-    assert_equal @order.id.to_s, results.first.evidence.first.value
+    assert_equal @ticket.id.to_s, results.first.evidence.first.value
   end
 
   test "invalid findings and evidence are rejected" do
@@ -138,20 +138,20 @@ class FindingsIntegrationTest < ActionDispatch::IntegrationTest
     rule = Object.new
     rule.define_singleton_method(:evaluate) { |record:| "secret" }
     registry = Rekorra::Findings::Registry.new
-    registry.register(:paid_but_pending, rule)
+    registry.register(:logged_but_pending, rule)
     assert_raises(Rekorra::ConfigurationError) do
-      Rekorra::Findings::Resolver.new(resource: OrderResource, record: @order,
+      Rekorra::Findings::Resolver.new(resource: TicketResource, record: @ticket,
         authorize: ->(_record, _action) { true }, registry: registry).call
     end
   end
 
   test "finding configuration is explicit and bounded" do
     definition = Rekorra::Findings::Definition.new
-    definition.rule :paid_but_pending
+    definition.rule :logged_but_pending
     definition.authorize :view_findings?
     definition.limit 1000
     assert_raises(Rekorra::ConfigurationError) { definition.validate! }
-    assert_raises(Rekorra::ConfigurationError) { definition.rule :paid_but_pending }
+    assert_raises(Rekorra::ConfigurationError) { definition.rule :logged_but_pending }
 
     registry = Rekorra::Findings::Registry.new
     assert_raises(Rekorra::ConfigurationError) { registry.fetch(:missing) }

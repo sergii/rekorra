@@ -202,3 +202,14 @@ html[data-theme="dark"] .rk-app {
 .rk-access-audit__list li:last-child { border-bottom: none; }
 .rk-access-audit__list time { margin-left: auto; color: var(--rk-muted); font-size: 0.8rem; }
 .rk-access-audit__list span { overflow-wrap: anywhere; }
+
+/* Opt-in navigation shell. Native details work without JavaScript. */
+.rk-workspace-shell { display: grid; grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr); max-width: 1600px; margin-inline: auto; }
+.rk-workspace-shell .rk-main { min-width: 0; width: calc(100% - 2rem); }
+.rk-sidebar { background: var(--rk-card); border-inline-end: 1px solid var(--rk-line); padding: 1rem; min-width: 0; overflow-wrap: anywhere; }
+.rk-sidebar summary { cursor: pointer; font-weight: 600; padding: .35rem 0; }
+.rk-sidebar nav { padding-top: .5rem; }
+.rk-navigation-tree { list-style: none; padding-inline-start: .7rem; margin: .25rem 0; }
+.rk-navigation-tree a { display: block; padding: .35rem .5rem; border-radius: .35rem; }
+.rk-navigation-tree a[aria-current="page"] { background: var(--rk-bg); font-weight: 700; }
+@media (max-width: 760px) { .rk-workspace-shell { grid-template-columns: minmax(0, 1fr); } .rk-sidebar { border-inline-end: 0; border-bottom: 1px solid var(--rk-line); } }

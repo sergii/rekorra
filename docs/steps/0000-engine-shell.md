@@ -27,4 +27,4 @@ Status: Engine boot confirmed by Step 0001 Rails 8.1 CI; browser visual checks p
 No resource models or persistent CRUD yet; this is intentional. No security claim is made before tests run.
 
 ## Next
-Introduce Customer, Order and Payment in dummy and the minimal resource DSL in the gem.
+Introduce Customer, Ticket and Interaction in dummy and the minimal resource DSL in the gem.

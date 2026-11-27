@@ -4,10 +4,18 @@ Rails-native, modular administration and back-office engine.
 
 **Status:** Early technical prototype. Do not use for sensitive production data.
 
+## CRM dogfooding (Step 0009.0)
+
+The next product-facing demo is a synthetic CRM inside the existing dummy host. Browse Leads, Customer onboarding, Support tickets and Interactions using the engine's opt-in nested sidebar. All reference data and regression scenarios use the synthetic CRM domain, including support tickets and interactions. CRM resources are initially read-only and demo authentication is not production security.
+
+- [Operational backoffice roadmap](docs/backlog/operational-backoffice.md)
+- [CRM dogfooding and navigation](docs/steps/0009-0-crm-dogfooding.md)
+- Demo URLs: `/backoffice/resources/crm_leads` and `/backoffice/resources/crm_onboardings`.
+
 ## Layout
 
 - `lib/rekorra` and `app/`: packaged Rails Engine gem
-- `test/dummy`: real Rails host with Organization, Customer, Order and Payment
+- `test/dummy`: real Rails host with Organization, Customer, Ticket and Interaction
 - `test/`: integration tests for each vertical slice
 - `docs/adr/`: design decisions
 - `docs/steps/`: granular development history and validation status
@@ -73,7 +81,7 @@ Rekorra.configure do |config|
   config.authenticate_with = ->(controller) { controller.current_user }
   config.authorize_with = ->(actor, subject, action) { MyPolicy.allowed?(actor, subject, action) }
   config.scope_with = ->(actor, model) { MyPolicy.scope(actor, model) }
-  config.resource :orders, "OrderResource"
+  config.resource :tickets, "TicketResource"
 end
 ```
 
@@ -112,7 +120,7 @@ config.access_audit_adapters.register :active_record,
   Rekorra::AccessAudit::Adapters::ActiveRecord.new(model: "YourAuditEntry")
 ```
 
-The demo logs authorized Order Show attempts and successful create/update/destroy, with a separately authorized, tenant-scoped read-only timeline. It stores only normalized metadata and request correlation IDs; never raw params or field values. Failed audit writes abort the operation. The demo writes to a host-owned audit table in the same DB transaction for successful mutations. Remote sinks are **not** automatically atomic. No audit gem dependency is mandatory.
+The demo logs authorized Ticket Show attempts and successful create/update/destroy, with a separately authorized, tenant-scoped read-only timeline. It stores only normalized metadata and request correlation IDs; never raw params or field values. Failed audit writes abort the operation. The demo writes to a host-owned audit table in the same DB transaction for successful mutations. Remote sinks are **not** automatically atomic. No audit gem dependency is mandatory.
 
 See [Step 0007](docs/steps/0007-access-audit.md) and [ADR 0021](docs/adr/0021-access-audit.md).
 
@@ -121,9 +129,9 @@ See [Step 0007](docs/steps/0007-access-audit.md) and [ADR 0021](docs/adr/0021-ac
 Use one explicit field policy declaration to govern Index, Show, forms and protected POST/PATCH attributes:
 
 \`\`\`ruby
-class OrderResource < Rekorra::Resource
-  model "Order"
-  field_policy :total_cents, read: :view_total_cents?, write: :edit_total_cents?
+class TicketResource < Rekorra::Resource
+  model "Ticket"
+  field_policy :estimated_minutes, read: :view_estimated_minutes?, write: :edit_estimated_minutes?
 end
 \`\`\`
 
@@ -198,24 +206,24 @@ Host-owned read-only rules can declare a business mismatch without requiring new
 
 ```ruby
 findings do
-  rule :paid_but_pending
+  rule :logged_but_pending
   authorize :view_findings?
   limit 10
 end
 ```
 
-Configure `config.finding_rules.register :paid_but_pending, "PaidButPending"` (resolved lazily after Rails autoloading), with `PaidButPending#evaluate(record:)` returning a `Rekorra::Findings::Finding` or nil. Findings are recomputed per authorized Show request, not persisted, and never automatically fix a record.
+Configure `config.finding_rules.register :logged_but_pending, "LoggedButPending"` (resolved lazily after Rails autoloading), with `LoggedButPending#evaluate(record:)` returning a `Rekorra::Findings::Finding` or nil. Findings are recomputed per authorized Show request, not persisted, and never automatically fix a record.
 
 See [Step 0004](docs/steps/0004-findings.md).
 
 ## Sidekiq backend (Step 0003.1)
 
-The demo also has a `:sidekiq_orders` resource to prove a second backend can be used with the same Jobs contract. The host installs Sidekiq and configures:
+The demo also has a `:sidekiq_tickets` resource to prove a second backend can be used with the same Jobs contract. The host installs Sidekiq and configures:
 
 ```ruby
 config.job_adapters.register :sidekiq,
   Rekorra::Jobs::Adapters::Sidekiq.new(
-    links: ->(order) { order.demo_job_links.where(provider: "sidekiq") }
+    links: ->(ticket) { ticket.demo_job_links.where(provider: "sidekiq") }
   )
 ```
 
@@ -229,7 +237,7 @@ An independent CI job starts real Solid Queue and Sidekiq worker subprocesses ag
 
 ## Background Jobs (Step 0003)
 
-The demo host uses Solid Queue with explicit `Order -> DemoJobLink -> ActiveJob ID` correlations. The engine renders provider-neutral job metadata and requires a distinct permission.
+The demo host uses Solid Queue with explicit `Ticket -> DemoJobLink -> ActiveJob ID` correlations. The engine renders provider-neutral job metadata and requires a distinct permission.
 
 ```ruby
 jobs do
@@ -243,7 +251,7 @@ Registered adapter in the host initializer:
 
 ```ruby
 config.job_adapters.register :solid_queue,
-  Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(order) { order.demo_job_links })
+  Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(ticket) { ticket.demo_job_links })
 ```
 
 This is read-only and deliberately never inspects serialized job arguments or exposes raw exception text. Solid Queue is only a demo dependency, not a published Rekorra requirement.
@@ -254,12 +262,12 @@ See [Step 0003](docs/steps/0003-jobs.md).
 
 ## Activity (Step 0002)
 
-Rekorra supports optional, policy-guarded activity history without requiring PaperTrail in the published gem. The demo host installs PaperTrail 17 and tracks Order versions.
+Rekorra supports optional, policy-guarded activity history without requiring PaperTrail in the published gem. The demo host installs PaperTrail 17 and tracks Ticket versions.
 
 ```ruby
 activity do
   source :paper_trail
-  fields :number, :status, :total_cents
+  fields :number, :status, :estimated_minutes
   authorize :view_activity?
   limit 10
 end
@@ -275,10 +283,10 @@ A resource can declare typed context independently from external URL builders:
 
 ```ruby
 context do
-  record :customer, resource: :customers, id: ->(order) { order.customer_id }
+  record :customer, resource: :customers, id: ->(ticket) { ticket.customer_id }
   external :issue, provider: :jira, instance: "example.atlassian.net",
-    kind: :issue, id: ->(order) { order.support_issue_id },
-    display_key: ->(order) { order.support_issue_key }, authorize: :view_issues?
+    kind: :issue, id: ->(ticket) { ticket.support_issue_id },
+    display_key: ->(ticket) { ticket.support_issue_key }, authorize: :view_issues?
 end
 ```
 
@@ -299,9 +307,9 @@ config.external_services[:sumo_logic] = {
   base_url: "https://service.sumologic.com"
 }
 
-# OrderResource:
+# TicketResource:
 external_link :logs, label: "See logs", provider: :sumo_logic,
-  query: ->(order) { "order_id=#{Integer(order.id)}" },
+  query: ->(ticket) { "ticket_id=#{Integer(ticket.id)}" },
   authorize: :view_logs?
 ```
 

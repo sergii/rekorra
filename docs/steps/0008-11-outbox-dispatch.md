@@ -22,7 +22,7 @@ Status: PR CI pending. Host-only reference implementation, **not** published Rek
 ## Open gates - issue #34 remains open
 
 - No supervised long-running scheduled service, orchestration/deployment configuration, leader election/lease-heartbeat for very long sends, distributed fairness or multi-node SLOs.
-- No production provider authentication, TLS certificate/pinning operations, 429/5xx taxonomy, per-provider jitter/backoff/rate limits, signed receipts, idempotency retention agreement or real payment/email API integration.
+- No production provider authentication, TLS certificate/pinning operations, 429/5xx taxonomy, per-provider jitter/backoff/rate limits, signed receipts, idempotency retention agreement or real interaction/email API integration.
 - This bounded test has two scanner processes; existing CI separately validates two Solid Queue workers, not a combined 2-scanner × 2-worker deployment.
 - No cross-system exactly-once guarantee. Operators must review unknown external effects; delivery remains at-least-once with cooperating provider dedupe.
 

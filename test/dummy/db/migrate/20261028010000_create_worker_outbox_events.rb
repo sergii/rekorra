@@ -5,7 +5,7 @@ class CreateWorkerOutboxEvents < ActiveRecord::Migration[8.0]
   def change
     create_table :worker_outbox_events do |t|
       t.references :organization, null: false, foreign_key: true
-      t.references :order, null: false, foreign_key: true
+      t.references :ticket, null: false, foreign_key: true
       t.string :operation_key, null: false, limit: 100
       t.string :status, null: false, default: "pending"
       t.integer :attempts, null: false, default: 0

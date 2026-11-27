@@ -157,14 +157,14 @@ class ResourceIndexBrowserAcceptanceTest < ActionDispatch::SystemTestCase
     target = Customer.create!(organization: @acme, name: "Lookup Customer Late",
       email: "late-lookup@example.test")
 
-    visit "/backoffice/resources/orders/new"
+    visit "/backoffice/resources/tickets/new"
     assert_selector "form.rk-form input[name='record[number]']"
     fill_in "record[number]", with: "UNSAVED-DRAFT-1"
     fill_in "association_q[customer_id]", with: "Lookup Customer Late"
     within("form[data-rk-association-lookup]") { click_button "Find options" }
     assert_selector "select[name='record[customer_id]'] option[value='#{target.id}']"
     assert_equal "UNSAVED-DRAFT-1", find("input[name='record[number]']").value
-    assert_equal "/backoffice/resources/orders/new", current_path
+    assert_equal "/backoffice/resources/tickets/new", current_path
 
     find("select[name='record[customer_id]']").find("option[value='#{target.id}']").select_option
     fill_in "association_q[customer_id]", with: "No Such Customer"

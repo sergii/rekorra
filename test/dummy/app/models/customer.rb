@@ -2,7 +2,7 @@
 
 class Customer < ApplicationRecord
   belongs_to :organization
-  has_many :orders, dependent: :restrict_with_error
+  has_many :tickets, dependent: :restrict_with_error
 
   validates :name, :email, presence: true
   validates :email, uniqueness: { scope: :organization_id }

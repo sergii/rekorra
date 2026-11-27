@@ -26,4 +26,4 @@ Business mutation, tenant-key idempotency ledger and outbound delivery INTENT ar
 
 ## Production gaps
 
-This is a bounded local simulation. No durable outbox scanner/dispatch scheduler, lease strategy for concurrent senders, alert delivery, HTTP authentication/authorization, TLS, rate limits, provider 429/5xx policies, provider idempotency retention contract, signed receipts, dead-letter handling, multiple remote vendors, multi-tenant provider isolation proof, or production monitoring SLO. The remote provider itself is a test fixture. Never claim exactly-once delivery across a network or real payment/email providers.
+This is a bounded local simulation. No durable outbox scanner/dispatch scheduler, lease strategy for concurrent senders, alert delivery, HTTP authentication/authorization, TLS, rate limits, provider 429/5xx policies, provider idempotency retention contract, signed receipts, dead-letter handling, multiple remote vendors, multi-tenant provider isolation proof, or production monitoring SLO. The remote provider itself is a test fixture. Never claim exactly-once delivery across a network or real external service providers.

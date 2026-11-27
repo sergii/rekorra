@@ -4,7 +4,7 @@ require_relative "test_helper"
 require "pundit"
 
 # Real Pundit policy used by the optional adapter integration test.
-class OrderPolicy
+class TicketPolicy
   attr_reader :user, :record
 
   def initialize(user, record)
@@ -16,14 +16,14 @@ class OrderPolicy
   end
 
   def show?
-    record.is_a?(Order) && record.customer.organization_id == user.id
+    record.is_a?(Ticket) && record.customer.organization_id == user.id
   end
 
   def update?
     show? && user.slug == "acme"
   end
 
-  def view_total_cents?
+  def view_estimated_minutes?
     show? && user.slug == "acme"
   end
 
@@ -46,9 +46,9 @@ class ResourceExtensionsTest < ActionDispatch::IntegrationTest
     @globex = Organization.create!(name: "Globex", slug: "globex")
     @alice = Customer.create!(organization: @acme, name: "Alice", email: "alice@example.test")
     @bob = Customer.create!(organization: @globex, name: "Bob", email: "bob@example.test")
-    @order = Order.create!(customer: @alice, number: "EXT-ACME", status: "pending", total_cents: 1000)
+    @ticket = Ticket.create!(customer: @alice, number: "EXT-ACME", status: "pending", estimated_minutes: 1000)
     @case = CaseRecord.create!(organization: @acme, title: "Demo Case", state: "open")
-    @foreign = Order.create!(customer: @bob, number: "EXT-GLOBEX", status: "pending", total_cents: 2000)
+    @foreign = Ticket.create!(customer: @bob, number: "EXT-GLOBEX", status: "pending", estimated_minutes: 2000)
   end
 
   teardown { ENV["REKORRA_DEMO_PASSWORD"] = @previous_password }
@@ -103,22 +103,22 @@ class ResourceExtensionsTest < ActionDispatch::IntegrationTest
 
   test "real Pundit policy authorizes model and scoped record independently" do
     adapter = Rekorra::Authorization::Adapters::Pundit.new
-    assert_equal true, adapter.call(@acme, Order, :index?)
-    assert_equal true, adapter.call(@acme, @order, :show?)
+    assert_equal true, adapter.call(@acme, Ticket, :index?)
+    assert_equal true, adapter.call(@acme, @ticket, :show?)
     assert_equal false, adapter.call(@acme, @foreign, :show?)
     assert_equal false, adapter.call(@globex, @foreign, :update?)
-    assert_equal true, adapter.call(@acme, @order, :view_total_cents?)
-    assert_equal false, adapter.call(@globex, @foreign, :view_total_cents?)
-    assert_equal false, adapter.call(@acme, @order, :undeclared_action?)
+    assert_equal true, adapter.call(@acme, @ticket, :view_estimated_minutes?)
+    assert_equal false, adapter.call(@globex, @foreign, :view_estimated_minutes?)
+    assert_equal false, adapter.call(@acme, @ticket, :undeclared_action?)
   end
 
   test "Pundit scope returns only the tenant relation and no unscoped fallback" do
     adapter = Rekorra::Authorization::Adapters::PunditScope.new
-    own = adapter.call(@acme, Order)
+    own = adapter.call(@acme, Ticket)
     assert_kind_of ActiveRecord::Relation, own
-    assert_equal Order, own.klass
-    assert_equal [@order.id], own.pluck(:id)
-    assert_equal [@foreign.id], adapter.call(@globex, Order).pluck(:id)
+    assert_equal Ticket, own.klass
+    assert_equal [@ticket.id], own.pluck(:id)
+    assert_equal [@foreign.id], adapter.call(@globex, Ticket).pluck(:id)
     assert_raises(Rekorra::ConfigurationError) { adapter.call(@acme, User) }
   end
 
@@ -128,12 +128,12 @@ class ResourceExtensionsTest < ActionDispatch::IntegrationTest
     config.authorize_with = Rekorra::Authorization::Adapters::Pundit.new
     config.scope_with = Rekorra::Authorization::Adapters::PunditScope.new
     assert_nil config.ready!
-    assert config.authorize_with.call(@acme, @order, :show?)
-    assert_equal [@order.id], config.scope_with.call(@acme, Order).pluck(:id)
+    assert config.authorize_with.call(@acme, @ticket, :show?)
+    assert_equal [@ticket.id], config.scope_with.call(@acme, Ticket).pluck(:id)
   end
 
   test "association lookup ships optional enhancement but keeps HTML GET fallback" do
-    get "/backoffice/resources/orders/new", headers: headers
+    get "/backoffice/resources/tickets/new", headers: headers
     assert_response :success
     assert_select "form[data-rk-association-lookup='true'][method='get']"
     assert_select "form[data-rk-association-lookup] [role='status'][aria-live='polite']"

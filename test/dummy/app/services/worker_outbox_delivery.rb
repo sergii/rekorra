@@ -23,7 +23,7 @@ class WorkerOutboxDelivery
     request = Net::HTTP::Post.new(uri)
     request["Content-Type"] = "application/json"
     request["Idempotency-Key"] = key_for(event)
-    request.body = JSON.generate(order_id: event.order_id, organization_id: event.organization_id)
+    request.body = JSON.generate(ticket_id: event.ticket_id, organization_id: event.organization_id)
     response = Net::HTTP.start(uri.hostname, uri.port, open_timeout: 2, read_timeout: 2,
       use_ssl: uri.scheme == "https") do |http|
       http.request(request)

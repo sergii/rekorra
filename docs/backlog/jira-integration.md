@@ -8,9 +8,9 @@ The provider-neutral `ExternalRef` and `ContextRef` contracts from Step 0001.6 p
 
 ## Proposed future vertical slice
 
-- Add a fictional Jira issue linked to an Order in the demo host.
+- Add a fictional Jira issue linked to an Ticket in the demo host.
 - Build a dedicated adapter for Jira Cloud Remote Issue Links, with stable issue ID / mutable display key.
-- Generate authenticated `Jira issue -> Rekorra Order` remote links only when tenant and policies allow the source record.
+- Generate authenticated `Jira issue -> Rekorra Ticket` remote links only when tenant and policies allow the source record.
 - Allow an unresolved issue with no record ID; do not invent associations.
 - Add request-level tests against an HTTP stub, without live Jira credentials.
 - Ensure idempotency, provider instance identity, retries, API error handling and no token leakage.

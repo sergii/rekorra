@@ -4,7 +4,7 @@ Status: Ruby 3.3/3.4 integration CI green; manual browser QA pending.
 
 ## Goal
 
-Support a second pagination strategy for ordinary model indexes (Users, Orders, etc.), preserving the Step 0005 search/filter/sort DSL and a small server-rendered Previous/Next UI. No mandatory Pagy dependency and no full table COUNT.
+Support a second pagination strategy for ordinary model indexes (Users, Tickets, etc.), preserving the Step 0005 search/filter/sort DSL and a small server-rendered Previous/Next UI. No mandatory Pagy dependency and no full table COUNT.
 
 ## Demo host
 
@@ -16,7 +16,7 @@ Support a second pagination strategy for ordinary model indexes (Users, Orders, 
 ## Architecture
 
 - `Index::Keyset` uses a lexicographic cursor with the selected column and an ascending primary-key tie-breaker. The query fetches at most `per_page + 1` rows.
-- Keyset navigation supports both ascending/descending sorting and both Next/Previous. For Previous the database reverses ordering before the returned rows are restored to display order.
+- Keyset navigation supports both ascending/descending sorting and both Next/Previous. For Previous the database reverses ordering before the returned rows are restored to display ticket.
 - `Index::Cursor` encrypts and authenticates cursor contents with a Rails app-derived key (`aes-256-gcm`) and one-hour expiry. It hashes the resource name, scope SQL, host context, search, normalized filters, sort, direction and page size into its fingerprint.
 - Query and view share existing filter and search mechanisms; the cursor never carries arbitrary SQL or serialized model arguments.
 - Unknown/tampered/expired/wrong-context cursor returns HTTP 400, not a 500 or a fresh first page.
