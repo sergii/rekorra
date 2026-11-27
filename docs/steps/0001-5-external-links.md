@@ -4,12 +4,12 @@ Status: Automated CI passed on Ruby 3.3 and 3.4; browser visual verification pen
 
 ## Demo Rails app
 
-`OrderResource` exposes:
-- Sumo Logic `See logs`: deep link filtered by numeric order and tenant ID, last 24 hours (demonstration search).
-- GitHub Issues `Find related issues`: URL-encoded search for an order reference.
+`TicketResource` exposes:
+- Sumo Logic `See logs`: deep link filtered by numeric ticket and tenant ID, last 24 hours (demonstration search).
+- GitHub Issues `Find related issues`: URL-encoded search for an ticket reference.
 - Per-provider visibility: the sample policy allows Sumo links for Acme but not Globex.
 
-The sample URLs do not prove that those external services contain events for demo orders.
+The sample URLs do not prove that those external services contain events for demo tickets.
 
 ## Rekorra gem
 

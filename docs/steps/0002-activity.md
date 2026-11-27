@@ -6,15 +6,15 @@ Status: GitHub Actions passed on Ruby 3.3 and 3.4; manual browser verification p
 
 - Installs `paper_trail ~> 17.0` only in the root development Gemfile, **not** in `rekorra.gemspec`.
 - Adds a host-owned `versions` table with JSON `object` and `object_changes` columns and item index.
-- Adds `has_paper_trail` to the `Order` model for create/update/destroy.
-- Seeds an initial pending Order then changes it to paid, so the demo has visible version history.
+- Adds `has_paper_trail` to the `Ticket` model for create/update/destroy.
+- Seeds an initial pending Ticket then changes it to completed, so the demo has visible version history.
 - Configures a demo-only actor identifier `demo-organization:<slug>` and explicit `view_activity?` permission (Acme only). This actor is an organization, **not** a real human identifier.
 
 ## Rekorra Engine
 
 - `activity do` resource DSL: provider source, explicit policy, allowed field list, bounded event count.
 - Optional adapter registry with `Rekorra::Activity::Adapters::PaperTrail`.
-- Read-only server-rendered Activity section on Order Show.
+- Read-only server-rendered Activity section on Ticket Show.
 - Field-level output allowlist; does not render the whole PaperTrail `object` or unapproved `object_changes`.
 - Per-request write actor propagated through the registered adapter to PaperTrail, with scoped restoration.
 - No JavaScript bundle, no Rekorra-owned database tables, no runtime dependency on PaperTrail.
@@ -22,7 +22,7 @@ Status: GitHub Actions passed on Ruby 3.3 and 3.4; manual browser verification p
 ## Validation checklist
 
 - [x] Ruby 3.3 and 3.4 CI green on Rails 8.1
-- [x] Order version create and update shown
+- [x] Ticket version create and update shown
 - [x] Unauthorized viewers cannot see activity or trigger adapter queries
 - [x] Tenant isolation intact
 - [x] Web CRUD attributes new versions to demo actor

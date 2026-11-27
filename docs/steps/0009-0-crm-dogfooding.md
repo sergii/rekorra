@@ -2,7 +2,7 @@
 
 ## Intent
 
-Use a real Rails CRM domain to develop Rekorra by using Rekorra itself. Keep the existing test/dummy host and legacy commerce fixtures: worker, outbox, access-audit and existing tests rely on them. CRM is the new product-facing demo, not a replacement for regression coverage.
+Use a real Rails CRM domain to develop Rekorra by using Rekorra itself. Keep the existing test/dummy host but replace the former example domain with CRM-only tickets and interactions, including worker, outbox and audit scenarios.
 
 ## First slice
 
@@ -19,6 +19,10 @@ Use a real Rails CRM domain to develop Rekorra by using Rekorra itself. Keep the
 2. Observe and operate it using generic Rekorra resources, not CRM-specific engine code.
 3. When a limitation appears, record the case, generalize a gem feature, implement and test it, then wire the CRM example to that feature.
 4. Keep real Chrome checks and negative security tests; use synthetic data only.
+
+## Public-domain cleanup
+
+All examples must be synthetic CRM examples. The current tree must not preserve a separate financial domain for regression. Historical Git objects and previously published refs require a separate cleanup; this change is not a history rewrite. Recreate disposable demo databases after the migration rename. CI and runtime validation are pending.
 
 ## Next CRM slices
 

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # Second view over the same scoped model, to demonstrate adapter interchange
-# without making Sidekiq a mandatory source for the regular Order workspace.
-class SidekiqOrderResource < Rekorra::Resource
-  model "Order"
+# without making Sidekiq a mandatory source for the regular Ticket workspace.
+class SidekiqTicketResource < Rekorra::Resource
+  model "Ticket"
   search_by :number
 
   index do

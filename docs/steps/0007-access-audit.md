@@ -12,8 +12,8 @@ Access Audit is **not** a model version history (PaperTrail Activity), backgroun
 - `AccessAudit::Event` immutable, validated scalar envelope: action, record type/id, actor key, tenant key, request ID, occurrence time. No params, passwords, before/after field values, cookies, user agent, IP, raw error or backtrace.
 - `AccessAudit::Registry` adapter contract `write!(event:)` and `entries(record:, tenant_key:, limit:)`; `AccessAudit::Resolver` checks an independent record-specific viewing policy before requesting bounded entries.
 - `AccessAudit::Adapters::ActiveRecord` uses a host-selected model name, constantized lazily. The host creates and retains its own audit table and indexed tenant/record columns. No new tables in Rekorra Engine and no extra runtime gem.
-- Demo host uses `DemoAuditEntry`, and explicitly maps authenticated actors and tenants to stable keys. Its Order Resource is audited; other resources are unchanged.
-- Authorized Order Show requests write an access event **before the audit section is read**. Denied and anonymous requests are not logged by this first slice.
+- Demo host uses `DemoAuditEntry`, and explicitly maps authenticated actors and tenants to stable keys. Its Ticket Resource is audited; other resources are unchanged.
+- Authorized Ticket Show requests write an access event **before the audit section is read**. Denied and anonymous requests are not logged by this first slice.
 - Successful create, update and destroy events are emitted only after a successful domain mutation. For the demo host storing audits in the *same ActiveRecord database*, both operations occur inside a shared transaction. Audit write failure rolls back a mutation.
 - A separate `view_access_audit?` authorization controls the Show page's read-only timeline, which displays only action, actor key and time for the current tenant/record.
 

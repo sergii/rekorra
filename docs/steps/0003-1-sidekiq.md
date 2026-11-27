@@ -4,10 +4,10 @@ Status: CI green on Ruby 3.3/3.4 with real Redis; mobile/browser QA pending.
 
 ## Demo Rails app
 
-- Adds Sidekiq 7.3 in demo Gemfile, a real `SidekiqOrderReceiptWorker`, and `SidekiqOrderResource` as an alternate view over scoped Orders.
+- Adds Sidekiq 7.3 in demo Gemfile, a real `SidekiqTicketSummaryWorker`, and `SidekiqTicketResource` as an alternate view over scoped Tickets.
 - `DemoJobLink` now carries `provider` and `queue_name` to prevent Solid Queue and Sidekiq correlations from mixing.
 - Sidekiq links are an explicit record-owned association; the adapter does not inspect serialized job arguments or infer tenant IDs.
-- Redis is supplied in GitHub Actions, but the demo's Sidekiq resource requires a reachable Redis instance to inspect jobs. The normal Order page remains Solid Queue-backed.
+- Redis is supplied in GitHub Actions, but the demo's Sidekiq resource requires a reachable Redis instance to inspect jobs. The normal Ticket page remains Solid Queue-backed.
 
 ## Rekorra
 
@@ -20,7 +20,7 @@ Status: CI green on Ruby 3.3/3.4 with real Redis; mobile/browser QA pending.
 ## Acceptance
 
 - [x] Ruby 3.3 and Ruby 3.4 CI green, with real Redis
-- [x] Enqueued Sidekiq job appears in Sidekiq Order page
+- [x] Enqueued Sidekiq job appears in Sidekiq Ticket page
 - [x] Other tenant job JID never leaks
 - [x] Retry / scheduled / dead status projection
 - [x] Adapter-specific permission

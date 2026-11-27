@@ -125,14 +125,14 @@ class TypedFormControlsTest < ActionDispatch::IntegrationTest
     assert_equal @acme.id, @case.reload.organization_id
   end
 
-  test "integer inputs on existing Orders remain native number controls" do
+  test "integer inputs on existing Tickets remain native number controls" do
     customer = Customer.create!(organization: @acme,
       name: "Typed Customer", email: "typed@example.test")
-    order = Order.create!(customer: customer, number: "TYPED-ORDER",
-      status: "pending", total_cents: 5500)
-    get "/backoffice/resources/orders/#{order.id}/edit", headers: auth
+    ticket = Ticket.create!(customer: customer, number: "TYPED-ORDER",
+      status: "pending", estimated_minutes: 5500)
+    get "/backoffice/resources/tickets/#{ticket.id}/edit", headers: auth
     assert_response :success
-    assert_select "input[type='number'][name='record[total_cents]'][step='1']"
+    assert_select "input[type='number'][name='record[estimated_minutes]'][step='1']"
     assert_select "select[name='record[customer_id]']"
   end
 

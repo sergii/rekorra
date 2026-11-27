@@ -25,7 +25,7 @@ A provider has a stable snake_case identifier. The Ruby classes implementing it 
 external_link :issues, label: "Find related issues", provider: :url,
   base_url: "https://github.com",
   path: "/sergii/rekorra/issues",
-  params: ->(order) { { q: "order_id:#{Integer(order.id)}" } },
+  params: ->(ticket) { { q: "ticket_id:#{Integer(ticket.id)}" } },
   authorize: :view_issues?
 ```
 

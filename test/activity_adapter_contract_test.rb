@@ -14,7 +14,7 @@ class ActivityAdapterContractTest < ActiveSupport::TestCase
           at: Time.utc(2026, 10, 28, 12),
           actor: "external-processor",
           changes: [Rekorra::Activity::Change.new(
-            field: "status", before: "pending", after: "paid"
+            field: "status", before: "pending", after: "completed"
           )]
         )
       ]
@@ -23,7 +23,7 @@ class ActivityAdapterContractTest < ActiveSupport::TestCase
 
   def custom_resource
     Class.new(Rekorra::Resource) do
-      model "Order"
+      model "Ticket"
       activity do
         source :domain_events
         fields :status
@@ -40,7 +40,7 @@ class ActivityAdapterContractTest < ActiveSupport::TestCase
 
     resource = custom_resource
     resource.validate!
-    record = Order.new(number: "A-101", status: "paid", total_cents: 100)
+    record = Ticket.new(number: "A-101", status: "completed", estimated_minutes: 100)
 
     events = Rekorra::Activity::Resolver.new(
       resource: resource, record: record, registry: registry,
@@ -51,7 +51,7 @@ class ActivityAdapterContractTest < ActiveSupport::TestCase
     assert_equal 1, events.size
     assert_equal "workflow_transition", events.first.kind
     assert_equal "external-processor", events.first.actor
-    assert_equal ["status", "pending", "paid"],
+    assert_equal ["status", "pending", "completed"],
       [events.first.changes.first.field,
        events.first.changes.first.before,
        events.first.changes.first.after]

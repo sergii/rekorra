@@ -10,7 +10,7 @@ Each `Finding` has a code, severity (`info`, `warning`, `critical`), title, desc
 
 ## Authorization and scope
 
-The engine must first load the source record through the host's tenant-scoped relation, authorize `:show?`, then check a separate `:view_findings?` policy before invoking any rule. A domain rule only reads records linked through the already authorized Order; never query global payments or tenants. Other hosts must supply similarly scoped rule implementations.
+The engine must first load the source record through the host's tenant-scoped relation, authorize `:show?`, then check a separate `:view_findings?` policy before invoking any rule. A domain rule only reads records linked through the already authorized Ticket; never query global interactions or tenants. Other hosts must supply similarly scoped rule implementations.
 
 ## Rules versus events
 

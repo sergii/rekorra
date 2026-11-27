@@ -6,13 +6,13 @@ Rekorra.configure do |config|
   config.navigation_strategy = :namespace
   config.importmap_enabled = ENV["REKORRA_HOTWIRE_BROWSER"] == "1"
   config.index_cursor_context_with = ->(actor) { "organization:#{actor.id}" }
-  config.finding_rules.register :paid_but_pending, "PaidButPending"
+  config.finding_rules.register :logged_but_pending, "LoggedButPending"
 
   config.job_adapters.register :solid_queue,
-    Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(order) { order.demo_job_links.where(provider: "solid_queue") })
+    Rekorra::Jobs::Adapters::SolidQueue.new(links: ->(ticket) { ticket.demo_job_links.where(provider: "solid_queue") })
   config.job_adapters.register :sidekiq,
     Rekorra::Jobs::Adapters::Sidekiq.new(
-      links: ->(order) { order.demo_job_links.where(provider: "sidekiq") }
+      links: ->(ticket) { ticket.demo_job_links.where(provider: "sidekiq") }
     )
 
   config.access_audit_actor_with = ->(actor) { "demo-organization:#{actor.slug}" }
@@ -50,7 +50,7 @@ Rekorra.configure do |config|
     if %w[Crm::Lead Crm::Onboarding].include?(model_name)
       next %i[index? show?].include?(action) && (subject.is_a?(Class) || subject.organization_id == actor.id)
     end
-    next false unless %w[Organization Customer Order Payment User CaseRecord].include?(model_name)
+    next false unless %w[Organization Customer Ticket Interaction User CaseRecord].include?(model_name)
     if model_name == "User"
       next %i[index? show?].include?(action)
     end
@@ -58,8 +58,8 @@ Rekorra.configure do |config|
       next %i[index? show?].include?(action) &&
         (subject.is_a?(Class) || subject.id == actor.id)
     end
-    next actor.slug == "acme" if action == :view_total_cents?
-    next actor.slug == "acme" if action == :edit_total_cents?
+    next actor.slug == "acme" if action == :view_estimated_minutes?
+    next actor.slug == "acme" if action == :edit_estimated_minutes?
     next actor.slug == "acme" if action == :view_findings?
     next actor.slug == "acme" if action == :view_jobs?
     # Demo-only operator approval; no public Rekorra retry route.
@@ -83,8 +83,8 @@ Rekorra.configure do |config|
     when "User" then model.where(organization_id: actor.id)
     when "CaseRecord" then model.where(organization_id: actor.id)
     when "Customer" then model.where(organization_id: actor.id)
-    when "Order" then model.joins(:customer).where(customers: { organization_id: actor.id })
-    when "Payment" then model.joins(order: :customer).where(customers: { organization_id: actor.id })
+    when "Ticket" then model.joins(:customer).where(customers: { organization_id: actor.id })
+    when "Interaction" then model.joins(ticket: :customer).where(customers: { organization_id: actor.id })
     else model.none
     end
   end
@@ -95,8 +95,8 @@ Rekorra.configure do |config|
   config.resource :users, "UserResource"
   config.resource :cursor_users, "CursorUserResource"
   config.resource :customers, "CustomerResource"
-  config.resource :orders, "OrderResource"
+  config.resource :tickets, "TicketResource"
   config.resource :cases, "CaseRecordResource"
-  config.resource :sidekiq_orders, "SidekiqOrderResource"
-  config.resource :payments, "PaymentResource"
+  config.resource :sidekiq_tickets, "SidekiqTicketResource"
+  config.resource :interactions, "InteractionResource"
 end

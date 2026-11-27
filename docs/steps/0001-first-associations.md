@@ -1,11 +1,11 @@
-# Step 0001 - Customer, Order and Payment
+# Step 0001 - Customer, Ticket and Interaction
 
 Status: Integration CI passed on Ruby 3.3 and 3.4 with Rails 8.1; browser checks pending.
 
 ## Demo application
 - Organization owns Customers.
-- Customer has_many Orders, Order belongs_to Customer.
-- Order has_many Payments, Payment belongs_to Order.
+- Customer has_many Tickets, Ticket belongs_to Customer.
+- Ticket has_many Interactions, Interaction belongs_to Ticket.
 - Two organizations with isolated seed records, plus demo-only HTTP Basic authentication.
 
 ## Rekorra gem
@@ -25,7 +25,7 @@ Status: Integration CI passed on Ruby 3.3 and 3.4 with Rails 8.1; browser checks
 ## Verification checklist
 - [x] Rails 8 boot and migration
 - [x] CRUD without JavaScript
-- [x] Customer/Order/Payment links
+- [x] Customer/Ticket/Interaction links
 - [x] Tenant isolation and unauthorized association
 - [x] SQL query budget
 - [x] Propshaft CSS loaded

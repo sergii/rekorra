@@ -38,15 +38,15 @@ class WorkerSmoke
     other_customer = Customer.create!(organization: globex, name: "E2E Other #{@token}",
       email: "other-#{@token}@worker.test")
 
-    solid_order = Order.create!(customer: own_customer, number: "E2E-SOLID-#{@token}",
-      status: "pending", total_cents: 100)
-    sidekiq_order = Order.create!(customer: own_customer, number: "E2E-SIDEKIQ-#{@token}",
-      status: "pending", total_cents: 200)
-    foreign_order = Order.create!(customer: other_customer, number: "E2E-FOREIGN-#{@token}",
-      status: "pending", total_cents: 300)
+    solid_ticket = Ticket.create!(customer: own_customer, number: "E2E-SOLID-#{@token}",
+      status: "pending", estimated_minutes: 100)
+    sidekiq_ticket = Ticket.create!(customer: own_customer, number: "E2E-SIDEKIQ-#{@token}",
+      status: "pending", estimated_minutes: 200)
+    foreign_ticket = Ticket.create!(customer: other_customer, number: "E2E-FOREIGN-#{@token}",
+      status: "pending", estimated_minutes: 300)
 
-    check_solid_queue(solid_order, foreign_order)
-    check_sidekiq(sidekiq_order, foreign_order)
+    check_solid_queue(solid_ticket, foreign_ticket)
+    check_sidekiq(sidekiq_ticket, foreign_ticket)
     puts "PASS: real worker processes, persisted effects, failures, retry and tenant privacy"
   ensure
     stop_workers
@@ -54,92 +54,92 @@ class WorkerSmoke
 
   private
 
-  def check_solid_queue(order, foreign)
-    successful = OrderReceiptJob.perform_later(order.id)
-    link(order, successful.job_id, provider: "solid_queue", klass: "OrderReceiptJob")
-    failing = OrderReceiptJob.perform_later(-9_000_000_001)
-    link(order, failing.job_id, provider: "solid_queue", klass: "OrderReceiptJob")
-    other = OrderReceiptJob.perform_later(foreign.id)
-    link(foreign, other.job_id, provider: "solid_queue", klass: "OrderReceiptJob")
+  def check_solid_queue(ticket, foreign)
+    successful = TicketSummaryJob.perform_later(ticket.id)
+    link(ticket, successful.job_id, provider: "solid_queue", klass: "TicketSummaryJob")
+    failing = TicketSummaryJob.perform_later(-9_000_000_001)
+    link(ticket, failing.job_id, provider: "solid_queue", klass: "TicketSummaryJob")
+    other = TicketSummaryJob.perform_later(foreign.id)
+    link(foreign, other.job_id, provider: "solid_queue", klass: "TicketSummaryJob")
 
-    check(order.reload.receipt_generated_at.nil?, "Solid Queue executed without a worker")
-    assert_status(order, successful.job_id, "Queued", sidekiq: false)
-    check(!show(order, sidekiq: false).include?(other.job_id), "Solid Queue leaked tenant job")
+    check(ticket.reload.summary_generated_at.nil?, "Solid Queue executed without a worker")
+    assert_status(ticket, successful.job_id, "Queued", sidekiq: false)
+    check(!show(ticket, sidekiq: false).include?(other.job_id), "Solid Queue leaked tenant job")
     check(status_code(foreign, sidekiq: false) == 404, "Solid Queue leaked tenant record")
 
     pid = launch("solid", ["bundle", "exec", "rake", "solid_queue:start"])
     wait_for("Solid Queue success/failure", worker_pid: pid) do
-      order.reload.receipt_generated_at &&
+      ticket.reload.summary_generated_at &&
         ::SolidQueue::Job.find_by(active_job_id: successful.job_id)&.finished_at &&
         ::SolidQueue::Job.find_by(active_job_id: other.job_id)&.finished_at &&
         ::SolidQueue::Job.find_by(active_job_id: failing.job_id)&.failed_execution
     end
     stop_worker(pid)
-    assert_status(order, successful.job_id, "Finished", sidekiq: false)
-    assert_status(order, failing.job_id, "Failed", sidekiq: false)
-    check(!show(order, sidekiq: false).include?(other.job_id), "Solid Queue leaked finished foreign job")
+    assert_status(ticket, successful.job_id, "Finished", sidekiq: false)
+    assert_status(ticket, failing.job_id, "Failed", sidekiq: false)
+    check(!show(ticket, sidekiq: false).include?(other.job_id), "Solid Queue leaked finished foreign job")
     check(status_code(foreign, sidekiq: false) == 404, "Solid Queue foreign show succeeded")
-    check(foreign.reload.receipt_generated_at.present?, "Solid Queue foreign job never ran")
-    check(!show(order, sidekiq: false).include?("Couldn't find Order"), "Solid Queue exposed exception")
+    check(foreign.reload.summary_generated_at.present?, "Solid Queue foreign job never ran")
+    check(!show(ticket, sidekiq: false).include?("Couldn't find Ticket"), "Solid Queue exposed exception")
     puts "PASS: Solid Queue real worker finished and failed jobs with scoped read"
   end
 
-  def check_sidekiq(order, foreign)
-    successful_jid = SidekiqOrderReceiptWorker.perform_async(order.id)
-    link(order, successful_jid, provider: "sidekiq", klass: "SidekiqOrderReceiptWorker")
-    failing_jid = SidekiqOrderReceiptWorker.perform_async(-9_000_000_002)
-    link(order, failing_jid, provider: "sidekiq", klass: "SidekiqOrderReceiptWorker")
-    other_jid = SidekiqOrderReceiptWorker.perform_async(foreign.id)
-    link(foreign, other_jid, provider: "sidekiq", klass: "SidekiqOrderReceiptWorker")
+  def check_sidekiq(ticket, foreign)
+    successful_jid = SidekiqTicketSummaryWorker.perform_async(ticket.id)
+    link(ticket, successful_jid, provider: "sidekiq", klass: "SidekiqTicketSummaryWorker")
+    failing_jid = SidekiqTicketSummaryWorker.perform_async(-9_000_000_002)
+    link(ticket, failing_jid, provider: "sidekiq", klass: "SidekiqTicketSummaryWorker")
+    other_jid = SidekiqTicketSummaryWorker.perform_async(foreign.id)
+    link(foreign, other_jid, provider: "sidekiq", klass: "SidekiqTicketSummaryWorker")
 
-    check(order.reload.receipt_generated_at.nil?, "Sidekiq executed without a worker")
-    assert_status(order, successful_jid, "Queued", sidekiq: true)
-    check(!show(order, sidekiq: true).include?(other_jid), "Sidekiq leaked tenant JID")
+    check(ticket.reload.summary_generated_at.nil?, "Sidekiq executed without a worker")
+    assert_status(ticket, successful_jid, "Queued", sidekiq: true)
+    check(!show(ticket, sidekiq: true).include?(other_jid), "Sidekiq leaked tenant JID")
     check(status_code(foreign, sidekiq: true) == 404, "Sidekiq foreign show succeeded")
 
     pid = launch("sidekiq", ["bundle", "exec", "sidekiq", "-r", "./config/environment.rb",
       "-q", "default", "-c", "1"])
     wait_for("Sidekiq success/retry", worker_pid: pid) do
-      order.reload.receipt_generated_at &&
-        foreign.reload.receipt_generated_at &&
+      ticket.reload.summary_generated_at &&
+        foreign.reload.summary_generated_at &&
         ::Sidekiq::RetrySet.new.any? { |job| job.jid == failing_jid }
     end
     stop_worker(pid)
-    assert_status(order, failing_jid, "Retrying", sidekiq: true)
+    assert_status(ticket, failing_jid, "Retrying", sidekiq: true)
     # An absent successful JID is not proof of completion.
-    assert_status(order, successful_jid, "Unavailable", sidekiq: true)
-    check(!show(order, sidekiq: true).include?(other_jid), "Sidekiq leaked completed foreign JID")
-    check(!show(order, sidekiq: true).include?("Couldn't find Order"), "Sidekiq exposed retry error")
+    assert_status(ticket, successful_jid, "Unavailable", sidekiq: true)
+    check(!show(ticket, sidekiq: true).include?(other_jid), "Sidekiq leaked completed foreign JID")
+    check(!show(ticket, sidekiq: true).include?("Couldn't find Ticket"), "Sidekiq exposed retry error")
     check(status_code(foreign, sidekiq: true) == 404, "Sidekiq foreign show succeeded")
     puts "PASS: Sidekiq real worker completed work, produced retry and kept unknown completion"
   end
 
-  def link(order, job_id, provider:, klass:)
+  def link(ticket, job_id, provider:, klass:)
     check(job_id.present?, "Backend did not enqueue #{klass}")
-    DemoJobLink.create!(order: order, active_job_id: job_id,
+    DemoJobLink.create!(ticket: ticket, active_job_id: job_id,
       job_class_name: klass, provider: provider, queue_name: "default")
   end
 
-  def show(order, sidekiq:)
-    request(order, sidekiq: sidekiq).body
+  def show(ticket, sidekiq:)
+    request(ticket, sidekiq: sidekiq).body
   end
 
-  def status_code(order, sidekiq:)
-    request(order, sidekiq: sidekiq).status
+  def status_code(ticket, sidekiq:)
+    request(ticket, sidekiq: sidekiq).status
   end
 
-  def request(order, sidekiq:)
-    resource = sidekiq ? "sidekiq_orders" : "orders"
-    path = "/backoffice/resources/#{resource}/#{order.id}"
+  def request(ticket, sidekiq:)
+    resource = sidekiq ? "sidekiq_tickets" : "tickets"
+    path = "/backoffice/resources/#{resource}/#{ticket.id}"
     auth = ActionController::HttpAuthentication::Basic.encode_credentials(
       "acme", ENV.fetch("REKORRA_DEMO_PASSWORD"))
     Rack::MockRequest.new(Rails.application).get(path,
       "HTTP_HOST" => "localhost", "HTTP_AUTHORIZATION" => auth)
   end
 
-  def assert_status(order, jid, expected, sidekiq:)
-    response = request(order, sidekiq: sidekiq)
-    check(response.status == 200, "Order HTTP #{response.status}")
+  def assert_status(ticket, jid, expected, sidekiq:)
+    response = request(ticket, sidekiq: sidekiq)
+    check(response.status == 200, "Ticket HTTP #{response.status}")
     document = Nokogiri::HTML(response.body)
     row = document.css("section.rk-jobs li.rk-jobs__item").find { |node| node.text.include?(jid) }
     check(row, "Missing linked #{jid} in Jobs section")

@@ -10,7 +10,7 @@ Tenant and actor identities must be provided explicitly by the host through `acc
 
 The first real adapter uses a host-owned ActiveRecord model with lazy constantization and a tenant+record scoped query, ordered and limited at the database. Its storage and retention are owned by the host; `rekorra.gemspec` has no audit dependency.
 
-Write audit only for authorized Show and successful create/update/destroy. Failed validation and forbidden mutations must never claim success. In a single host DB, write the audit inside the domain transaction; sink failures abort the mutation. The viewer's policy is separate from the permission to view the underlying Order.
+Write audit only for authorized Show and successful create/update/destroy. Failed validation and forbidden mutations must never claim success. In a single host DB, write the audit inside the domain transaction; sink failures abort the mutation. The viewer's policy is separate from the permission to view the underlying Ticket.
 
 ## Boundaries
 

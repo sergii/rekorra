@@ -18,7 +18,7 @@ class EngineBootTest < ActionDispatch::IntegrationTest
     }
     assert_response :success
     assert_includes response.body, "Rekorra engine is mounted"
-    assert_includes response.body, "Orders"
+    assert_includes response.body, "Tickets"
   ensure
     ENV["REKORRA_DEMO_PASSWORD"] = previous
   end

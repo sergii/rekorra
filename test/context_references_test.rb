@@ -10,12 +10,12 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
     @globex = Organization.create!(name: "Globex", slug: "globex")
     @alice = Customer.create!(organization: @acme, name: "Alice", email: "alice@example.test")
     @bob = Customer.create!(organization: @globex, name: "Bob", email: "bob@example.test")
-    @order = Order.create!(customer: @alice, number: "ACME-CONTEXT",
-      status: "paid", total_cents: 10_000, support_issue_id: "10024",
-      support_issue_key: "BILL-482", trace_id: "4bf92f3577b34da6a3ce929d0e0e4736")
-    @foreign = Order.create!(customer: @bob, number: "GLOBEX-CONTEXT",
-      status: "pending", total_cents: 400,
-      support_issue_id: "10025", support_issue_key: "BILL-483", trace_id: "abc123")
+    @ticket = Ticket.create!(customer: @alice, number: "ACME-CONTEXT",
+      status: "completed", estimated_minutes: 10_000, support_issue_id: "10024",
+      support_issue_key: "SUP-482", trace_id: "4bf92f3577b34da6a3ce929d0e0e4736")
+    @foreign = Ticket.create!(customer: @bob, number: "GLOBEX-CONTEXT",
+      status: "pending", estimated_minutes: 400,
+      support_issue_id: "10025", support_issue_key: "SUP-483", trace_id: "abc123")
   end
 
   teardown { ENV["REKORRA_DEMO_PASSWORD"] = @previous_password }
@@ -25,40 +25,40 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
       ActionController::HttpAuthentication::Basic.encode_credentials(tenant, "test-password") }
   end
 
-  test "Order links to authorized Customer and Organization resources" do
-    get "/backoffice/resources/orders/#{@order.id}", headers: headers
+  test "Ticket links to authorized Customer and Organization resources" do
+    get "/backoffice/resources/tickets/#{@ticket.id}", headers: headers
     assert_response :success
     assert_select "section.rk-context a[href='/backoffice/resources/customers/#{@alice.id}']", text: "Customer: Alice"
     assert_select "section.rk-context a[href='/backoffice/resources/organizations/#{@acme.id}']", text: "Organization: Acme"
-    assert_includes response.body, "Jira issue: BILL-482"
+    assert_includes response.body, "Jira issue: SUP-482"
     assert_includes response.body, "Datadog trace: 4bf92f3577b34da6a3ce929d0e0e4736"
   end
 
   test "external references are policy checked separately from record visibility" do
-    get "/backoffice/resources/orders/#{@foreign.id}", headers: headers("globex")
+    get "/backoffice/resources/tickets/#{@foreign.id}", headers: headers("globex")
     assert_response :success
-    assert_includes response.body, "Jira issue: BILL-483"
+    assert_includes response.body, "Jira issue: SUP-483"
     assert_not_includes response.body, "Datadog trace: abc123"
     assert_select "section.rk-context a[href='/backoffice/resources/customers/#{@bob.id}']"
     assert_select "section.rk-context a[href='/backoffice/resources/organizations/#{@globex.id}']"
   end
 
   test "cross tenant source cannot disclose context" do
-    get "/backoffice/resources/orders/#{@foreign.id}", headers: headers
+    get "/backoffice/resources/tickets/#{@foreign.id}", headers: headers
     assert_response :not_found
-    assert_not_includes response.body, "BILL-483"
+    assert_not_includes response.body, "SUP-483"
   end
 
   test "anonymous actor cannot disclose context" do
-    get "/backoffice/resources/orders/#{@order.id}"
+    get "/backoffice/resources/tickets/#{@ticket.id}"
     assert_response :unauthorized
-    assert_not_includes response.body, "BILL-482"
+    assert_not_includes response.body, "SUP-482"
   end
 
   test "missing external IDs do not produce phantom references" do
-    another = Order.create!(customer: @alice, number: "NO-REFERENCES",
-      status: "pending", total_cents: 100)
-    get "/backoffice/resources/orders/#{another.id}", headers: headers
+    another = Ticket.create!(customer: @alice, number: "NO-REFERENCES",
+      status: "pending", estimated_minutes: 100)
+    get "/backoffice/resources/tickets/#{another.id}", headers: headers
     assert_response :success
     assert_select "section.rk-context .rk-context__label", count: 0
     assert_select "section.rk-context a", count: 2
@@ -69,7 +69,7 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
     section.record(:customer, resource: :customers, id: ->(_source) { @bob.id })
     resource = Struct.new(:context).new(section)
     entries = Rekorra::Context::Resolver.new(resource: resource,
-      record: @order, actor: @acme, configuration: Rekorra.configuration,
+      record: @ticket, actor: @acme, configuration: Rekorra.configuration,
       authorize: ->(_subject, _action) { true },
       scope: ->(model) { model.where(organization_id: @acme.id) }).call
     assert_empty entries
@@ -83,7 +83,7 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
       display_key: ->(_record) { invoked = true; "ISSUE-314" }, authorize: :private?)
     resource = Struct.new(:context).new(section)
     entries = Rekorra::Context::Resolver.new(resource: resource,
-      record: @order, actor: @acme, configuration: Rekorra.configuration,
+      record: @ticket, actor: @acme, configuration: Rekorra.configuration,
       authorize: ->(_subject, _action) { false },
       scope: ->(model) { model.none }).call
     assert_empty entries
@@ -92,7 +92,7 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
 
   test "ContextRef identity includes tenant application and environment" do
     args = { application: "billing", environment: "production",
-      tenant: "acme", resource: "orders", id: "42" }
+      tenant: "acme", resource: "tickets", id: "42" }
     a = Rekorra::ContextRef.new(**args)
     same = Rekorra::ContextRef.new(**args)
     other = Rekorra::ContextRef.new(**args.merge(tenant: "globex"))
@@ -107,12 +107,12 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
 
   test "ExternalRef handles different providers and provider-specific IDs" do
     jira = Rekorra::ExternalRef.new(provider: :jira,
-      instance: "acme.atlassian.net", kind: :issue, id: "10024", display_key: "BILL-482")
+      instance: "acme.atlassian.net", kind: :issue, id: "10024", display_key: "SUP-482")
     github = Rekorra::ExternalRef.new(provider: :github_issues,
       instance: "sergii/rekorra", kind: :issue, id: "314")
     trace = Rekorra::ExternalRef.new(provider: :datadog,
       instance: "us1", kind: :trace, id: "4bf92f3577b34da6a3ce929d0e0e4736")
-    assert_equal "BILL-482", jira.display_key
+    assert_equal "SUP-482", jira.display_key
     assert_equal "314", github.display_key
     assert_equal :trace, trace.kind
     assert_equal :github_issues, github.provider
@@ -121,7 +121,7 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
     # Changing a Jira display key does not change the remote issue identity.
     renamed = Rekorra::ExternalRef.new(provider: :jira,
       instance: "acme.atlassian.net", kind: :issue, id: "10024",
-      display_key: "BILL-900")
+      display_key: "SUP-900")
     assert_equal jira, renamed
     assert_equal jira.hash, renamed.hash
     assert_not_equal jira.to_h, renamed.to_h
@@ -131,7 +131,7 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
     section = Rekorra::Context::Section.new
     section.record(:customer, resource: :customers, id: ->(source) { source.customer_id })
     resource = Struct.new(:context).new(section)
-    resolver = Rekorra::Context::Resolver.new(resource: resource, record: @order,
+    resolver = Rekorra::Context::Resolver.new(resource: resource, record: @ticket,
       actor: @acme, configuration: Rekorra.configuration,
       authorize: ->(_subject, _action) { true },
       scope: ->(_model) { Customer.all.to_a })
@@ -141,7 +141,7 @@ class ContextReferencesTest < ActionDispatch::IntegrationTest
   test "reference identifiers reject blanks and control characters" do
     assert_raises(Rekorra::ConfigurationError) do
       Rekorra::ContextRef.new(application: "billing", environment: "test",
-        tenant: "", resource: "orders", id: "1")
+        tenant: "", resource: "tickets", id: "1")
     end
     assert_raises(Rekorra::ConfigurationError) do
       Rekorra::ExternalRef.new(provider: :jira, instance: "example.atlassian.net",

@@ -4,12 +4,12 @@ Status: Automated Ruby 3.3/3.4 CI passed; manual browser QA pending.
 
 ## Goal
 
-Make searching, filtering, sorting and pagination first-class for **ordinary model indexes** (Users, Orders, Customers), not only specialized operational pages.
+Make searching, filtering, sorting and pagination first-class for **ordinary model indexes** (Users, Tickets, Customers), not only specialized operational pages.
 
 ## Demo host
 
 - A read-only User model, migration, Resource and tenant scope with explicit statuses, roles, verification flag and created-at filter.
-- Order model gains an ordinary index with typed status, price-range and date-range filters.
+- Ticket model gains an ordinary index with typed status, price-range and date-range filters.
 - Standard seed creates 65 Users for pagination. Optional `cd test/dummy && bundle exec rake 'demo:seed_users[50000]'` adds 50,000 Users in batches of 1,000 for large-model QA.
 - No changes required to Activity, Jobs or Findings interfaces.
 
@@ -19,7 +19,7 @@ Make searching, filtering, sorting and pagination first-class for **ordinary mod
 - Strongly-typed static select, boolean, number range and date range predicates. Values are checked against configured columns and a declared allowlist.
 - SQL-level filtering built with ActiveRecord and Arel, always starting with the host's `scope_with` relation.
 - Configurable `per_page` with a hard maximum of 100 and 25 as the default; bounded `LIMIT per_page + 1` and `OFFSET`.
-- Stable secondary primary-key order avoids arbitrary ordering of ties.
+- Stable secondary primary-key ticket avoids arbitrary ordering of ties.
 - Server-rendered GET filters and pagination links preserve selected parameters, no JavaScript and no full-table COUNT by default.
 
 ## Verification

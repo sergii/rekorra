@@ -3,7 +3,7 @@
 # Host-only durable delivery intent; never stores arbitrary HTTP payloads.
 class WorkerOutboxEvent < ApplicationRecord
   belongs_to :organization
-  belongs_to :order
+  belongs_to :ticket
 
   validates :operation_key, presence: true, length: { maximum: 100 }
   validates :status, inclusion: { in: %w[pending unknown delivered needs_review] }

@@ -13,41 +13,41 @@ other = Customer.find_or_create_by!(organization: globex, email: "hidden@example
   customer.name = "Globex Customer"
 end
 
-order_a = Order.find_or_create_by!(number: "ACME-1001") do |order|
-  order.customer = alice
-  order.status = "pending"
-  order.total_cents = 25000
+ticket_a = Ticket.find_or_create_by!(number: "ACME-1001") do |ticket|
+  ticket.customer = alice
+  ticket.status = "pending"
+  ticket.estimated_minutes = 25000
 end
 # Demonstrate a real change event while keeping the seeded end state stable.
-order_a.update!(status: "paid") unless order_a.status == "paid"
+ticket_a.update!(status: "completed") unless ticket_a.status == "completed"
 
-order_a.update!(
+ticket_a.update!(
   support_issue_id: "10024",
-  support_issue_key: "BILL-482",
+  support_issue_key: "SUP-482",
   trace_id: "4bf92f3577b34da6a3ce929d0e0e4736"
 )
-order_b = Order.find_or_create_by!(number: "ACME-1002") do |order|
-  order.customer = bob
-  order.status = "pending"
-  order.total_cents = 7800
+ticket_b = Ticket.find_or_create_by!(number: "ACME-1002") do |ticket|
+  ticket.customer = bob
+  ticket.status = "pending"
+  ticket.estimated_minutes = 7800
 end
-Order.find_or_create_by!(number: "GLOBEX-9001") do |order|
-  order.customer = other
-  order.status = "paid"
-  order.total_cents = 9900
+Ticket.find_or_create_by!(number: "GLOBEX-9001") do |ticket|
+  ticket.customer = other
+  ticket.status = "completed"
+  ticket.estimated_minutes = 9900
 end
-Payment.find_or_create_by!(order: order_a, status: "captured") { |payment| payment.amount_cents = 25000 }
+Interaction.find_or_create_by!(ticket: ticket_a, status: "logged") { |interaction| interaction.duration_minutes = 25000 }
 # Intentionally inconsistent sample, so the Findings panel has an example.
-Payment.find_or_create_by!(order: order_b, status: "captured") { |payment| payment.amount_cents = 7800 }
+Interaction.find_or_create_by!(ticket: ticket_b, status: "logged") { |interaction| interaction.duration_minutes = 7800 }
 
 puts "Rekorra demo records ready: login acme or globex with REKORRA_DEMO_PASSWORD"
 
-# Enqueue exactly one demonstration job for the first order.
+# Enqueue exactly one demonstration job for the first ticket.
 # It remains queued until the demo runs a Solid Queue worker.
-unless order_a.demo_job_links.exists?
-  job = OrderReceiptJob.perform_later(order_a.id)
+unless ticket_a.demo_job_links.exists?
+  job = TicketSummaryJob.perform_later(ticket_a.id)
   if job&.successfully_enqueued?
-    DemoJobLink.create!(order: order_a, active_job_id: job.job_id,
+    DemoJobLink.create!(ticket: ticket_a, active_job_id: job.job_id,
       job_class_name: job.class.name)
   end
 end

@@ -13,12 +13,12 @@ A provider is configured with snake_case symbols such as `:jira`, `:github_issue
 ```ruby
 ContextRef.new(
   application: "billing", environment: "production",
-  tenant: "acme", resource: "orders", id: "10582"
+  tenant: "acme", resource: "tickets", id: "10582"
 )
 
 ExternalRef.new(
   provider: :jira, instance: "acme.atlassian.net",
-  kind: :issue, id: "10024", display_key: "BILL-482"
+  kind: :issue, id: "10024", display_key: "SUP-482"
 )
 
 ExternalRef.new(
@@ -36,7 +36,7 @@ The `context do` DSL supports `record` and `external` declarations. Resolving an
 
 External reference identity uses provider, instance, kind, and stable ID; `display_key` is presentation metadata and may change (for example, after renaming a Jira issue key). Context reference identity uses the model's primary key, not its potentially overridden URL parameter.
 
-Identity must include the source application/instance and environment. A record ID alone is insufficient; staging and production orders may use the same number.
+Identity must include the source application/instance and environment. A record ID alone is insufficient; staging and production tickets may use the same number.
 
 ## Relationship provenance
 
@@ -50,4 +50,4 @@ Reference: https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group
 
 ## Security
 
-Resolution must enforce tenant scope and policies for **each** referenced record. Reading a Jira ticket must not grant read access to customer or payment records.
+Resolution must enforce tenant scope and policies for **each** referenced record. Reading a Jira ticket must not grant read access to customer or interaction records.

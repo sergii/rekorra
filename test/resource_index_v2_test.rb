@@ -77,12 +77,12 @@ class ResourceIndexV2Test < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "After Day"
   end
 
-  test "numeric range can be used on ordinary Orders Index" do
-    Order.create!(customer: @alice, number: "CHEAP", status: "pending", total_cents: 400)
-    Order.create!(customer: @alice, number: "MEDIUM", status: "pending", total_cents: 1000)
-    Order.create!(customer: @alice, number: "EXPENSIVE", status: "paid", total_cents: 5000)
-    get "/backoffice/resources/orders", headers: auth,
-      params: { filters: { total_cents_min: "500", total_cents_max: "1500", status: "pending" } }
+  test "numeric range can be used on ordinary Tickets Index" do
+    Ticket.create!(customer: @alice, number: "CHEAP", status: "pending", estimated_minutes: 400)
+    Ticket.create!(customer: @alice, number: "MEDIUM", status: "pending", estimated_minutes: 1000)
+    Ticket.create!(customer: @alice, number: "EXPENSIVE", status: "completed", estimated_minutes: 5000)
+    get "/backoffice/resources/tickets", headers: auth,
+      params: { filters: { estimated_minutes_min: "500", estimated_minutes_max: "1500", status: "pending" } }
     assert_response :success
     assert_select "table.rk-table tbody tr", count: 1
     assert_includes response.body, "MEDIUM"

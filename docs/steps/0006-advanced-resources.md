@@ -10,7 +10,7 @@ Improve ordinary Rails Resource CRUD, not Findings or a custom dashboard:
 
 ## Core
 
-- Resource DSL \`field_policy :total_cents, read: :view_total_cents?, write: :edit_total_cents?\`.
+- Resource DSL \`field_policy :estimated_minutes, read: :view_estimated_minutes?, write: :edit_estimated_minutes?\`.
 - Each field policy is declared once per model column. Predicates are delegated to the host's existing \`authorize_with\`, with separate checks at the class and record level. No hard-coded role names.
 - Index hides forbidden columns, filter UI, and sortable fields. A request explicitly trying to sort/filter a forbidden column returns HTTP 403, and text-search excludes protected columns.
 - Show and forms omit restricted fields. Index rows additionally check policy against each individual record; a denied row-level field renders "Restricted" rather than running a formatter.
