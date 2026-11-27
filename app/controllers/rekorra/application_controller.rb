@@ -6,7 +6,16 @@ module Rekorra
     layout "rekorra/application"
     before_action :authenticate_actor!
 
-    helper_method :rekorra_actor, :rekorra_theme, :allowed?, :scoped_for
+    helper_method :rekorra_actor, :rekorra_theme, :allowed?, :scoped_for, :rekorra_navigation
+
+    def rekorra_navigation
+      strategy = Rekorra.configuration.navigation_strategy
+      return unless strategy && allowed?(nil, :access?)
+
+      @rekorra_navigation ||= Navigation.build(resources: Rekorra.configuration.resources,
+        strategy: strategy, resolve: Rekorra.method(:resource_for),
+        allowed: method(:allowed?))
+    end
     rescue_from NotAuthenticated, with: :not_authenticated
     rescue_from NotAuthorized, with: :not_authorized
     rescue_from InvalidCursor, with: :invalid_cursor

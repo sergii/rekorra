@@ -7,3 +7,5 @@ These ideas are accepted as directions, not scheduled work. Each item must still
 - Investigations and AI-assisted context resolution.
 - [Access Audit](../steps/0007-access-audit.md) first slice implemented: next include per-user actor attribution, failed/denied access (separate security boundary), durable outbox/retention, `console1984` / `audits1984` adapters.
 - Browser QA, more Rails compatibility targets and dedicated accessibility checks.
+
+- [Operational backoffice roadmap and CRM dogfooding](operational-backoffice.md): product direction and test-gated delivery slices.

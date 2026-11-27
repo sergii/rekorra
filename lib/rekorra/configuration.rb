@@ -10,7 +10,7 @@ module Rekorra
     attr_accessor :context_application, :context_environment, :context_tenant_with
     attr_accessor :external_link_allowed_hosts
     # Opt-in: host must install and configure importmap-rails.
-    attr_accessor :importmap_enabled
+    attr_accessor :importmap_enabled, :navigation_strategy
     attr_reader :resources, :external_services
 
     def initialize

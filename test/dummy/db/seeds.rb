@@ -70,3 +70,34 @@ if acme.users.count < 65
   end
   User.insert_all(rows)
 end
+
+# CRM dogfooding: repeatable synthetic records; never real customer data.
+[
+  ["LEAD-001", "Pine Studio", "new_lead", "Jamie", 1],
+  ["LEAD-002", "Northwind Design", "contacted", "Morgan", -2],
+  ["LEAD-003", "Cedar Labs", "qualified", "Jamie", 3],
+  ["LEAD-004", "Orbit Garden", "won", "Morgan", 5]
+].each do |reference, company, stage, assignee, days|
+  Crm::Lead.find_or_create_by!(organization: acme, reference: reference) do |lead|
+    lead.assign_attributes(company_name: company, contact_email: "#{reference.downcase}@example.test",
+      stage: stage, assigned_to: assignee, follow_up_on: Date.current + days)
+  end
+end
+
+[
+  ["ONB-001", "Pine Studio", "started", "healthy", "Jamie", 2.minutes, nil],
+  ["ONB-002", "Northwind Design", "dispatched", "unknown", "Jamie", 45.minutes, "No server response; outcome unknown"],
+  ["ONB-003", "Cedar Labs", "dispatched", "failed", "Morgan", 2.hours, "Provider explicitly rejected request"],
+  ["ONB-004", "Orbit Garden", "awaiting_confirmation", "overdue", "Jamie", 8.days, "Confirmation webhook missing"],
+  ["ONB-005", "Maple Works", "confirmed", "healthy", "Morgan", 1.day, nil]
+].each do |reference, company, stage, health, assignee, age, finding|
+  Crm::Onboarding.find_or_create_by!(organization: acme, reference: reference) do |record|
+    record.assign_attributes(company_name: company, stage: stage, health: health,
+      assigned_to: assignee, stage_entered_at: Time.current - age, finding: finding)
+  end
+end
+
+Crm::Lead.find_or_create_by!(organization: globex, reference: "LEAD-001") do |lead|
+  lead.assign_attributes(company_name: "Globex Private CRM", contact_email: "globex-crm@example.test",
+    stage: "contacted", assigned_to: "Taylor")
+end

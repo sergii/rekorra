@@ -3,6 +3,7 @@ require "sidekiq/api"
 
 # Demo-only Basic authentication. A real host must use its own auth and policies.
 Rekorra.configure do |config|
+  config.navigation_strategy = :namespace
   config.importmap_enabled = ENV["REKORRA_HOTWIRE_BROWSER"] == "1"
   config.index_cursor_context_with = ->(actor) { "organization:#{actor.id}" }
   config.finding_rules.register :paid_but_pending, "PaidButPending"
@@ -46,6 +47,9 @@ Rekorra.configure do |config|
     next true if subject.nil? && action == :access?
 
     model_name = subject.is_a?(Class) ? subject.name : subject.class.name
+    if %w[Crm::Lead Crm::Onboarding].include?(model_name)
+      next %i[index? show?].include?(action) && (subject.is_a?(Class) || subject.organization_id == actor.id)
+    end
     next false unless %w[Organization Customer Order Payment User CaseRecord].include?(model_name)
     if model_name == "User"
       next %i[index? show?].include?(action)
@@ -75,6 +79,7 @@ Rekorra.configure do |config|
 
     case model.name
     when "Organization" then model.where(id: actor.id)
+    when "Crm::Lead", "Crm::Onboarding" then model.where(organization_id: actor.id)
     when "User" then model.where(organization_id: actor.id)
     when "CaseRecord" then model.where(organization_id: actor.id)
     when "Customer" then model.where(organization_id: actor.id)
@@ -84,6 +89,8 @@ Rekorra.configure do |config|
     end
   end
 
+  config.resource :crm_leads, "Crm::LeadResource"
+  config.resource :crm_onboardings, "Crm::OnboardingResource"
   config.resource :organizations, "OrganizationResource"
   config.resource :users, "UserResource"
   config.resource :cursor_users, "CursorUserResource"

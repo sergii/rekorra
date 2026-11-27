@@ -4,6 +4,14 @@ Rails-native, modular administration and back-office engine.
 
 **Status:** Early technical prototype. Do not use for sensitive production data.
 
+## CRM dogfooding (Step 0009.0)
+
+The next product-facing demo is a synthetic CRM inside the existing dummy host. Browse Leads and Customer onboarding using the engine's opt-in nested sidebar. Existing commerce and worker fixtures remain for regression tests. CRM resources are initially read-only and demo authentication is not production security.
+
+- [Operational backoffice roadmap](docs/backlog/operational-backoffice.md)
+- [CRM dogfooding and navigation](docs/steps/0009-0-crm-dogfooding.md)
+- Demo URLs: `/backoffice/resources/crm_leads` and `/backoffice/resources/crm_onboardings`.
+
 ## Layout
 
 - `lib/rekorra` and `app/`: packaged Rails Engine gem
